@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".LoginActivity">
+
+    <TextView
+        android:id="@+id/signin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:fontFamily="@font/days_one"
+        android:gravity="center"
+        android:text="Sign In"
+        android:textColor="@color/foreground"
+        android:textSize="60sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextEmail"
+        android:layout_width="310dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="96dp"
+        android:background="@color/foreground"
+        android:ems="10"
+        android:fontFamily="@font/days_one"
+        android:hint="E-mail"
+        android:inputType="textEmailAddress"
+        android:textColor="@color/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signin" />
+
+    <EditText
+        android:id="@+id/editTextPass"
+        android:layout_width="310dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="40dp"
+        android:background="@color/foreground"
+        android:ems="10"
+        android:fontFamily="@font/days_one"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textColor="@color/background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmail" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="263dp"
+        android:layout_height="69dp"
+        android:layout_marginTop="76dp"
+        android:fontFamily="@font/days_one"
+        android:gravity="center"
+        android:text="Sign In"
+        android:textColor="@color/foreground"
+        android:textSize="35sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPass" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/days_one"
+        android:gravity="center"
+        android:text="Forgot Password?"
+        android:textColor="@color/foreground"
+        android:textSize="20sp"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/editTextPass" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:fontFamily="@font/days_one"
+        android:gravity="center"
+        android:text="Made by Marko Olejník 2023"
+        android:textColor="@color/foreground"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

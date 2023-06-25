@@ -16,16 +16,22 @@ import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity  {
 
     BottomNavigationView bottomNavigationView;
     MenuItem workouts, profile, settings;
     FragmentContainerView workoutsContainer, profileContainer, settingsContainer;
+
+    FirebaseAuth auth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        auth = FirebaseAuth.getInstance();
+        checkSignedIn();
         WorkoutsFragment workoutsFragment = new WorkoutsFragment();
         ProfileFragment profileFragment = new ProfileFragment();
         SettingsFragment settingsFragment = new SettingsFragment();
@@ -80,8 +86,15 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 else{return false;}
             }});
+    }
+    public void checkSignedIn() {
 
-
+        if (auth.getCurrentUser() == null) {
+            startActivity(new Intent(this, RegisterActivity.class));
+            finish();
+        } else {
+            Log.i("here is the user", auth.getCurrentUser().getEmail());
+        }
     }
 
 }

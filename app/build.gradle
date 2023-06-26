@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "sk.spse.olejnik.fithub"
-        minSdk 24
+        minSdk 26
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -48,5 +48,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-auth:21.3.0'
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
+    implementation 'com.google.firebase:firebase-firestore'
     // https://firebase.google.com/docs/android/setup#available-libraries
 }

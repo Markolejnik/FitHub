@@ -4,19 +4,32 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth auth;
+    FirebaseFirestore db;
+
 
     TextView signIn;
     EditText editPassword, editEmail, editNickname;
@@ -38,7 +51,8 @@ public class RegisterActivity extends AppCompatActivity {
         signIn = findViewById(R.id.goSignIn);
     }
     public void userRegistration(View view) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         String userEmail = editEmail.getText().toString();
         String userPassword = editPassword.getText().toString();
 
@@ -68,10 +82,31 @@ public class RegisterActivity extends AppCompatActivity {
         auth.createUserWithEmailAndPassword(editEmail.getText().toString(),
                 editPassword.getText().toString()).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+
                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                 Toast.makeText(RegisterActivity.this, "Sign Up Successful!", Toast.LENGTH_LONG).show();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                 nickname = editNickname.getText().toString();
+                nickname = editNickname.getText().toString();
+                LocalDate currentDate = LocalDate.now();
+                Map<String, Object> newuser = new HashMap<>();
+                newuser.put("nickname", nickname);
+                newuser.put("email", userEmail);
+                newuser.put("password", userPassword);
+                newuser.put("joined", currentDate.toString());
+                db.collection("users")
+                        .add(newuser)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d("newUser", newuser.get(1) + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w("newUser", "Error adding document", e);
+                            }
+                        });
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                         .setDisplayName(nickname).build();
 

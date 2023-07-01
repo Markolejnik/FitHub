@@ -10,21 +10,18 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class WorkoutsFragment extends Fragment {
 
     ConstraintLayout content;
     TextView duration, muscleGroup, title;
+    ImageView thumbnail;
 
 
 
     public WorkoutsFragment() {}
-
-    public static WorkoutsFragment newInstance() {
-        WorkoutsFragment fragment = new WorkoutsFragment();
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,7 +38,7 @@ public class WorkoutsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        thumbnail = view.findViewById(R.id.thumbnail);
 
 
     }

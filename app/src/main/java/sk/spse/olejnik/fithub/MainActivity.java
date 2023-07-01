@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity  {
 
     BottomNavigationView bottomNavigationView;
     MenuItem workouts, profile, settings;
-    FragmentContainerView workoutsContainer, profileContainer, settingsContainer;
+    FragmentContainerView workoutsContainer, exerciseContainer, profileContainer, settingsContainer;
 
     FirebaseAuth auth;
 
@@ -35,13 +35,16 @@ public class MainActivity extends AppCompatActivity  {
         WorkoutsFragment workoutsFragment = new WorkoutsFragment();
         ProfileFragment profileFragment = new ProfileFragment();
         SettingsFragment settingsFragment = new SettingsFragment();
+        ExerciseFragment exerciseFragment = new ExerciseFragment();
 
         workoutsContainer = findViewById(R.id.workoutsContainerView);
+        exerciseContainer = findViewById(R.id.exerciseContainerView);
         profileContainer = findViewById(R.id.profileContainerView);
         settingsContainer = findViewById(R.id.settingsContainerView);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         workoutsContainer.setVisibility(View.VISIBLE);
+        exerciseContainer.setVisibility(View.GONE);
         profileContainer.setVisibility(View.GONE);
         settingsContainer.setVisibility(View.GONE);
         getSupportFragmentManager()
@@ -60,19 +63,32 @@ public class MainActivity extends AppCompatActivity  {
                                 .replace(R.id.workoutsContainerView, workoutsFragment)
                                 .commit();
                         workoutsContainer.setVisibility(View.VISIBLE);
+                        exerciseContainer.setVisibility(View.GONE);
                         profileContainer.setVisibility(View.GONE);
                         settingsContainer.setVisibility(View.GONE);
                         return true;
                     }
+                else if (id == R.id.exercises && exerciseContainer.getVisibility() == View.GONE) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.exerciseContainerView, exerciseFragment)
+                            .commit();
+                    exerciseContainer.setVisibility(View.VISIBLE);
+                    profileContainer.setVisibility(View.GONE);
+                    workoutsContainer.setVisibility(View.GONE);
+                    settingsContainer.setVisibility(View.GONE);
+                    return true;
+                }
                 else if (id == R.id.profile && profileContainer.getVisibility() == View.GONE) {
                         getSupportFragmentManager()
                                 .beginTransaction()
                                 .replace(R.id.profileContainerView, profileFragment)
                                 .commit();
-                        profileContainer.setVisibility(View.VISIBLE);
-                        workoutsContainer.setVisibility(View.GONE);
-                        settingsContainer.setVisibility(View.GONE);
-                        return true;
+                    profileContainer.setVisibility(View.VISIBLE);
+                    workoutsContainer.setVisibility(View.GONE);
+                    exerciseContainer.setVisibility(View.GONE);
+                    settingsContainer.setVisibility(View.GONE);
+                    return true;
                     }
                 else if (id == R.id.settings && settingsContainer.getVisibility() == View.GONE) {
                         getSupportFragmentManager()
@@ -80,6 +96,7 @@ public class MainActivity extends AppCompatActivity  {
                                 .replace(R.id.settingsContainerView, settingsFragment)
                                 .commit();
                         settingsContainer.setVisibility(View.VISIBLE);
+                        exerciseContainer.setVisibility(View.GONE);
                         profileContainer.setVisibility(View.GONE);
                         workoutsContainer.setVisibility(View.GONE);
                         return true;

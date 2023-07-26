@@ -3,10 +3,13 @@ package sk.spse.olejnik.fithub;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +21,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity  {
 
     BottomNavigationView bottomNavigationView;
@@ -25,11 +31,18 @@ public class MainActivity extends AppCompatActivity  {
     FragmentContainerView workoutsContainer, exerciseContainer, profileContainer, settingsContainer;
 
     FirebaseAuth auth;
+    public static int height, width, image1, image2;
 
+    static String title, link, type;
+    static List<String> muscleGroups;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        height = displayMetrics.heightPixels;
+        width = displayMetrics.widthPixels;
         auth = FirebaseAuth.getInstance();
         checkSignedIn();
         WorkoutsFragment workoutsFragment = new WorkoutsFragment();
@@ -103,6 +116,7 @@ public class MainActivity extends AppCompatActivity  {
                     }
                 else{return false;}
             }});
+
     }
     public void checkSignedIn() {
 
@@ -113,5 +127,23 @@ public class MainActivity extends AppCompatActivity  {
             Log.i("here is the user", auth.getCurrentUser().getEmail());
         }
     }
+    public void saveData() {
+        Bundle args = getIntent().getExtras();
+        if (args != null) {
+            title = args.getString("title");
+            muscleGroups = args.getStringArrayList("groups");
+
+            image1 = args.getInt("img1");
+            image2 = args.getInt("img2");
+            link = args.getString("link");
+            type = args.getString("type");
+            ExerciseDetailFragment exerciseDetailFragment = ExerciseDetailFragment.newInstance(title, muscleGroups, link, type, image1, image2);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.conLayout, exerciseDetailFragment)
+                    .commit();
+            // Do something with the data, like passing it to another Fragment
+        }
+    }
+
 
 }

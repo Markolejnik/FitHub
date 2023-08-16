@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.ClipData;
 import android.content.Intent;
@@ -31,20 +32,28 @@ public class MainActivity extends AppCompatActivity  {
     FragmentContainerView workoutsContainer, exerciseContainer, profileContainer, settingsContainer;
 
     FirebaseAuth auth;
-    public static int height, width, image1, image2;
+
+    private ExerciseViewModel exerciseViewModel;
+
+    public static int height, width, image1, image2, bottomNavHeight;
 
     static String title, link, type;
     static List<String> muscleGroups;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         height = displayMetrics.heightPixels;
         width = displayMetrics.widthPixels;
         auth = FirebaseAuth.getInstance();
         checkSignedIn();
+
+        exerciseViewModel = new ViewModelProvider(this).get(ExerciseViewModel.class);
+
         WorkoutsFragment workoutsFragment = new WorkoutsFragment();
         ProfileFragment profileFragment = new ProfileFragment();
         SettingsFragment settingsFragment = new SettingsFragment();
@@ -55,6 +64,8 @@ public class MainActivity extends AppCompatActivity  {
         profileContainer = findViewById(R.id.profileContainerView);
         settingsContainer = findViewById(R.id.settingsContainerView);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+
+        bottomNavHeight = bottomNavigationView.getHeight();
 
         workoutsContainer.setVisibility(View.VISIBLE);
         exerciseContainer.setVisibility(View.GONE);
@@ -127,22 +138,22 @@ public class MainActivity extends AppCompatActivity  {
             Log.i("here is the user", auth.getCurrentUser().getEmail());
         }
     }
-    public void saveData() {
-        Bundle args = getIntent().getExtras();
-        if (args != null) {
-            title = args.getString("title");
-            muscleGroups = args.getStringArrayList("groups");
+//    public void saveData() {
+//        Bundle args = getIntent().getExtras();
+//        if (args != null) {
+//            title = args.getString("title");
+//            muscleGroups = args.getStringArrayList("groups");
+//
+//            image1 = args.getInt("img1");
+//            image2 = args.getInt("img2");
+//            link = args.getString("link");
+//            type = args.getString("type");
 
-            image1 = args.getInt("img1");
-            image2 = args.getInt("img2");
-            link = args.getString("link");
-            type = args.getString("type");
-            ExerciseDetailFragment exerciseDetailFragment = ExerciseDetailFragment.newInstance(title, muscleGroups, link, type, image1, image2);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.conLayout, exerciseDetailFragment)
-                    .commit();
-            // Do something with the data, like passing it to another Fragment
-        }
+//            // Do something with the data, like passing it to another Fragment
+//        }
+//    }
+    public ExerciseViewModel getExerciseViewModel() {
+        return exerciseViewModel;
     }
 
 

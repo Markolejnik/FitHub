@@ -8,27 +8,72 @@
     android:background="@color/background"
     tools:context=".ExerciseFragment">
 
-    <TextView
-        android:id="@+id/exerciseTitle"
+
+
+
+
+    <SearchView
+        android:id="@+id/searchBar"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:fontFamily="@font/days_one"
-        android:gravity="center"
-        android:text="Exercises"
-        android:textColor="@color/colorAccent"
-        android:textSize="45sp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/search_background"
+        android:iconifiedByDefault="false"
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:queryHint="Search Exercises"
+        android:textColorHint="@color/foreground"
+        android:tooltipText="Search Exercises"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+
+    </SearchView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="8dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginEnd="8dp"
+    android:id="@+id/filterContainer"
+    app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.571"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/searchBar">
+
+        <Button
+            android:id="@+id/filterbutton"
+            android:layout_width="345dp"
+            android:layout_height="39dp"
+            android:background="@drawable/round_filter"
+            android:fontFamily="@font/days_one"
+            android:text="Filter"
+            android:textSize="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_max="400dp"
+            app:layout_constraintWidth_min="300dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="660dp"
+        android:layout_height="500dp"
+        app:layout_constraintHeight_min="380dp"
+        app:layout_constraintHeight_max="680dp"
         android:layout_marginTop="8dp"
+        android:foregroundGravity="bottom"
+        app:layout_constraintBottom_toTopOf="@id/filler"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/exerciseTitle">
+        app:layout_constraintTop_toBottomOf="@+id/filterContainer"
+        app:layout_constraintVertical_bias="1.0">
 
 
         <TableLayout
@@ -36,9 +81,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-
         </TableLayout>
+
+
+
     </ScrollView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/filler"
+        android:background="@color/colorAccent"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:minWidth="1dp"
+        android:minHeight="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,4 +12,5 @@
     <color name="colorAccent">#FF5700</color>
     <color name="foreground">#E9E9E9</color>
     <color name="background">#131313</color>
+    <color name="barbackground">#323232</color>
 </resources>

@@ -1,31 +1,54 @@
 package sk.spse.olejnik.fithub;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SettingsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
 public class SettingsFragment extends Fragment {
+    BottomNavigationView bottomNavigationView;
+    Button signOut, delete;
+
+    FirebaseAuth auth;
+    FirebaseFirestore db;
+    FirebaseUser user;
 
     public SettingsFragment() {}
 
     public static SettingsFragment newInstance() {
         SettingsFragment fragment = new SettingsFragment();
-        Bundle args = new Bundle();
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+
     }
 
     @Override
@@ -33,5 +56,93 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        signOut = view.findViewById(R.id.signOut);
+        delete = view.findViewById(R.id.deleteUser);
+        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(R.id.settings);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int id = item.getItemId();
+                if (id == R.id.workouts) {
+                    Navigation.findNavController(view).navigate(R.id.action_Settings_to_Workouts);
+                    return true;
+                }
+                else if (id == R.id.exercises) {
+                    Navigation.findNavController(view).navigate(R.id.action_Settings_to_Exercise);
+                    return true;
+                }
+                else if (id == R.id.profile) {
+                    Navigation.findNavController(view).navigate(R.id.action_Settings_to_Profile);
+                    return true;
+                }
+                else if (id == R.id.settings) {
+
+                    return true;
+                }
+                else{return false;}
+            }});
+
+        checkSignedIn();
+
+        delete.setOnClickListener(v1 -> deleteUser(view));
+    }
+
+    public void checkSignedIn() {
+
+        if (auth.getCurrentUser() == null) {
+            signOut.setText("Sign In");
+            signOut.setOnClickListener(v1 -> {
+                getActivity().finish();
+                Intent intent = new Intent(getActivity(), RegisterActivity.class);
+                startActivity(intent);
+            });
+        } else {
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            final String current = user.getEmail();
+            db.collection("users")
+                    .whereEqualTo("email", current)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                signOut.setText("Sign Out");
+                                signOut.setOnClickListener(v1 -> {
+                                    FirebaseAuth.getInstance().signOut();
+                                    getActivity().finish();
+                                    Intent intent = new Intent(getActivity(), RegisterActivity.class);
+                                    startActivity(intent);
+                                });
+                                Log.i("here is the user", auth.getCurrentUser().getEmail());
+                            }
+
+                        }
+                    });}
+    }
+
+    public void deleteUser(View view){
+        try {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+            user.delete()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
+                                checkSignedIn();
+                            }
+                        }
+                    });
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Account deletion failed", Toast.LENGTH_SHORT).show();
+        }
     }
 }

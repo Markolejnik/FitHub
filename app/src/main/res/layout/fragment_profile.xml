@@ -16,7 +16,7 @@
         android:gravity="center"
         android:text="Profile"
         android:textColor="@color/colorAccent"
-        android:textSize="45sp"
+        android:textSize="32sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -51,45 +51,64 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="176dp"
-        android:layout_height="149dp"
+        android:layout_width="132dp"
+        android:layout_height="95dp"
         android:layout_marginTop="12dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_profile_foreground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileTitle" />
 
-    <Button
-        android:id="@+id/signOut"
-        android:layout_width="263dp"
-        android:layout_height="69dp"
-        android:layout_marginBottom="120dp"
-        android:background="@color/colorAccent"
-        android:fontFamily="@font/days_one"
-        android:gravity="center"
-        android:onClick="signOut"
-        android:text="Sign Out"
-        android:textColor="@color/foreground"
-        android:textSize="35sp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="394dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/joinedText">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
-        android:id="@+id/deleteUser"
-        android:layout_width="263dp"
-        android:layout_height="69dp"
-        android:layout_marginBottom="20dp"
-        android:background="@color/colorAccent"
-        android:fontFamily="@font/days_one"
-        android:gravity="center"
-        android:text="Delete Account"
-        android:textColor="@color/foreground"
-        android:textSize="25sp"
-        app:layout_constraintBottom_toTopOf="@id/signOut"
+        android:id="@+id/button"
+        android:layout_width="137dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="68dp"
+        android:text="Your Workouts"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/joinedText"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="80dp"
+        android:text="Workout Drafts"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/joinedText"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
+        app:itemTextColor="@drawable/bottom_nav_icon_color_selector"
+        app:itemIconSize="40dp"
+        app:menu="@menu/bottom_nav_menu"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/constraintLayout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
+
+
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="8dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/exercise"
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/days_one"
+        android:maxLines="1"
+        android:text="TextView"
+        android:textColor="@color/foreground"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@+id/removeExercise"
+        app:layout_constraintHorizontal_bias="0.093"
+        app:layout_constraintStart_toEndOf="@+id/thumbnail"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.815" />
+
+    <ImageView
+        android:id="@+id/removeExercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_baseline_close_24" />
+
+    <EditText
+        android:id="@+id/sets"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="12dp"
+        android:ems="3"
+        android:fontFamily="@font/days_one"
+        android:inputType="number"
+        android:hint="Sets"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/thumbnail" />
+
+    <EditText
+        android:id="@+id/reps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:ems="3"
+        android:fontFamily="@font/days_one"
+        android:inputType="number"
+        android:hint="Reps"
+        app:layout_constraintBottom_toBottomOf="@+id/sets"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/thumbnail"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/days_one"
+        android:text="x"
+        android:textColor="@color/foreground"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/sets"
+        app:layout_constraintStart_toEndOf="@+id/sets" />
+
+<!--    <Button-->
+<!--        android:id="@+id/repstosec"-->
+<!--        android:layout_width="136dp"-->
+<!--        android:layout_height="41dp"-->
+<!--        android:layout_marginStart="12dp"-->
+<!--        android:background="@drawable/round_filter"-->
+<!--        android:fontFamily="@font/days_one"-->
+<!--        android:padding="5dp"-->
+<!--        android:text="Use Seconds"-->
+<!--        android:textColor="@color/foreground"-->
+<!--        android:textSize="15sp"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/reps"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/reps"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/reps"-->
+<!--        app:layout_constraintVertical_bias="0.0" />-->
+
+    <ToggleButton
+        android:id="@+id/repstosec"
+        android:layout_width="136dp"
+        android:layout_height="41dp"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/round_filter"
+        android:fontFamily="@font/days_one"
+        android:padding="5dp"
+        android:text="Use Seconds"
+        android:textColor="@color/foreground"
+        android:textOff="Use Seconds"
+        android:textOn="Use Reps"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="@+id/reps"
+        app:layout_constraintStart_toEndOf="@+id/reps"
+        app:layout_constraintTop_toTopOf="@+id/reps"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

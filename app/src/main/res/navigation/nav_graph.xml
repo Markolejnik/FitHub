@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragmentWorkouts">
+
+    <fragment
+        android:id="@+id/fragmentWorkouts"
+        android:name="sk.spse.olejnik.fithub.WorkoutsFragment"
+        android:label="Fragment Workouts"
+        tools:layout="@layout/fragment_workouts">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_Workouts_to_Exercise"
+            app:destination="@id/fragmentExercise" />
+        <action
+            android:id="@+id/action_Workouts_to_Profile"
+            app:destination="@id/fragmentProfile" />
+        <action
+            android:id="@+id/action_Workouts_to_Settings"
+            app:destination="@id/fragmentSettings" />
+        <action
+            android:id="@+id/action_Workouts_to_WorkoutCreation"
+            app:destination="@id/fragmentWorkoutCreation" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentWorkoutCreation"
+        android:name="sk.spse.olejnik.fithub.WorkoutCreationFragment"
+        android:label="Fragment Workout Creation"
+        tools:layout="@layout/fragment_workout_creation">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_WorkoutCreation_to_Workouts"
+            app:destination="@id/fragmentWorkouts" />
+        <action
+            android:id="@+id/action_WorkoutCreation_to_Exercise"
+            app:destination="@id/fragmentExercise" />
+        <action
+            android:id="@+id/action_WorkoutCreation_to_ExerciseDetail"
+            app:destination="@id/fragmentExerciseDetail" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentExercise"
+        android:name="sk.spse.olejnik.fithub.ExerciseFragment"
+        android:label="Fragment Exercise"
+        tools:layout="@layout/fragment_exercise">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_Exercise_to_Workouts"
+            app:destination="@id/fragmentWorkouts" />
+        <action
+            android:id="@+id/action_Exercise_to_Profile"
+            app:destination="@id/fragmentProfile" />
+
+        <action
+            android:id="@+id/action_Exercise_to_Settings"
+            app:destination="@id/fragmentSettings" />
+        <action
+            android:id="@+id/action_Exercise_to_Filter"
+            app:destination="@id/fragmentFilter" />
+        <action
+            android:id="@+id/action_Exercise_to_ExerciseDetail"
+            app:destination="@id/fragmentExerciseDetail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentFilter"
+        android:name="sk.spse.olejnik.fithub.FilterFragment"
+        android:label="Fragment Filter"
+        tools:layout="@layout/fragment_filter">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_Filter_to_Exercise"
+            app:destination="@id/fragmentExercise" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentExerciseDetail"
+        android:name="sk.spse.olejnik.fithub.ExerciseDetailFragment"
+        android:label="Fragment Exercise Detail"
+        tools:layout="@layout/fragment_exercise_detail">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_ExerciseDetail_to_Exercise"
+            app:destination="@id/fragmentExercise" />
+        <action
+            android:id="@+id/action_ExerciseDetail_to_WorkoutCreation"
+            app:destination="@id/fragmentWorkoutCreation" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentProfile"
+        android:name="sk.spse.olejnik.fithub.ProfileFragment"
+        android:label="Fragment Profile"
+        tools:layout="@layout/fragment_profile">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_Profile_to_Workouts"
+            app:destination="@id/fragmentWorkouts" />
+
+        <action
+            android:id="@+id/action_Profile_to_Exercise"
+            app:destination="@id/fragmentExercise" />
+
+        <action
+            android:id="@+id/action_Profile_to_Settings"
+            app:destination="@id/fragmentSettings" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentSettings"
+        android:name="sk.spse.olejnik.fithub.SettingsFragment"
+        android:label="Fragment Settings"
+        tools:layout="@layout/fragment_settings">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_Settings_to_Workouts"
+            app:destination="@id/fragmentWorkouts" />
+
+        <action
+            android:id="@+id/action_Settings_to_Exercise"
+            app:destination="@id/fragmentExercise" />
+
+        <action
+            android:id="@+id/action_Settings_to_Profile"
+            app:destination="@id/fragmentProfile" />
+
+    </fragment>
+
+    <!-- Actions to navigate between fragments -->
+
+
+
+
+
+
+
+
+</navigation>

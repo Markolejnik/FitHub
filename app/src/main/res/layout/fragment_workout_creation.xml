@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/creationLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".WorkoutCreationFragment">
+
+    <ImageView
+        android:id="@+id/goBack"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="6dp"
+        android:src="@drawable/icon_back_foreground"
+        app:layout_constraintBottom_toBottomOf="@+id/workoutTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/workoutTitle"
+        app:layout_constraintVertical_bias="0.23" />
+
+    <TextView
+        android:id="@+id/workoutTitle"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:fontFamily="@font/days_one"
+        android:gravity="center"
+        android:text="New Workout"
+        android:textColor="@color/colorAccent"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/workoutSave"
+        android:layout_width="81dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="3dp"
+        android:fontFamily="@font/days_one"
+        android:gravity="center"
+        android:text="Save"
+        android:textColor="@color/colorAccent"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/workoutTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/workoutTitle" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/workoutTitle">
+
+        <EditText
+            android:id="@+id/titleInput"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="32dp"
+            android:ems="10"
+            android:fontFamily="@font/days_one"
+            android:hint="Workout Title"
+            android:inputType="textPersonName"
+            android:text=""
+            android:textColor="@color/foreground"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/targetedMGInput"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="32dp"
+            android:ems="10"
+            android:fontFamily="@font/days_one"
+            android:hint="Targeted Muscle Groups"
+            android:inputType="textPersonName"
+            android:text=""
+            android:textColor="@color/foreground"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleInput" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView3"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
+
+        <TableLayout
+            android:id="@+id/tableLayoutWorkout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TableLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/AddExercise"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:fontFamily="@font/days_one"
+        android:text="Add Exercise"
+        android:textColor="@color/foreground"
+        android:textSize="20sp"
+        android:background="@drawable/round_filter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView3" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

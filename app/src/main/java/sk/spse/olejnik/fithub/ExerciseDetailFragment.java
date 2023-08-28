@@ -6,12 +6,15 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,7 +32,8 @@ public class ExerciseDetailFragment extends Fragment {
     List<String> muscleGroups;
     int image1, image2;
     TextView titleText, muscleGroupsText, typeText, linkText;
-    ImageView imageView1, imageView2;
+    ImageView imageView1, imageView2, goBack;
+    Button addToWorkout;
 
 
 
@@ -89,6 +93,28 @@ public class ExerciseDetailFragment extends Fragment {
         linkText = view.findViewById(R.id.link);
         imageView1 = view.findViewById(R.id.image1);
         imageView2 = view.findViewById(R.id.image2);
+        goBack = view.findViewById(R.id.goBack);
+        addToWorkout = view.findViewById(R.id.AddToWorkout);
+
+        goBack.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_ExerciseDetail_to_Exercise);
+        });
+
+        addToWorkout.setOnClickListener(v -> {
+            // Update the data in one go
+            ExerciseData newData = new ExerciseData();
+            newData.setNewTitle(titleText.getText().toString());
+            newData.setNewMuscleGroups(muscleGroups);
+            newData.setNewImage1(image1);
+            if(imageView2.getVisibility() != View.GONE) newData.setNewImage2(image2);
+
+            newData.setNewLink(linkText.getText().toString());
+            newData.setNewType(typeText.getText().toString());
+
+            exerciseViewModel.updateCreationData(newData);
+            Navigation.findNavController(v).navigate(R.id.action_ExerciseDetail_to_WorkoutCreation);
+
+        });
 
         // Observe the LiveData for changes
         exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
@@ -104,14 +130,26 @@ public class ExerciseDetailFragment extends Fragment {
                     muscleGroupsText.setText(muscleGroupContent);
                     typeText.setText(exerciseData.getNewType());
                     linkText.setText(exerciseData.getNewLink());
-                    imageView1.setImageResource(exerciseData.getNewImage1());
-                    if (exerciseData.getNewImage2() == 0) {
+                    image1 = exerciseData.getNewImage1();
+                    imageView1.setImageResource(image1);
+                    image2 = exerciseData.getNewImage2();
+                    if (image2 == 0) {
                         imageView2.setVisibility(View.GONE);
                     }
-                    imageView2.setImageResource(exerciseData.getNewImage2());
+                    imageView2.setImageResource(image2);
                 }
             }
         });
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.frameLayout); // Replace with your container's ID
+//        Log.i("fragment", currentFragment);
+        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+
+        for (int i = 0; i < backStackEntryCount; i++) {
+            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
+            String fragmentName = entry.getName();
+            Log.d("BackStack", "Fragment in back stack: " + fragmentName);
+        }
 
 
 
@@ -125,9 +163,21 @@ public class ExerciseDetailFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
     }
+
+
 }

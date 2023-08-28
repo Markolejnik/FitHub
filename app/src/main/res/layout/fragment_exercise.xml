@@ -68,7 +68,7 @@
         app:layout_constraintHeight_max="680dp"
         android:layout_marginTop="8dp"
         android:foregroundGravity="bottom"
-        app:layout_constraintBottom_toTopOf="@id/filler"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,20 +86,20 @@
 
 
     </ScrollView>
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/filler"
-        android:background="@color/colorAccent"
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:minWidth="1dp"
-        android:minHeight="60dp"
+        android:layout_height="75dp"
+        android:background="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/scrollView2">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+        app:itemIconTint="@drawable/bottom_nav_icon_color_selector"
+        app:itemTextColor="@drawable/bottom_nav_icon_color_selector"
+        app:itemIconSize="40dp"
+        app:menu="@menu/bottom_nav_menu"/>
 
 
 

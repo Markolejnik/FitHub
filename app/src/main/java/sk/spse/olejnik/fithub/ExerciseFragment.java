@@ -17,11 +17,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.navigation.Navigation;
 
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -34,6 +36,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,14 +46,17 @@ import java.util.ListIterator;
 import java.util.Locale;
 
 public class ExerciseFragment extends Fragment {
-    
+
+    BottomNavigationView bottomNavigationView;
     TableLayout tableLayout;
     TableRow filler;
     ConstraintLayout layoutExercise, filterContainer;
 
     private ExerciseViewModel exerciseViewModel;
+    private FilterViewModel filterViewModel;
 
-    List<Exercises> exercises, filteredExercises, groupFilter;
+    List<Exercises> exercises, filteredExercises, filteredExercisesFinal;
+    List<String> groupFilter;
 
     String searchPhrase, typeFilter;
     SearchView searchBar;
@@ -78,14 +84,39 @@ public class ExerciseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
 
         searchBar = view.findViewById(R.id.searchBar);
         filterButton = view.findViewById(R.id.filterbutton);
         tableLayout = view.findViewById(R.id.tableLayout);
         layoutExercise = view.findViewById(R.id.conLayout);
         filterContainer = view.findViewById(R.id.filterContainer);
+        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(R.id.exercises);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                int id = item.getItemId();
+                if (id == R.id.workouts) {
+                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Workouts);
+                    return true;
+                }
+                else if (id == R.id.exercises) {
+
+                    return true;
+                }
+                else if (id == R.id.profile) {
+                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Profile);
+                    return true;
+                }
+                else if (id == R.id.settings) {
+                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Settings);
+                    return true;
+                }
+                else{return false;}
+            }});
 //        filler = view.findViewById(R.id.filler);
 
         layoutExercise.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -140,6 +171,7 @@ public class ExerciseFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (filteredExercises != null) filteredExercises.removeAll(filteredExercises);
+                if (filteredExercisesFinal != null) filteredExercisesFinal.removeAll(filteredExercisesFinal);
                 Log.i("searching this query", query);
                 updateExerciseList(query);
 
@@ -158,6 +190,7 @@ public class ExerciseFragment extends Fragment {
 
 
         filterButton.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Filter);
             filterExercises();
         });
 
@@ -176,6 +209,7 @@ public class ExerciseFragment extends Fragment {
         });
 
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
+        filterViewModel = ((MainActivity) requireActivity()).getFilterViewModel();
 
         createExerciseList(exercises);
 
@@ -202,6 +236,7 @@ public class ExerciseFragment extends Fragment {
                 ImageView thumbnail = layoutExercise.findViewById(R.id.thumbnail);
                 layoutExercise.setOnClickListener(v -> {
                     createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getLink(), item.getType());
+                    Navigation.findNavController(v).navigate(R.id.action_Exercise_to_ExerciseDetail);
                 });
 
                 title.setText(item.getName());
@@ -224,8 +259,8 @@ public class ExerciseFragment extends Fragment {
                 }
             }
         }
-        if (typeFilter != null) {
-            if (filteredExercises.size() != 0)  {
+        if (typeFilter != null && !typeFilter.equals("Any")) {
+            if (filteredExercises.size() != 0) {
                 filteredExercises.removeIf(item -> !item.getType().toLowerCase(Locale.ROOT).equals(typeFilter.toLowerCase(Locale.ROOT)));
             } else {
                 for (Exercises item : exercises) {
@@ -236,12 +271,33 @@ public class ExerciseFragment extends Fragment {
             }
 
         }
+        filteredExercisesFinal = new ArrayList<>();
+        if (groupFilter != null && !groupFilter.contains("Any")) {
+            for (String groupFilter : groupFilter) {
+                if (filteredExercises.size() != 0) {
+                    for (Exercises item : filteredExercises) {
+                        for (String muscleGroup : item.getMuscleGroup()) {
+                            if (muscleGroup.toLowerCase(Locale.ROOT).equals(groupFilter.toLowerCase(Locale.ROOT))) filteredExercisesFinal.add(item);
+                        }
+                    }
+                } else {
+                    for (Exercises item : exercises) {
+                        for (String muscleGroup : item.getMuscleGroup()) {
+                            if (muscleGroup.toLowerCase(Locale.ROOT).equals(groupFilter.toLowerCase(Locale.ROOT))) filteredExercisesFinal.add(item);
+                        }
+                    }
+                }
+            }
+        }
+
+
         tableLayout.removeAllViews();
-        for (Exercises item: filteredExercises) {
+        for (Exercises item : filteredExercises) {
             Log.i("filtered list item: ", item.getName());
         }
 
-        if (filteredExercises.size() != 0) createExerciseList(filteredExercises);
+        if (filteredExercisesFinal.size() != 0) createExerciseList(filteredExercisesFinal);
+        else if (filteredExercises.size() != 0) createExerciseList(filteredExercises);
         else createExerciseList(exercises);
 
 //        for (Exercises item: filteredExercises) {
@@ -273,13 +329,15 @@ public class ExerciseFragment extends Fragment {
 
     }
     void filterExercises() {
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.bottomNavigationView.setVisibility(View.GONE);
-        FilterFragment filterFragment = new FilterFragment();
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.conLayout, filterFragment, "findThisFragment")
-                .addToBackStack(null)
-                .commit();
+
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        mainActivity.bottomNavigationView.setVisibility(View.GONE);
+
+//        FilterFragment filterFragment = new FilterFragment();
+//        getActivity().getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.conLayout, filterFragment, "FilterFragment")
+//                .addToBackStack("FragmentExercise")
+//                .commit();
 
 
 //        FilterFragment filterFragment = new FilterFragment();
@@ -305,13 +363,14 @@ public class ExerciseFragment extends Fragment {
 
         exerciseViewModel.updateExerciseData(newData);
 
-        MainActivity mainActivity = (MainActivity) getActivity();
-        mainActivity.bottomNavigationView.setVisibility(View.GONE);
-        ExerciseDetailFragment exerciseDetailFragment = new ExerciseDetailFragment();
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.conLayout, exerciseDetailFragment, "findThisFragment")
-                .addToBackStack(null)
-                .commit();
+//        MainActivity mainActivity = (MainActivity) getActivity();
+//        mainActivity.bottomNavigationView.setVisibility(View.GONE);
+//        ExerciseDetailFragment exerciseDetailFragment = new ExerciseDetailFragment();
+//        getActivity().getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.conLayout, exerciseDetailFragment, "ExerciseDetailFragment")
+//                .addToBackStack("ExerciseFragment")
+//                .commit();
+//        Navigation.findNavController(v).navigate(R.id.action_Exercise_to_ExerciseDetail);
 
 
 //        Log.i("mi", name);
@@ -333,16 +392,43 @@ public class ExerciseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
-        exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), exerciseData -> {
-            if (exerciseData != null) {
-                typeFilter = exerciseData.getNewType();
+        bottomNavigationView.setVisibility(View.VISIBLE);
+        bottomNavigationView.setSelectedItemId(R.id.exercises);
+        filterViewModel = ((MainActivity) requireActivity()).getFilterViewModel();
+        filterViewModel.getFilterLiveData().observe(getViewLifecycleOwner(), filterData -> {
+            if (filterData != null) {
+                typeFilter = filterData.getFilterType();
+                groupFilter = filterData.getFilterMuscleGroups();
+                StringBuilder result = new StringBuilder();
+                for (String group: groupFilter
+                     ) {
+                    result.append(group + " ");
+                }
                 Log.i("jiggas", typeFilter);
+                Log.i("groupfilter", result.toString());
                 if (filteredExercises != null) filteredExercises.removeAll(filteredExercises);
+                if (filteredExercisesFinal != null) filteredExercisesFinal.removeAll(filteredExercisesFinal);
                 Log.i("searching this query when filter", searchBar.getQuery().toString());
                 updateExerciseList(searchBar.getQuery().toString());
             }
         });
 
+
+//        exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), exerciseData -> {
+//            if (exerciseData != null) {
+//                typeFilter = exerciseData.getNewType();
+//                Log.i("jiggas", typeFilter);
+//                if (filteredExercises != null) filteredExercises.removeAll(filteredExercises);
+//                Log.i("searching this query when filter", searchBar.getQuery().toString());
+//                updateExerciseList(searchBar.getQuery().toString());
+//            }
+//        });
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        bottomNavigationView.setVisibility(View.GONE);
     }
 }

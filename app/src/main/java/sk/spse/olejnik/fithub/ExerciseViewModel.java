@@ -12,6 +12,7 @@ import java.util.List;
 public class ExerciseViewModel extends AndroidViewModel {
 
     private MutableLiveData<ExerciseData> exerciseLiveData = new MutableLiveData<>();
+    private MutableLiveData<ExerciseData> creationLiveData = new MutableLiveData<>();
 
     // Constructor
     public ExerciseViewModel(@NonNull Application application) {
@@ -23,10 +24,14 @@ public class ExerciseViewModel extends AndroidViewModel {
     public LiveData<ExerciseData> getExerciseLiveData() {
         return exerciseLiveData;
     }
+    public LiveData<ExerciseData> getCreationLiveData() {return creationLiveData;}
 
     // Method to update all fields in one go
     public void updateExerciseData(ExerciseData newData) {
         exerciseLiveData.setValue(newData);
+    }
+    public void updateCreationData(ExerciseData newData) {
+        creationLiveData.setValue(newData);
     }
 
 //    private MutableLiveData<String> title = new MutableLiveData<>();

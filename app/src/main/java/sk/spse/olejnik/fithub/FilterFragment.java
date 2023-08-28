@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
+import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +18,23 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class FilterFragment extends Fragment {
 
     ImageView backButton;
+    Button clearFilters;
     TextView saveFilters, filterTypeAny, filterType1, filterType2, filterGroupAny, filterGroup1, filterGroup2, filterGroup3, filterGroup4, filterGroup5, filterGroup6, filterGroup7, filterGroup8, filterGroup9, filterGroup10, filterGroup11, filterGroup12, filterGroup13, filterGroup14, filterGroup15, filterGroup16;
-    Boolean typeAny, type1, type2, groupAny, group1, group2, group3, group4, group5, group6, group7, group8, group9, group10, group11, group12, group13, group14, group15, group16;
+//    Boolean typeAny, type1, type2, groupAny, group1, group2, group3, group4, group5, group6, group7, group8, group9, group10, group11, group12, group13, group14, group15, group16;
+    List<TextView> groupFilterViews;
+    String typeFilter;
+    List<String> groupFilter, filterOutput;
 
-    private ExerciseViewModel exerciseViewModel;
+    private FilterViewModel filterViewModel;
 
 
     public FilterFragment() {
@@ -54,6 +62,7 @@ public class FilterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         backButton = view.findViewById(R.id.goBack);
+        clearFilters = view.findViewById(R.id.clearfilters);
         saveFilters = view.findViewById(R.id.filterSave);
         filterTypeAny = view.findViewById(R.id.filterTypeAny);
         filterType1 = view.findViewById(R.id.filterType1);
@@ -75,51 +84,141 @@ public class FilterFragment extends Fragment {
         filterGroup14 = view.findViewById(R.id.filterGroup14);
         filterGroup15 = view.findViewById(R.id.filterGroup15);
         filterGroup16 = view.findViewById(R.id.filterGroup16);
-        typeAny = groupAny = true;
-        type1 = type2 = group1 = group2 = group3 = group4 = group5 = group6 = group7 = group8 = group9 = group10 = group11 = group12 = group13 = group14 = group15 = group16 = false;
+        groupFilterViews = new ArrayList<>();
+        groupFilterViews.add(filterGroup1);
+        groupFilterViews.add(filterGroup2);
+        groupFilterViews.add(filterGroup3);
+        groupFilterViews.add(filterGroup4);
+        groupFilterViews.add(filterGroup5);
+        groupFilterViews.add(filterGroup6);
+        groupFilterViews.add(filterGroup7);
+        groupFilterViews.add(filterGroup8);
+        groupFilterViews.add(filterGroup9);
+        groupFilterViews.add(filterGroup10);
+        groupFilterViews.add(filterGroup11);
+        groupFilterViews.add(filterGroup12);
+        groupFilterViews.add(filterGroup13);
+        groupFilterViews.add(filterGroup14);
+        groupFilterViews.add(filterGroup15);
+        groupFilterViews.add(filterGroup16);
+//        typeAny = groupAny = true;
+//        type1 = type2 = group1 = group2 = group3 = group4 = group5 = group6 = group7 = group8 = group9 = group10 = group11 = group12 = group13 = group14 = group15 = group16 = false;
         backButton.setOnClickListener(v -> {
+            Navigation.findNavController(v).navigate(R.id.action_Filter_to_Exercise);
 //            ExerciseFragment exerciseFragment = new ExerciseFragment();
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//
 //            getActivity().getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.frameLayout2, exerciseFragment, "findThisFragment")
+//                    .replace(R.id.frameLayout2, exerciseFragment, "ExerciseFragment")
 //                    .commit();
+//
+//            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//            fragmentManager.popBackStack();
+//            MainActivity mainActivity = (MainActivity) getActivity();
+//            mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        });
 
-            fragmentManager.popBackStack();
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        FilterData filterData = new FilterData();
+        filterViewModel = ((MainActivity) requireActivity()).getFilterViewModel();
+        filterViewModel.getFilterLiveData().observe(getViewLifecycleOwner(), new Observer<FilterData>() {
+            @Override
+            public void onChanged(FilterData filterData) {
+                if (filterData != null) {
+                    if (filterData.getFilterType() != null ) {
+                        typeFilter = filterData.getFilterType();
+                        if (typeFilter.equals("Any")) {
+                            filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                        } else if (typeFilter.equals("Bodybuilding")) {
+                            filterType1.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                        } else {
+                            filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                        }
+
+                    }
+                    if (filterData.getFilterMuscleGroups() != null) {
+                        groupFilter = filterData.getFilterMuscleGroups();
+                    }
+                }
+            }
+        });
+        clearFilters.setOnClickListener(v -> {
+            filterData.setFilterType(null);
+            filterData.setFilterMuscleGroups(null);
+            performViewColorChange();
+            filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+            filterType1.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+            filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+
+
         });
         saveFilters.setOnClickListener(v -> {
 
-            ExerciseData typeData = new ExerciseData();
-            exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
-            exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
-                @Override
-                public void onChanged(@Nullable ExerciseData exerciseData) {
-                    if (exerciseData != null) {
-                        typeData.setNewTitle(null);
-                        typeData.setNewMuscleGroups(null);
-                        typeData.setNewImage1(0);
-                        typeData.setNewImage2(0);
-                        typeData.setNewLink(null);
-                        typeData.setNewType(null);
-                    }
-                }
-            });
+//            exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
+//                @Override
+//                public void onChanged(@Nullable ExerciseData exerciseData) {
+//                    if (exerciseData != null) {
+//                        typeData.setNewTitle(null);
+//                        typeData.setNewMuscleGroups(null);
+//                        typeData.setNewImage1(0);
+//                        typeData.setNewImage2(0);
+//                        typeData.setNewLink(null);
+//                        typeData.setNewType(null);
+//                    }
+//                }
+//            });
+            filterData.setFilterType(null);
+            filterData.setFilterMuscleGroups(null);
 
             if (filterTypeAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
-                typeData.setNewType("");
+                filterData.setFilterType("Any");
             } else if (filterType1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)){
-                typeData.setNewType("Bodybuilding");
+                filterData.setFilterType("Bodybuilding");
             } else if (filterType2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)){
-                typeData.setNewType("Bodyweight");
+                filterData.setFilterType("Bodyweight");
             }
 
-            exerciseViewModel.updateExerciseData(typeData);
+            filterOutput = new ArrayList<>();
+            if (filterGroupAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Any");
+            } else if (filterGroup1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Abdominals");
+            } if (filterGroup2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Biceps");
+            } if (filterGroup3.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Calfs");
+            } if (filterGroup4.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Chest");
+            } if (filterGroup5.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Forearms");
+            } if (filterGroup6.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Front Delts");
+            } if (filterGroup7.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Glutes");
+            } if (filterGroup8.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Hamstrings");
+            } if (filterGroup9.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                    filterOutput.add("Lats");
+            } if (filterGroup10.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Lower Back");
+            } if (filterGroup11.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Quads");
+            } if (filterGroup12.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Rear Delts");
+            } if (filterGroup13.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Rhomboids");
+            } if (filterGroup14.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Shoulders");
+            } if (filterGroup15.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Traps");
+            } if (filterGroup16.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterOutput.add("Triceps");
+            }
+            filterData.setFilterMuscleGroups(filterOutput);
+            filterViewModel.updateExerciseData(filterData);
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             fragmentManager.popBackStack();
-            MainActivity mainActivity = (MainActivity) getActivity();
-            mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+//            MainActivity mainActivity = (MainActivity) getActivity();
+//            mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         });
         filterTypeAny.setOnClickListener(v1 -> {
             filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
@@ -143,5 +242,246 @@ public class FilterFragment extends Fragment {
             }
 
         });
+
+        filterGroupAny.setOnClickListener(v2 -> {
+            if (filterGroupAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {}
+            else {
+                performViewColorChange();
+            }
+        });
+        filterGroup1.setOnClickListener(v2 -> {
+            if (filterGroup1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup1.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup1.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup2.setOnClickListener(v2 -> {
+            if (filterGroup2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup2.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup2.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup3.setOnClickListener(v2 -> {
+            if (filterGroup3.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup3.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup3.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup4.setOnClickListener(v2 -> {
+            if (filterGroup4.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup4.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup4.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup5.setOnClickListener(v2 -> {
+            if (filterGroup5.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup5.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup5.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup6.setOnClickListener(v2 -> {
+            if (filterGroup6.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup6.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup6.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup7.setOnClickListener(v2 -> {
+            if (filterGroup7.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup7.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup7.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup8.setOnClickListener(v2 -> {
+            if (filterGroup8.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup8.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup8.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup9.setOnClickListener(v2 -> {
+            if (filterGroup9.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup9.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup9.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup10.setOnClickListener(v2 -> {
+            if (filterGroup10.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup10.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup10.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup11.setOnClickListener(v2 -> {
+            if (filterGroup11.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup11.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup11.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup12.setOnClickListener(v2 -> {
+            if (filterGroup12.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup12.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup12.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup13.setOnClickListener(v2 -> {
+            if (filterGroup13.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup13.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup13.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup14.setOnClickListener(v2 -> {
+            if (filterGroup14.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup14.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup14.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+
+        filterGroup15.setOnClickListener(v2 -> {
+            if (filterGroup15.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup15.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup15.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
+        filterGroup16.setOnClickListener(v2 -> {
+            if (filterGroup16.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
+                filterGroup16.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                if (!performViewColorCheck()) {
+                    performViewColorChange();
+                }
+
+            } else {
+                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                filterGroup16.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+            }
+        });
     }
+
+    boolean performViewColorCheck() {
+        boolean result = false;
+        for (TextView filter: groupFilterViews) {
+            if (filter.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) result = true;
+        }
+        return result;
+    }
+    void performViewColorChange() {
+        filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        for (TextView filter: groupFilterViews) {
+            filter.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
 }

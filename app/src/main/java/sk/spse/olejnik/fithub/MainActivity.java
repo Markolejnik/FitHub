@@ -27,18 +27,17 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
 
-    BottomNavigationView bottomNavigationView;
+//    BottomNavigationView bottomNavigationView;
     MenuItem workouts, profile, settings;
     FragmentContainerView workoutsContainer, exerciseContainer, profileContainer, settingsContainer;
 
     FirebaseAuth auth;
 
     private ExerciseViewModel exerciseViewModel;
+    private FilterViewModel filterViewModel;
 
-    public static int height, width, image1, image2, bottomNavHeight;
+    public static int height, width, bottomNavHeight;
 
-    static String title, link, type;
-    static List<String> muscleGroups;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,80 +52,81 @@ public class MainActivity extends AppCompatActivity  {
         checkSignedIn();
 
         exerciseViewModel = new ViewModelProvider(this).get(ExerciseViewModel.class);
+        filterViewModel = new ViewModelProvider(this).get(FilterViewModel.class);
 
         WorkoutsFragment workoutsFragment = new WorkoutsFragment();
         ProfileFragment profileFragment = new ProfileFragment();
         SettingsFragment settingsFragment = new SettingsFragment();
         ExerciseFragment exerciseFragment = new ExerciseFragment();
 
-        workoutsContainer = findViewById(R.id.workoutsContainerView);
-        exerciseContainer = findViewById(R.id.exerciseContainerView);
-        profileContainer = findViewById(R.id.profileContainerView);
-        settingsContainer = findViewById(R.id.settingsContainerView);
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+//        workoutsContainer = findViewById(R.id.workoutsContainerView);
+//        exerciseContainer = findViewById(R.id.exerciseContainerView);
+//        profileContainer = findViewById(R.id.profileContainerView);
+//        settingsContainer = findViewById(R.id.settingsContainerView);
+//        bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        bottomNavHeight = bottomNavigationView.getHeight();
+//        bottomNavHeight = bottomNavigationView.getHeight();
 
-        workoutsContainer.setVisibility(View.VISIBLE);
-        exerciseContainer.setVisibility(View.GONE);
-        profileContainer.setVisibility(View.GONE);
-        settingsContainer.setVisibility(View.GONE);
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.workoutsContainerView, workoutsFragment)
-                .commit();
-        bottomNavigationView.setSelectedItemId(R.id.workouts);
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                int id = item.getItemId();
-                if (id == R.id.workouts && workoutsContainer.getVisibility() == View.GONE) {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.workoutsContainerView, workoutsFragment)
-                                .commit();
-                        workoutsContainer.setVisibility(View.VISIBLE);
-                        exerciseContainer.setVisibility(View.GONE);
-                        profileContainer.setVisibility(View.GONE);
-                        settingsContainer.setVisibility(View.GONE);
-                        return true;
-                    }
-                else if (id == R.id.exercises && exerciseContainer.getVisibility() == View.GONE) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.exerciseContainerView, exerciseFragment)
-                            .commit();
-                    exerciseContainer.setVisibility(View.VISIBLE);
-                    profileContainer.setVisibility(View.GONE);
-                    workoutsContainer.setVisibility(View.GONE);
-                    settingsContainer.setVisibility(View.GONE);
-                    return true;
-                }
-                else if (id == R.id.profile && profileContainer.getVisibility() == View.GONE) {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.profileContainerView, profileFragment)
-                                .commit();
-                    profileContainer.setVisibility(View.VISIBLE);
-                    workoutsContainer.setVisibility(View.GONE);
-                    exerciseContainer.setVisibility(View.GONE);
-                    settingsContainer.setVisibility(View.GONE);
-                    return true;
-                    }
-                else if (id == R.id.settings && settingsContainer.getVisibility() == View.GONE) {
-                        getSupportFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.settingsContainerView, settingsFragment)
-                                .commit();
-                        settingsContainer.setVisibility(View.VISIBLE);
-                        exerciseContainer.setVisibility(View.GONE);
-                        profileContainer.setVisibility(View.GONE);
-                        workoutsContainer.setVisibility(View.GONE);
-                        return true;
-                    }
-                else{return false;}
-            }});
+//        workoutsContainer.setVisibility(View.VISIBLE);
+//        exerciseContainer.setVisibility(View.GONE);
+//        profileContainer.setVisibility(View.GONE);
+//        settingsContainer.setVisibility(View.GONE);
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.workoutsContainerView, workoutsFragment)
+//                .commit();
+//        bottomNavigationView.setSelectedItemId(R.id.workouts);
+//        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//
+//                int id = item.getItemId();
+//                if (id == R.id.workouts && workoutsContainer.getVisibility() == View.GONE) {
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.workoutsContainerView, workoutsFragment)
+//                                .commit();
+//                        workoutsContainer.setVisibility(View.VISIBLE);
+//                        exerciseContainer.setVisibility(View.GONE);
+//                        profileContainer.setVisibility(View.GONE);
+//                        settingsContainer.setVisibility(View.GONE);
+//                        return true;
+//                    }
+//                else if (id == R.id.exercises && exerciseContainer.getVisibility() == View.GONE) {
+//                    getSupportFragmentManager()
+//                            .beginTransaction()
+//                            .replace(R.id.exerciseContainerView, exerciseFragment)
+//                            .commit();
+//                    exerciseContainer.setVisibility(View.VISIBLE);
+//                    profileContainer.setVisibility(View.GONE);
+//                    workoutsContainer.setVisibility(View.GONE);
+//                    settingsContainer.setVisibility(View.GONE);
+//                    return true;
+//                }
+//                else if (id == R.id.profile && profileContainer.getVisibility() == View.GONE) {
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.profileContainerView, profileFragment)
+//                                .commit();
+//                    profileContainer.setVisibility(View.VISIBLE);
+//                    workoutsContainer.setVisibility(View.GONE);
+//                    exerciseContainer.setVisibility(View.GONE);
+//                    settingsContainer.setVisibility(View.GONE);
+//                    return true;
+//                    }
+//                else if (id == R.id.settings && settingsContainer.getVisibility() == View.GONE) {
+//                        getSupportFragmentManager()
+//                                .beginTransaction()
+//                                .replace(R.id.settingsContainerView, settingsFragment)
+//                                .commit();
+//                        settingsContainer.setVisibility(View.VISIBLE);
+//                        exerciseContainer.setVisibility(View.GONE);
+//                        profileContainer.setVisibility(View.GONE);
+//                        workoutsContainer.setVisibility(View.GONE);
+//                        return true;
+//                    }
+//                else{return false;}
+//            }});
 
     }
     public void checkSignedIn() {
@@ -155,6 +155,8 @@ public class MainActivity extends AppCompatActivity  {
     public ExerciseViewModel getExerciseViewModel() {
         return exerciseViewModel;
     }
+
+    public FilterViewModel getFilterViewModel() {return filterViewModel;}
 
 
 }

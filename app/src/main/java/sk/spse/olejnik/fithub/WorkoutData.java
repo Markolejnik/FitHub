@@ -9,6 +9,12 @@ public class WorkoutData {
     private String targetedMuscleGroups;
     private List<WorkoutExercises> exercises;
 
+    public WorkoutData(String title, String targetedMuscleGroups, List<WorkoutExercises> exercises) {
+        this.title = title;
+        this.targetedMuscleGroups = targetedMuscleGroups;
+        this.exercises = exercises;
+    }
+
     public String getTitle() {
         return title;
     }

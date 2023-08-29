@@ -7,12 +7,26 @@ public class WorkoutExercises {
     private String title;
     private String type;
     private String link;
-    private String image1;
-    private String image2;
+    private Integer image1;
+    private Integer image2;
     private List<String> muscleGroupsUsed;
-    private int sets;
-    private int reps;
+    private Integer sets;
+    private Integer reps;
     private boolean isTimeFormat;
+
+
+    public WorkoutExercises(String title, String type, String link, Integer image1, Integer image2, List<String> muscleGroupsUsed, Integer sets, Integer reps, boolean isTimeFormat) {
+        this.title = title;
+        this.type = type;
+        this.link = link;
+        this.image1 = image1;
+        this.image2 = image2;
+        this.muscleGroupsUsed = muscleGroupsUsed;
+        this.sets = sets;
+        this.reps = reps;
+        this.isTimeFormat = isTimeFormat;
+    }
+
 
     public String getTitle() {
         return title;
@@ -38,19 +52,19 @@ public class WorkoutExercises {
         this.link = link;
     }
 
-    public String getImage1() {
+    public Integer getImage1() {
         return image1;
     }
 
-    public void setImage1(String image1) {
+    public void setImage1(Integer image1) {
         this.image1 = image1;
     }
 
-    public String getImage2() {
+    public Integer getImage2() {
         return image2;
     }
 
-    public void setImage2(String image2) {
+    public void setImage2(Integer image2) {
         this.image2 = image2;
     }
 
@@ -62,19 +76,19 @@ public class WorkoutExercises {
         this.muscleGroupsUsed = muscleGroupsUsed;
     }
 
-    public int getSets() {
+    public Integer getSets() {
         return sets;
     }
 
-    public void setSets(int sets) {
+    public void setSets(Integer sets) {
         this.sets = sets;
     }
 
-    public int getReps() {
+    public Integer getReps() {
         return reps;
     }
 
-    public void setReps(int reps) {
+    public void setReps(Integer reps) {
         this.reps = reps;
     }
 

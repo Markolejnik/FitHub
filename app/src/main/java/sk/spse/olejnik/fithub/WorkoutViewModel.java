@@ -20,7 +20,7 @@ public class WorkoutViewModel extends AndroidViewModel {
     }
 
     // Method to update all fields in one go
-    public void updateWrokoutData(WorkoutData newData) {
+    public void updateWorkoutData(WorkoutData newData) {
         workoutLiveData.setValue(newData);
     }
 }

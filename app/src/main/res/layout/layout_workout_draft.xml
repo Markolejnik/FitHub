@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/draftContainer"
+    android:background="@color/background"
+    android:layout_width="match_parent"
+    android:layout_height="75dp">
+
+    <TextView
+        android:id="@+id/draftTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:fontFamily="@font/days_one"
+        android:maxLines="1"
+        android:text="Unnamed Workout Draft"
+        android:textColor="@color/foreground"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.136"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.815"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <TextView
+        android:id="@+id/exerciseCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:fontFamily="@font/days_one"
+        android:maxLines="1"
+        android:text="0 Exercises"
+        android:textColor="@color/foreground"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/draftTitle"
+        app:layout_constraintVertical_bias="0.407"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.815"
+        tools:layout_editor_absoluteX="16dp" />
+
+
+
+    <TextView
+        android:id="@+id/draftTargetedMG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/days_one"
+        android:maxLines="1"
+        android:text="No Targeted Muscle Groups"
+        android:textColor="@color/foreground"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/exerciseCount"
+        app:layout_constraintTop_toBottomOf="@+id/draftTitle"
+        app:layout_constraintVertical_bias="0.407"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.815" />
+
+    <View
+        android:layout_width="1000dp"
+        android:layout_height="1dp"
+        android:background="@color/linecolor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="-295dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

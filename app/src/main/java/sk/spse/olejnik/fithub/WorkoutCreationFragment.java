@@ -36,7 +36,6 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkoutCreationFragment extends Fragment {
 
@@ -69,6 +68,7 @@ public class WorkoutCreationFragment extends Fragment {
     private int originalSoftInputMode;
 
     private ExerciseViewModel exerciseViewModel;
+    private WorkoutViewModel workoutViewModel;
     private SharedPreferences preferences;
 
 
@@ -111,6 +111,7 @@ public class WorkoutCreationFragment extends Fragment {
 
 
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
+        workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
         preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
         exerciseList = new ArrayList<>();
 
@@ -195,6 +196,10 @@ public class WorkoutCreationFragment extends Fragment {
                     // Now you can retrieve the values from these views
                     int sets = Integer.parseInt(setsEditText.getText().toString());
                     int reps = Integer.parseInt(repsEditText.getText().toString());
+                    if (sets == 0 || reps == 0) {
+                        Toast.makeText(getContext(), "Add sets and reps to exercises before saving", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                     boolean isTimeFormat = repsTosec.isChecked(); // true for seconds, false for reps
                     exerciseList.get(i).setSets(sets);
                     exerciseList.get(i).setReps(reps);
@@ -203,6 +208,19 @@ public class WorkoutCreationFragment extends Fragment {
                 }
 
             }
+            List<WorkoutExercises> workoutExercises = new ArrayList<>();
+            for (int i = 0; i < exercises.size(); i++) {
+                workoutExercises.add(new WorkoutExercises(exercises.get(i).getName(), exercises.get(i).getType(), exercises.get(i).getLink(), exercises.get(i).getImage1(), exercises.get(i).getImage2(), exercises.get(i).getMuscleGroup(), exerciseList.get(i).getSets(), exerciseList.get(i).getReps(), exerciseList.get(i).getRepstosec()));
+            }
+
+
+            WorkoutData newData = new WorkoutData(valueTitle, valueTargetedMG, workoutExercises);
+//            newData.setTitle(valueTitle);
+//            newData.setTargetedMuscleGroups(valueTargetedMG);
+//            newData.setExercises(workoutExercises);
+
+            workoutViewModel.updateWorkoutData(newData);
+
             SharedPreferences.Editor editor = preferences.edit();
 
             gson = new Gson();

@@ -1,6 +1,8 @@
 package sk.spse.olejnik.fithub;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -33,6 +35,8 @@ public class SettingsFragment extends Fragment {
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseUser user;
+
+    private SharedPreferences preferences, preferences2;
 
     public SettingsFragment() {}
 
@@ -88,7 +92,6 @@ public class SettingsFragment extends Fragment {
                 }
                 else{return false;}
             }});
-
         checkSignedIn();
 
         delete.setOnClickListener(v1 -> deleteUser(view));
@@ -136,6 +139,14 @@ public class SettingsFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.clear();
+                                editor.apply();
+                                preferences2 = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor2 = preferences2.edit();
+                                editor2.clear();
+                                editor2.apply();
                                 Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
                                 checkSignedIn();
                             }

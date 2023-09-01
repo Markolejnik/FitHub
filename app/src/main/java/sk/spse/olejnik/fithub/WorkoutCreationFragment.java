@@ -30,6 +30,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.WriteResult;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -71,6 +81,9 @@ public class WorkoutCreationFragment extends Fragment {
     private WorkoutViewModel workoutViewModel;
     private SharedPreferences preferences;
 
+    FirebaseAuth auth;
+    FirebaseFirestore db;
+    FirebaseUser user;
 
     public WorkoutCreationFragment() {
     }
@@ -84,6 +97,9 @@ public class WorkoutCreationFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
     }
 
     @Override
@@ -215,11 +231,10 @@ public class WorkoutCreationFragment extends Fragment {
 
 
             WorkoutData newData = new WorkoutData(valueTitle, valueTargetedMG, workoutExercises);
-//            newData.setTitle(valueTitle);
-//            newData.setTargetedMuscleGroups(valueTargetedMG);
-//            newData.setExercises(workoutExercises);
 
             workoutViewModel.updateWorkoutData(newData);
+
+            checkSignedIn(newData);
 
             SharedPreferences.Editor editor = preferences.edit();
 
@@ -521,18 +536,38 @@ public class WorkoutCreationFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onPause () {
-        super.onPause();
+    public void checkSignedIn(WorkoutData data) {
+
+        if (auth.getCurrentUser() == null) {
+            Log.i("workouts local", auth.getCurrentUser().getEmail());
+            Toast.makeText(getContext(), "Log in to Publish a Workout", Toast.LENGTH_SHORT).show();
+
+        } else {
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            final String current = user.getEmail();
+            db.collection("users")
+                    .whereEqualTo("email", current)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                    gson = new Gson();
+                                    String jsonData = gson.toJson(data);
+                                    DocumentReference user = db.collection("users").document("QB8Elr8HLtHZZv6IgS7h");
+                                    user.update("workouts", FieldValue.arrayUnion(jsonData));
+                            }
+
+                            Log.i("here is the user", auth.getCurrentUser().getEmail());
+                            Log.i("workouts public", auth.getCurrentUser().getEmail());
+
+                        }
+                    });}
     }
 
-    @Override
-    public void onResume () {
-        super.onResume();
-    }
 
     private void showExitDialog() {
-        
+
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Save or Delete Workout Draft");
         builder.setMessage("Do you want to save or delete this workout draft?");
@@ -585,7 +620,7 @@ public class WorkoutCreationFragment extends Fragment {
                 Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
 
             }
-            
+
         });
         builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -602,5 +637,14 @@ public class WorkoutCreationFragment extends Fragment {
 
         // Restore the original softInputMode when the fragment is destroyed
         getActivity().getWindow().setSoftInputMode(originalSoftInputMode);
+    }
+    @Override
+    public void onPause () {
+        super.onPause();
+    }
+
+    @Override
+    public void onResume () {
+        super.onResume();
     }
 }

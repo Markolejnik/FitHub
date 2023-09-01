@@ -24,6 +24,7 @@
         app:layout_constraintWidth_percent="0.815"
         tools:layout_editor_absoluteX="16dp" />
 
+
     <TextView
         android:id="@+id/exerciseCount"
         android:layout_width="wrap_content"
@@ -36,18 +37,28 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/draftTitle"
-        app:layout_constraintVertical_bias="0.407"
+        app:layout_constraintVertical_bias="0.4"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.815"
-        tools:layout_editor_absoluteX="16dp" />
+        tools:layout_editor_absoluteX="22dp" />
 
-
+    <View
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/dot"
+        app:layout_constraintBottom_toBottomOf="@+id/exerciseCount"
+        app:layout_constraintEnd_toStartOf="@+id/draftTargetedMG"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/exerciseCount"
+        app:layout_constraintTop_toTopOf="@+id/exerciseCount" />
 
     <TextView
         android:id="@+id/draftTargetedMG"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="12dp"
         android:ellipsize="end"
         android:fontFamily="@font/days_one"
         android:maxLines="1"
@@ -57,7 +68,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/exerciseCount"
         app:layout_constraintTop_toBottomOf="@+id/draftTitle"
-        app:layout_constraintVertical_bias="0.407"
+        app:layout_constraintVertical_bias="0.4"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.815" />
 

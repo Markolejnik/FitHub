@@ -9,6 +9,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
@@ -50,21 +52,25 @@ import java.util.Objects;
 public class ProfileFragment extends Fragment {
 
     BottomNavigationView bottomNavigationView;
-    TableLayout tableLayout;
+    TableLayout draftLayout, workoutLayout;
+    ConstraintLayout root, workoutContainer, draftContainer;
+    TextView nickname, joined;
+    Button workoutButton, draftButton;
 
-    List<WorkoutData> workouts;
+    List<WorkoutData> workouts, userWorkouts, userDrafts;
+
 
 
     private WorkoutViewModel workoutViewModel;
 
 
-    TextView nickname, joined;
 
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseUser user;
 
     String titleValue, targetedMGValue, json;
+    Boolean isWorkout;
 
     List<WorkoutExercises> exercises;
 
@@ -104,11 +110,20 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        root = view.findViewById(R.id.constraintLayout);
         nickname = view.findViewById(R.id.nicknameText);
         joined = view.findViewById(R.id.joinedText);
-        tableLayout = view.findViewById(R.id.tableWorkoutList);
+        draftLayout = view.findViewById(R.id.tableDraftList);
+        workoutLayout = view.findViewById(R.id.tableWorkoutList);
+        draftContainer = view.findViewById(R.id.draftContainer);
+        workoutContainer = view.findViewById(R.id.workoutContainer);
+        draftButton = view.findViewById(R.id.draftButton);
+        workoutButton = view.findViewById(R.id.workoutButton);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
 
+        draftContainer.setVisibility(View.GONE);
+
+        isWorkout = true;
         exercises = new ArrayList<>();
         workouts = new ArrayList<>();
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
@@ -122,7 +137,7 @@ public class ProfileFragment extends Fragment {
 
         if (!Objects.equals(json, "")) {
             for (WorkoutData workout: workouts) {
-                createNewWorkout(workout.getTitle(), workout.getTargetedMuscleGroups(), workout.getExercises());
+                createNewDraft(workout.getTitle(), workout.getTargetedMuscleGroups(), workout.getExercises());
             }
         }
 
@@ -133,14 +148,14 @@ public class ProfileFragment extends Fragment {
                     titleValue = workoutData.getTitle();
                     targetedMGValue = workoutData.getTargetedMuscleGroups();
                     exercises = workoutData.getExercises();
-                    SharedPreferences.Editor editor = preferences.edit();
                     List<WorkoutData> list = new ArrayList<>();
                     list.add(new WorkoutData(titleValue, targetedMGValue, exercises));
+                    SharedPreferences.Editor editor = preferences.edit();
                     gson = new Gson();
                     String workoutsJson = gson.toJson(list);
                     editor.putString("workoutsJson", workoutsJson);
                     editor.apply();
-                    createNewWorkout(titleValue, targetedMGValue, exercises);
+                    createNewDraft(titleValue, targetedMGValue, exercises);
                 }
             }
         });
@@ -168,6 +183,23 @@ public class ProfileFragment extends Fragment {
                 }
                 else{return false;}
             }});
+        draftButton.setOnClickListener(v -> {
+            if (!(draftButton.getBackgroundTintList() == ContextCompat.getColorStateList(getContext(), R.color.colorAccent))) {
+                workoutContainer.setVisibility(View.GONE);
+                draftContainer.setVisibility(View.VISIBLE);
+                draftButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.colorAccent));
+                workoutButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.barbackground));
+            }
+        });
+
+        workoutButton.setOnClickListener(v -> {
+            if (!(workoutButton.getBackgroundTintList() == ContextCompat.getColorStateList(getContext(), R.color.colorAccent))) {
+                draftContainer.setVisibility(View.GONE);
+                workoutContainer.setVisibility(View.VISIBLE);
+                workoutButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.colorAccent));
+                draftButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), R.color.barbackground));
+            }
+        });
 
         checkSignedIn();
 
@@ -177,6 +209,9 @@ public class ProfileFragment extends Fragment {
 
         if (auth.getCurrentUser() == null) {
             nickname.setText("Not logged in");
+            Log.i("workouts local", auth.getCurrentUser().getEmail());
+
+
         } else {
             user = FirebaseAuth.getInstance().getCurrentUser();
             final String current = user.getEmail();
@@ -190,17 +225,30 @@ public class ProfileFragment extends Fragment {
                                 for (DocumentSnapshot document : task.getResult()) {
                                     nickname.setText((CharSequence) document.get("nickname"));
                                     joined.setText("Joined: " + (CharSequence) document.get("joined"));
+                                    userWorkouts = new ArrayList<>();
+                                    List<String> temp = (List<String>) document.get("workouts");
+                                    gson = new Gson();
+                                    type = new TypeToken<WorkoutData>() {
+                                    }.getType();
+                                    for (String t: temp) {
+                                        WorkoutData w = gson.fromJson(t, type);
+                                        userWorkouts.add(w);
+                                    }
+                                    for (WorkoutData workout: userWorkouts) {
+                                        createNewWorkout(workout.getTitle(), workout.getTargetedMuscleGroups(), workout.getExercises());
+                                    }
                                 }
                             }
 
             Log.i("here is the user", auth.getCurrentUser().getEmail());
+            Log.i("workouts public", auth.getCurrentUser().getEmail());
 
         }
     });}
     }
 
     @SuppressLint("SetTextI18n")
-    void createNewWorkout(String title, String targetedMG, List<WorkoutExercises> exercises) {
+    void createNewDraft(String title, String targetedMG, List<WorkoutExercises> exercises) {
         TableRow tableRow = new TableRow(getContext());
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View layoutDraft = inflater.inflate(R.layout.layout_workout_draft, null);
@@ -211,8 +259,34 @@ public class ProfileFragment extends Fragment {
         workoutMG.setText(targetedMG);
         exerciseCount.setText(exercises.size() + " Exercises");
         tableRow.addView(layoutDraft);
-        tableLayout.addView(tableRow);
+        draftLayout.addView(tableRow);
 
+    }
+    @SuppressLint("SetTextI18n")
+    void createNewWorkout(String title, String targetedMG, List<WorkoutExercises> exercises) {
+        TableRow tableRow = new TableRow(getContext());
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View layoutWorkout = inflater.inflate(R.layout.layout_workout_draft, null);
+        TextView workoutTitle = layoutWorkout.findViewById(R.id.draftTitle);
+        TextView exerciseCount = layoutWorkout.findViewById(R.id.exerciseCount);
+        TextView workoutMG = layoutWorkout.findViewById(R.id.draftTargetedMG);
+
+        layoutWorkout.setOnClickListener(v -> {
+            createWorkoutDetail(title, targetedMG, exercises);
+        });
+
+        workoutTitle.setText(title);
+        workoutMG.setText(targetedMG);
+        exerciseCount.setText(exercises.size() + " Exercises");
+        tableRow.addView(layoutWorkout);
+        workoutLayout.addView(tableRow);
+
+    }
+
+    void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {
+        WorkoutData data = new WorkoutData(title, targetedMG, exercises);
+        workoutViewModel.updateWorkoutData(data);
+        Navigation.findNavController(root).navigate(R.id.action_Profile_to_WorkoutDetail);
     }
 
 }

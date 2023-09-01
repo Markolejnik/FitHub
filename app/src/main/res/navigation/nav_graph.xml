@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_Workouts_to_WorkoutCreation"
             app:destination="@id/fragmentWorkoutCreation" />
+        <action
+            android:id="@+id/action_Workouts_to_WorkoutDetail"
+            app:destination="@id/fragmentWorkoutDetail" />
     </fragment>
 
     <fragment
@@ -39,6 +42,24 @@
             app:destination="@id/fragmentExercise" />
         <action
             android:id="@+id/action_WorkoutCreation_to_ExerciseDetail"
+            app:destination="@id/fragmentExerciseDetail" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentWorkoutDetail"
+        android:name="sk.spse.olejnik.fithub.WorkoutDetailFragment"
+        android:label="Fragment Workout Detail"
+        tools:layout="@layout/fragment_workout_detail">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_WorkoutDetail_to_Workouts"
+            app:destination="@id/fragmentWorkouts" />
+        <action
+            android:id="@+id/action_WorkoutDetail_to_Profile"
+            app:destination="@id/fragmentProfile" />
+        <action
+            android:id="@+id/action_WorkoutDetail_to_ExerciseDetail"
             app:destination="@id/fragmentExerciseDetail" />
 
     </fragment>
@@ -90,6 +111,9 @@
         <action
             android:id="@+id/action_ExerciseDetail_to_WorkoutCreation"
             app:destination="@id/fragmentWorkoutCreation" />
+        <action
+            android:id="@+id/action_ExerciseDetail_to_WorkoutDetail"
+            app:destination="@id/fragmentWorkoutDetail" />
     </fragment>
 
     <fragment
@@ -109,6 +133,9 @@
         <action
             android:id="@+id/action_Profile_to_Settings"
             app:destination="@id/fragmentSettings" />
+        <action
+            android:id="@+id/action_Profile_to_WorkoutDetail"
+            app:destination="@id/fragmentWorkoutDetail" />
 
     </fragment>
 

@@ -18,11 +18,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -86,13 +89,19 @@ public class RegisterActivity extends AppCompatActivity {
                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                 Toast.makeText(RegisterActivity.this, "Sign Up Successful!", Toast.LENGTH_LONG).show();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String userUid = user.getUid();
+                CollectionReference usersCollection = db.collection("users");
                 nickname = editNickname.getText().toString();
                 LocalDate currentDate = LocalDate.now();
+                List<String> workouts = new ArrayList<>();
+                List<String> drafts = new ArrayList<>();
                 Map<String, Object> newuser = new HashMap<>();
                 newuser.put("nickname", nickname);
                 newuser.put("email", userEmail);
                 newuser.put("password", userPassword);
                 newuser.put("joined", currentDate.toString());
+                newuser.put("workouts", workouts);
+                newuser.put("drafts", drafts);
                 db.collection("users")
                         .add(newuser)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

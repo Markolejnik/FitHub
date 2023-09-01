@@ -61,14 +61,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileTitle" />
 
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/joinedText">
+
+        <Button
+            android:id="@+id/workoutButton"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:background="@drawable/profile_button1"
+            android:backgroundTint="@color/colorAccent"
+            android:fontFamily="@font/days_one"
+            android:text="Your Workouts"
+            android:textAllCaps="false"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/draftButton"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:background="@drawable/profile_button2"
+            android:backgroundTint="@color/barbackground"
+            android:fontFamily="@font/days_one"
+            android:text="Workout Drafts"
+            android:textAllCaps="false"
+            android:textSize="15sp" />
+    </LinearLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/workoutContainer"
         android:layout_width="match_parent"
         android:layout_height="345dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button">
+        app:layout_constraintTop_toBottomOf="@+id/buttonContainer">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -86,30 +120,31 @@
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="137dp"
-        android:layout_height="41dp"
-        android:layout_marginStart="72dp"
-        android:background="@drawable/round_filter"
-        android:text="Your Workouts"
-        android:textSize="11sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/joinedText"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="140dp"
-        android:layout_height="40dp"
-        android:layout_marginEnd="80dp"
-        android:background="@drawable/round_filter"
-        android:text="Workout Drafts"
-        android:textSize="11sp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/draftContainer"
+        android:layout_width="match_parent"
+        android:layout_height="345dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/button"
-        app:layout_constraintTop_toBottomOf="@+id/joinedText" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonContainer">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableLayout
+                android:id="@+id/tableDraftList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </TableLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

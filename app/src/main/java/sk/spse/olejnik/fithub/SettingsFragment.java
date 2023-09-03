@@ -107,6 +107,7 @@ public class SettingsFragment extends Fragment {
                 startActivity(intent);
             });
         } else {
+
             user = FirebaseAuth.getInstance().getCurrentUser();
             final String current = user.getEmail();
             db.collection("users")
@@ -132,8 +133,7 @@ public class SettingsFragment extends Fragment {
 
     public void deleteUser(View view){
         try {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
+            
             user.delete()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

@@ -21,9 +21,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,7 +54,8 @@ import java.util.Objects;
 public class ProfileFragment extends Fragment {
 
     BottomNavigationView bottomNavigationView;
-    TableLayout draftLayout, workoutLayout;
+    TableLayout draftLayout;
+    LinearLayout workoutLayout;
     ConstraintLayout root, workoutContainer, draftContainer;
     TextView nickname, joined;
     Button workoutButton, draftButton;
@@ -114,7 +117,7 @@ public class ProfileFragment extends Fragment {
         nickname = view.findViewById(R.id.nicknameText);
         joined = view.findViewById(R.id.joinedText);
         draftLayout = view.findViewById(R.id.tableDraftList);
-        workoutLayout = view.findViewById(R.id.tableWorkoutList);
+        workoutLayout = view.findViewById(R.id.layoutWorkout);
         draftContainer = view.findViewById(R.id.draftContainer);
         workoutContainer = view.findViewById(R.id.workoutContainer);
         draftButton = view.findViewById(R.id.draftButton);
@@ -264,22 +267,26 @@ public class ProfileFragment extends Fragment {
     }
     @SuppressLint("SetTextI18n")
     void createNewWorkout(String title, String targetedMG, List<WorkoutExercises> exercises) {
-        TableRow tableRow = new TableRow(getContext());
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        View layoutWorkout = inflater.inflate(R.layout.layout_workout_draft, null);
-        TextView workoutTitle = layoutWorkout.findViewById(R.id.draftTitle);
+        View layoutWorkout = inflater.inflate(R.layout.layout_workout, null);
+        TextView user = layoutWorkout.findViewById(R.id.username);
+        TextView published = layoutWorkout.findViewById(R.id.published);
+        TextView workoutTitle = layoutWorkout.findViewById(R.id.workoutTitle);
         TextView exerciseCount = layoutWorkout.findViewById(R.id.exerciseCount);
-        TextView workoutMG = layoutWorkout.findViewById(R.id.draftTargetedMG);
+        TextView workoutMG = layoutWorkout.findViewById(R.id.targetedMG);
+        ImageView profilePicture = layoutWorkout.findViewById(R.id.profilePicture);
+
 
         layoutWorkout.setOnClickListener(v -> {
             createWorkoutDetail(title, targetedMG, exercises);
         });
-
+        published.setVisibility(View.GONE);
+        profilePicture.setVisibility(View.VISIBLE);
+        user.setText(nickname.getText());
         workoutTitle.setText(title);
         workoutMG.setText(targetedMG);
         exerciseCount.setText(exercises.size() + " Exercises");
-        tableRow.addView(layoutWorkout);
-        workoutLayout.addView(tableRow);
+        workoutLayout.addView(layoutWorkout);
 
     }
 

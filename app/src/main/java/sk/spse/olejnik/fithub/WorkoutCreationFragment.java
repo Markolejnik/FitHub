@@ -38,6 +38,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.WriteResult;
 import com.google.gson.Gson;
@@ -45,6 +46,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class WorkoutCreationFragment extends Fragment {
@@ -544,7 +546,12 @@ public class WorkoutCreationFragment extends Fragment {
 
         } else {
             user = FirebaseAuth.getInstance().getCurrentUser();
+            assert user != null;
             final String current = user.getEmail();
+            String uid = user.getProviderId();
+            Log.i("uid", user.getUid());
+            Log.i("uid2", user.getProviderId());
+
             db.collection("users")
                     .whereEqualTo("email", current)
                     .get()
@@ -554,8 +561,19 @@ public class WorkoutCreationFragment extends Fragment {
                             if (task.isSuccessful()) {
                                     gson = new Gson();
                                     String jsonData = gson.toJson(data);
-                                    DocumentReference user = db.collection("users").document("QB8Elr8HLtHZZv6IgS7h");
-                                    user.update("workouts", FieldValue.arrayUnion(jsonData));
+//                                    String doc = "users";
+//                                    DocumentReference user = db.collection("users").document(uid);
+//                                    user.update("workouts", FieldValue.arrayUnion(jsonData));
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        // You can access the matched document here
+                                        String documentId = document.getId();
+                                        db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(jsonData));
+                                        HashMap<String, Object> data = new HashMap<>();
+                                        data.put("author", document.get("nickname"));
+                                        data.put("workout", jsonData);
+                                        data.put("published", FieldValue.serverTimestamp());
+                                        db.collection("workouts").add(data);
+                                    }
                             }
 
                             Log.i("here is the user", auth.getCurrentUser().getEmail());

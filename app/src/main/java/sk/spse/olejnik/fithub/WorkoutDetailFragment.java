@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -97,7 +99,8 @@ public class WorkoutDetailFragment extends Fragment {
         });
 
         goBack.setOnClickListener(v -> {
-            Navigation.findNavController(root).navigate(R.id.action_WorkoutDetail_to_Profile);
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.popBackStack();
         });
     }
 

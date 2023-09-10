@@ -107,22 +107,27 @@
         app:layout_constraintTop_toBottomOf="@+id/buttonContainer">
 
 
-        <ScrollView
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
-                android:id="@+id/layoutWorkout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
 
-            </LinearLayout>
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"/>
 
-        </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -150,6 +155,35 @@
             </TableLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--        android:id="@+id/workoutContainer"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/buttonContainer">-->
+
+
+<!--        <ScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/layoutWorkout"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="vertical">-->
+
+<!--            </LinearLayout>-->
+
+<!--        </ScrollView>-->
+<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

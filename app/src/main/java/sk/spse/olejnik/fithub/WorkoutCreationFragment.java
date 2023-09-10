@@ -40,6 +40,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.installations.remote.TokenResult;
 import com.google.firestore.v1.WriteResult;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -259,7 +260,7 @@ public class WorkoutCreationFragment extends Fragment {
             editor.putString("muscleGroupsJson", muscleGroupsJson);
             editor.putString("detailsJson", detailsJson);
             editor.apply();
-            Navigation.findNavController(v).navigate(R.id.action_WorkoutCreation_to_Workouts);
+
         });
         addExercise.setOnClickListener(v -> {
 
@@ -559,29 +560,41 @@ public class WorkoutCreationFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                    gson = new Gson();
-                                    String jsonData = gson.toJson(data);
+                                gson = new Gson();
+                                String jsonData = gson.toJson(data);
 //                                    String doc = "users";
 //                                    DocumentReference user = db.collection("users").document(uid);
 //                                    user.update("workouts", FieldValue.arrayUnion(jsonData));
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        // You can access the matched document here
-                                        String documentId = document.getId();
-                                        db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(jsonData));
-                                        HashMap<String, Object> data = new HashMap<>();
-                                        data.put("author", document.get("nickname"));
-                                        data.put("workout", jsonData);
-                                        data.put("published", FieldValue.serverTimestamp());
-                                        db.collection("workouts").add(data);
-                                    }
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    // You can access the matched document here
+                                    String documentId = document.getId();
+                                    db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(jsonData));
+                                    HashMap<String, Object> data = new HashMap<>();
+                                    data.put("author", document.get("nickname"));
+                                    data.put("workout", jsonData);
+                                    data.put("published", FieldValue.serverTimestamp());
+                                        db.collection("workouts").add(data).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                                if (task.isSuccessful()) {
+                                                    Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
+                                                }
+                                            }
+
+
+                                        });
+
+                                }
+
+                                Log.i("here is the user", auth.getCurrentUser().getEmail());
+                                Log.i("workouts public", auth.getCurrentUser().getEmail());
+
                             }
-
-                            Log.i("here is the user", auth.getCurrentUser().getEmail());
-                            Log.i("workouts public", auth.getCurrentUser().getEmail());
-
                         }
-                    });}
+                    });
+        }
     }
+
 
 
     private void showExitDialog() {

@@ -133,7 +133,7 @@ public class SettingsFragment extends Fragment {
 
     public void deleteUser(View view){
         try {
-            
+
             user.delete()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

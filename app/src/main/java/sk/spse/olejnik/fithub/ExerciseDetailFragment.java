@@ -8,7 +8,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -97,7 +99,8 @@ public class ExerciseDetailFragment extends Fragment {
         addToWorkout = view.findViewById(R.id.AddToWorkout);
 
         goBack.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_ExerciseDetail_to_Exercise);
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.popBackStack();
         });
 
         addToWorkout.setOnClickListener(v -> {

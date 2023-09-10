@@ -70,11 +70,16 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull WorkoutViewHolder holder, int position) {
+        Log.i("sizes", usernames.size() + " " + workouts.size() + " " + times.size());
         holder.username.setText(usernames.get(position));
         holder.workoutTitle.setText(workouts.get(position).getTitle());
         holder.targetedMG.setText(workouts.get(position).getTargetedMuscleGroups());
         holder.profilePicture.setImageResource(R.drawable.ic_profile_foreground);
-        holder.published.setText(times.get(position));
+        try {
+            holder.published.setText(times.get(position));
+        } catch (Exception e) {
+            holder.published.setText("Just now");
+        }
         if (workouts.get(position).getExercises().size() > 1) holder.exerciseCount.setText(workouts.get(position).getExercises().size() + " Exercises");
         else holder.exerciseCount.setText(workouts.get(position).getExercises().size() + " Exercise");
     }

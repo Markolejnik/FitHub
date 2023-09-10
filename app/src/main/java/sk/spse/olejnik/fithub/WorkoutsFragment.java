@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Tasks;
@@ -26,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.Timestamp;
@@ -35,6 +38,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.sql.Time;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -44,6 +48,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Timer;
 
 public class WorkoutsFragment extends Fragment {
 
@@ -54,13 +59,18 @@ public class WorkoutsFragment extends Fragment {
     FloatingActionButton fab;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipe;
+    ProgressBar loadingSpinner;
 
     List<WorkoutData> workouts;
     List<String> usernames, times;
 
+    Boolean isLoading = false;
+
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseUser user;
+    DocumentSnapshot lastVisibleDocument = null;
+    Query query;
 
     Gson gson;
     Type type;
@@ -95,14 +105,17 @@ public class WorkoutsFragment extends Fragment {
         root = view.findViewById(R.id.workoutsLayout);
         recyclerView = view.findViewById(R.id.recyclerView);
         swipe = view.findViewById(R.id.swipeRefreshLayout);
+        loadingSpinner = view.findViewById(R.id.loadingSpinner);
         thumbnail = view.findViewById(R.id.thumbnail);
         fab = view.findViewById(R.id.fab);
+        loadingSpinner.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorAccent), android.graphics.PorterDuff.Mode.MULTIPLY);
         if (usernames == null) {
             workouts = new ArrayList<>();
             usernames = new ArrayList<>();
             times = new ArrayList<>();
         }
         getWorkoutData();
+
 
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
@@ -160,54 +173,110 @@ public class WorkoutsFragment extends Fragment {
                 createWorkoutDetail(workouts.get(position).getTitle(), workouts.get(position).getTargetedMuscleGroups(), workouts.get(position).getExercises());
             }
         });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(workoutsAdapter);
 //        workoutsAdapter.notifyDataSetChanged();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+                int totalItemCount = layoutManager.getItemCount();
+
+                if (!isLoading && lastVisibleItemPosition == totalItemCount - 1) {
+                    loadMoreData();
+                }
+            }
+        });
+        workoutsAdapter.notifyDataSetChanged();
     }
 
     void getWorkoutData() {
-        db.collection("workouts").get().addOnCompleteListener(task -> {
-            if (task.isComplete()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    int g = document.getData().size();
 
-                    Map<String, Object> data = document.getData();
+
+        if (lastVisibleDocument == null) {
+            query = db.collection("workouts")
+                    .orderBy("published", Query.Direction.DESCENDING)
+                    .limit(5);
+        } else {
+            query = db.collection("workouts")
+                    .orderBy("published", Query.Direction.DESCENDING)
+                    .startAfter(lastVisibleDocument)
+                    .limit(5);
+        }
+
+
+        query.get()
+            .addOnCompleteListener(task -> {
+                if (task.isComplete()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        int size = document.getData().size();
+
+                        Map<String, Object> data = document.getData();
 //                    for (Map.Entry<String, Object> entry : data.entrySet()) {
-                    for (int i = 0; i < g/3; i++) {
-                        String author = (String) data.get("author");
-                        String workout = (String) data.get("workout");
-                        Timestamp time = (Timestamp) data.get("published");
+                        for (int i = 0; i < size / 3; i++) {
+                            String author = (String) data.get("author");
+                            String workout = (String) data.get("workout");
+                            Timestamp time = (Timestamp) data.get("published");
 
-                        if (workout != null) {
-                            Log.i("asgds", workout);
-                            gson = new Gson();
-                            type = new TypeToken<WorkoutData>() {
-                            }.getType();
-                            WorkoutData w = gson.fromJson(workout, type);
-                            workouts.add(w);
+                            if (workout != null) {
+                                Log.i("asgds", workout);
+                                gson = new Gson();
+                                type = new TypeToken<WorkoutData>() {
+                                }.getType();
+                                WorkoutData w = gson.fromJson(workout, type);
+                                workouts.add(w);
 //                            workouts.add((WorkoutData) entry.getValue());
-                        }
-                        if (author != null) {
-                            usernames.add(author);
+                            }
+                            if (author != null) {
+                                usernames.add(author);
 
+                            }
+                            if (time != null) {
+                                Instant instant = time.toDate().toInstant();
+                                LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
+                                String formattedDate = formatter.format(localDateTime);
+                                Log.i("time", formattedDate);
+                                times.add(formattedDate);
+
+                            } else {
+                                Log.i("nick get", "getWorkoutData: ");
+                            }
+                            workoutsAdapter.notifyItemInserted(i);
                         }
-                        if (time != null) {
-                            Instant instant = time.toDate().toInstant();
-                            LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                            String formattedDate = formatter.format(localDateTime);
-                            times.add(formattedDate);
+                        if (task.getResult().size() > 0) {
+                            lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                            Log.i("last visible docuemnt set", lastVisibleDocument.getString("workout"));
                         }
-                        workoutsAdapter.notifyItemInserted(i);
                     }
+
                 }
+            });
 
+
+    }
+    private void loadMoreData() {
+        isLoading = true;
+        loadingSpinner.setVisibility(View.VISIBLE);
+
+        // Implement your data retrieval logic here (e.g., Firestore query, API call)
+        // Append the new data to dataList
+
+        // Simulate a delay (remove in production)
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getWorkoutData();
+                isLoading = false;
+                loadingSpinner.setVisibility(View.GONE);
             }
-        });
-
-
+        }, 2000);
+        workoutsAdapter.notifyDataSetChanged();
     }
 
     void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {

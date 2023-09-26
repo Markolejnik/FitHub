@@ -139,8 +139,8 @@ public class WorkoutsFragment extends Fragment {
                     Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Profile);
                     return true;
                 }
-                else if (id == R.id.settings) {
-                    Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Settings);
+                else if (id == R.id.calendar) {
+                    Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Calendar);
                     return true;
                 }
                 else{return false;}

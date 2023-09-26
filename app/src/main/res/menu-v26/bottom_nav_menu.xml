@@ -16,8 +16,8 @@
         android:icon="@drawable/ic_person_foreground"
         android:iconTint="@color/foreground"/>
     <item
-        android:id="@+id/settings"
-        android:title="Settings"
-        android:icon="@drawable/ic_settings_foreground"
+        android:id="@+id/calendar"
+        android:title="Calendar"
+        android:icon="@drawable/icon_calendar_foreground"
         android:iconTint="@color/foreground"/>
 </menu>

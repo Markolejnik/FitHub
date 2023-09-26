@@ -50,7 +50,7 @@ public class ExerciseFragment extends Fragment {
     BottomNavigationView bottomNavigationView;
     TableLayout tableLayout;
     TableRow filler;
-    ConstraintLayout layoutExercise, filterContainer;
+    ConstraintLayout layoutExercise, filterContainer, root;
 
     private ExerciseViewModel exerciseViewModel;
     private FilterViewModel filterViewModel;
@@ -86,7 +86,7 @@ public class ExerciseFragment extends Fragment {
 
 //        MainActivity mainActivity = (MainActivity) getActivity();
 //        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
-
+        root = view.findViewById(R.id.conLayout);
         searchBar = view.findViewById(R.id.searchBar);
         filterButton = view.findViewById(R.id.filterbutton);
         tableLayout = view.findViewById(R.id.tableLayout);
@@ -111,8 +111,8 @@ public class ExerciseFragment extends Fragment {
                     Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Profile);
                     return true;
                 }
-                else if (id == R.id.settings) {
-                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Settings);
+                else if (id == R.id.calendar) {
+                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Calendar);
                     return true;
                 }
                 else{return false;}
@@ -236,7 +236,7 @@ public class ExerciseFragment extends Fragment {
                 ImageView thumbnail = layoutExercise.findViewById(R.id.thumbnail);
                 layoutExercise.setOnClickListener(v -> {
                     createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getLink(), item.getType());
-                    Navigation.findNavController(v).navigate(R.id.action_Exercise_to_ExerciseDetail);
+
                 });
 
                 title.setText(item.getName());
@@ -362,6 +362,7 @@ public class ExerciseFragment extends Fragment {
         newData.setNewType(type);
 
         exerciseViewModel.updateExerciseData(newData);
+        Navigation.findNavController(root).navigate(R.id.action_Exercise_to_ExerciseDetail);
 
 //        MainActivity mainActivity = (MainActivity) getActivity();
 //        mainActivity.bottomNavigationView.setVisibility(View.GONE);

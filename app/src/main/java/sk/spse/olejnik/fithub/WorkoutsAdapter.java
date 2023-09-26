@@ -92,21 +92,21 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
 
 
 
-        @Override
-        public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-            super.onAttachedToRecyclerView(recyclerView);
-        }
-
-        private OnEntryClickListener mOnEntryClickListener;
-
-        public interface OnEntryClickListener {
-            void onEntryClick(View view, int position);
-        }
-
-        public void setOnEntryClickListener(OnEntryClickListener onEntryClickListener) {
-            mOnEntryClickListener = onEntryClickListener;
-        }
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
     }
+
+    private OnEntryClickListener mOnEntryClickListener;
+
+    public interface OnEntryClickListener {
+        void onEntryClick(View view, int position);
+    }
+
+    public void setOnEntryClickListener(OnEntryClickListener onEntryClickListener) {
+        mOnEntryClickListener = onEntryClickListener;
+    }
+}
     //    @NonNull
 //    @Override
 //    public WorkoutsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

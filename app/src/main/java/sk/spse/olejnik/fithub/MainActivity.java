@@ -1,29 +1,16 @@
 package sk.spse.olejnik.fithub;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentContainerView;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
-import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.View;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
 
@@ -58,7 +45,7 @@ public class MainActivity extends AppCompatActivity  {
 
         WorkoutsFragment workoutsFragment = new WorkoutsFragment();
         ProfileFragment profileFragment = new ProfileFragment();
-        SettingsFragment settingsFragment = new SettingsFragment();
+        CalendarFragment calendarFragment = new CalendarFragment();
         ExerciseFragment exerciseFragment = new ExerciseFragment();
 
 //        workoutsContainer = findViewById(R.id.workoutsContainerView);

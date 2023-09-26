@@ -201,8 +201,8 @@ public class ProfileFragment extends Fragment {
                 else if (id == R.id.profile) {
                     return true;
                 }
-                else if (id == R.id.settings) {
-                    Navigation.findNavController(view).navigate(R.id.action_Profile_to_Settings);
+                else if (id == R.id.calendar) {
+                    Navigation.findNavController(view).navigate(R.id.action_Profile_to_Calendar);
                     return true;
                 }
                 else{return false;}

@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/calendarTitle"
+            android:id="@+id/entryTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/days_one"
@@ -35,6 +35,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/CustomCalendarViewStyle"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/entryList"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -64,50 +71,6 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-<!--    <TextView-->
-<!--        android:id="@+id/settingsTitle"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="68dp"-->
-<!--        android:fontFamily="@font/days_one"-->
-<!--        android:gravity="center"-->
-<!--        android:text="Settings"-->
-<!--        android:textColor="@color/colorAccent"-->
-<!--        android:textSize="32sp"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
-
-
-<!--    <Button-->
-<!--        android:id="@+id/deleteUser"-->
-<!--        android:layout_width="263dp"-->
-<!--        android:layout_height="65dp"-->
-<!--        android:layout_marginBottom="20dp"-->
-<!--        android:background="@drawable/round_filter"-->
-<!--        android:fontFamily="@font/days_one"-->
-<!--        android:gravity="center"-->
-<!--        android:text="Delete Account"-->
-<!--        android:textColor="@color/foreground"-->
-<!--        android:textSize="25sp"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/signOut"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
-
-<!--    <Button-->
-<!--        android:id="@+id/signOut"-->
-<!--        android:layout_width="263dp"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:layout_marginBottom="120dp"-->
-<!--        android:background="@drawable/round_filter"-->
-<!--        android:fontFamily="@font/days_one"-->
-<!--        android:gravity="center"-->
-<!--        android:onClick="signOut"-->
-<!--        android:text="Sign Out"-->
-<!--        android:textColor="@color/foreground"-->
-<!--        android:textSize="25sp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
 
 

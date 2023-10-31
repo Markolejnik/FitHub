@@ -30,6 +30,8 @@ public class CalendarExerciseFragment extends Fragment {
     ExerciseAdapter exerciseAdapter;
     ImageView goBack;
 
+    private ExerciseViewModel exerciseViewModel;
+
     public CalendarExerciseFragment() {}
 
     public static CalendarExerciseFragment newInstance() {
@@ -58,6 +60,8 @@ public class CalendarExerciseFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         searchBar = view.findViewById(R.id.searchBar);
         goBack = view.findViewById(R.id.goBack);
+
+        exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
 
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
@@ -95,7 +99,7 @@ public class CalendarExerciseFragment extends Fragment {
         exerciseAdapter.setOnEntryClickListener(new ExerciseAdapter.OnEntryClickListener() {
             @Override
             public void onEntryClick(View view, int position) {
-
+                createProgressEnrty(exercises.get(position));
             }
         });
 
@@ -110,6 +114,20 @@ public class CalendarExerciseFragment extends Fragment {
         exercises.removeIf(exercise -> !exercise.getName().contains(searchPhrase));
         exerciseAdapter.notifyDataSetChanged();
         exerciseAdapter = new ExerciseAdapter(exercises, getContext());
+    }
+
+
+    void createProgressEnrty(Exercises exercise) {
+        ExerciseData newData = new ExerciseData();
+        newData.setNewTitle(exercise.getName());
+        newData.setNewMuscleGroups(exercise.getMuscleGroup());
+        newData.setNewImage1(exercise.getImage1());
+        newData.setNewImage2(exercise.getImage2());
+        newData.setNewLink(exercise.getLink());
+        newData.setNewType(exercise.getType());
+
+        exerciseViewModel.updateExerciseData(newData);
+        Navigation.findNavController(root).navigate(R.id.action_CalendarExercise_to_ProgressEntry);
     }
 
 //    void createExerciseDetail(String name, List<String> muscleGroup, int image1, int image2, String link, String type) {

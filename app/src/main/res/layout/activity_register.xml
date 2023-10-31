@@ -78,16 +78,16 @@
 
     <Button
         android:id="@+id/signUpButton"
-        android:layout_width="263dp"
+        android:layout_width="285dp"
         android:layout_height="69dp"
         android:layout_marginTop="64dp"
+        android:background="@drawable/round_button"
         android:clickable="true"
         android:fontFamily="@font/days_one"
         android:gravity="center"
         android:onClick="userRegistration"
         android:text="Sign Up"
         android:textColor="@color/foreground"
-        android:background="@color/colorAccent"
         android:textSize="35sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

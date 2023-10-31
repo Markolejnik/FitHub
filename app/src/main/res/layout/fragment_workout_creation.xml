@@ -104,9 +104,7 @@
         <TableLayout
             android:id="@+id/tableLayoutWorkout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </TableLayout>
+            android:layout_height="wrap_content"/>
     </ScrollView>
 
     <Button

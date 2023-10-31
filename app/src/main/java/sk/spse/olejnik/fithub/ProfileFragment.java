@@ -73,6 +73,7 @@ public class ProfileFragment extends Fragment {
     Button workoutButton, draftButton;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipe;
+    ImageView settings;
 
     List<WorkoutData> workouts, userWorkouts, userDrafts;
 
@@ -130,6 +131,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         root = view.findViewById(R.id.constraintLayout);
+        settings = view.findViewById(R.id.settings);
         nickname = view.findViewById(R.id.nicknameText);
         joined = view.findViewById(R.id.joinedText);
         draftLayout = view.findViewById(R.id.tableDraftList);
@@ -207,6 +209,10 @@ public class ProfileFragment extends Fragment {
                 }
                 else{return false;}
             }});
+
+        settings.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_Profile_to_Settings);
+        });
         draftButton.setOnClickListener(v -> {
             if (!(draftButton.getBackgroundTintList() == ContextCompat.getColorStateList(getContext(), R.color.colorAccent))) {
                 workoutContainer.setVisibility(View.GONE);

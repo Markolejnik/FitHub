@@ -137,6 +137,22 @@
             android:id="@+id/action_Profile_to_WorkoutDetail"
             app:destination="@id/fragmentWorkoutDetail" />
 
+        <action
+            android:id="@+id/action_Profile_to_Settings"
+            app:destination="@id/fragmentSettings" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentSettings"
+        android:name="sk.spse.olejnik.fithub.SettingsFragment"
+        android:label="Fragment Settings"
+        tools:layout="@layout/fragment_settings">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_Settings_to_Profile"
+            app:destination="@id/fragmentProfile" />
+
     </fragment>
 
     <fragment
@@ -171,6 +187,25 @@
         <!-- Additional fragment attributes -->
         <action
             android:id="@+id/action_CalendarExercise_to_Calendar"
+            app:destination="@id/fragmentCalendar" />
+        <action
+            android:id="@+id/action_CalendarExercise_to_ProgressEntry"
+            app:destination="@id/fragmentProgressEntry" />
+
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentProgressEntry"
+        android:name="sk.spse.olejnik.fithub.ProgressEntryFragment"
+        android:label="Fragment Progress Entry"
+        tools:layout="@layout/fragment_progress_entry">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_ProgressEntry_to_CalendarExercise"
+            app:destination="@id/fragmentCalendarExercise" />
+        <action
+            android:id="@+id/action_ProgressEntry_to_Calendar"
             app:destination="@id/fragmentCalendar" />
 
     </fragment>

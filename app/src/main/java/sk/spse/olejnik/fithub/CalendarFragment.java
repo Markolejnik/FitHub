@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,16 +32,24 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Date;
+
 public class CalendarFragment extends Fragment {
     ConstraintLayout root;
     BottomNavigationView bottomNavigationView;
     FloatingActionButton fab;
     CalendarView calendarView;
+    RecyclerView entryList;
 //    Button signOut, delete;
+
 
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseUser user;
+
+    Integer vDay, vMonth, vYear;
 
     private SharedPreferences preferences, preferences2;
 
@@ -76,6 +85,8 @@ public class CalendarFragment extends Fragment {
         root = view.findViewById(R.id.calendarRoot);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         calendarView = view.findViewById(R.id.calendarView);
+        entryList = view.findViewById(R.id.entryList);
+
         fab = view.findViewById(R.id.fab);
 
 
@@ -105,11 +116,38 @@ public class CalendarFragment extends Fragment {
             }
         });
         fab.setOnClickListener(v -> {
+            Log.i("jiggas", "" + vDay + " " + vMonth + " " + vYear);
+            if (vDay == null || vMonth == null || vYear == null) {
+                getCurrentDate();
+                Log.i("jiggas", "" + vDay + " " + vMonth + " " + vYear);
+            }
             Navigation.findNavController(root).navigate(R.id.action_Calendar_to_CalendarExercise);
+        });
+
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                vYear = year;
+                vMonth = month + 1;
+                vDay = dayOfMonth;
+
+            }
         });
 //        checkSignedIn();
 //
 //        delete.setOnClickListener(v1 -> deleteUser());
+    }
+
+    public void getCurrentDate() {
+        LocalDate currentDate = LocalDate.now();
+
+        vDay = currentDate.getDayOfMonth();
+
+        // Get month from date
+        vMonth = currentDate.getMonthValue();
+
+        // Get year from date
+        vYear = currentDate.getYear();
     }
 
 //    public void checkSignedIn() {

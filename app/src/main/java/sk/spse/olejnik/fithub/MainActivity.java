@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity  {
     private ExerciseViewModel exerciseViewModel;
     private FilterViewModel filterViewModel;
     private WorkoutViewModel workoutViewModel;
+    private ProgressViewModel progressViewModel;
 
     public static int height, width, bottomNavHeight;
 
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity  {
         exerciseViewModel = new ViewModelProvider(this).get(ExerciseViewModel.class);
         filterViewModel = new ViewModelProvider(this).get(FilterViewModel.class);
         workoutViewModel = new ViewModelProvider(this).get(WorkoutViewModel.class);
+        progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
 
         WorkoutsFragment workoutsFragment = new WorkoutsFragment();
         ProfileFragment profileFragment = new ProfileFragment();
@@ -148,6 +150,8 @@ public class MainActivity extends AppCompatActivity  {
     public FilterViewModel getFilterViewModel() {return filterViewModel;}
 
     public WorkoutViewModel getWorkoutViewModel() {return workoutViewModel;}
+
+    public ProgressViewModel getProgressViewModel() {return progressViewModel;}
 
 
 }

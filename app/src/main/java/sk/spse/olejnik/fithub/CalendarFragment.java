@@ -34,6 +34,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Calendar;
 import java.util.Date;
 
 public class CalendarFragment extends Fragment {
@@ -50,8 +51,10 @@ public class CalendarFragment extends Fragment {
     FirebaseUser user;
 
     Integer vDay, vMonth, vYear;
+    Calendar date;
 
     private SharedPreferences preferences, preferences2;
+    private ProgressViewModel progressViewModel;
 
     public CalendarFragment() {}
 
@@ -86,11 +89,11 @@ public class CalendarFragment extends Fragment {
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         calendarView = view.findViewById(R.id.calendarView);
         entryList = view.findViewById(R.id.entryList);
-
         fab = view.findViewById(R.id.fab);
-
-
         bottomNavigationView.setSelectedItemId(R.id.calendar);
+
+        progressViewModel = ((MainActivity) requireActivity()).getProgressViewModel();
+
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -121,6 +124,56 @@ public class CalendarFragment extends Fragment {
                 getCurrentDate();
                 Log.i("jiggas", "" + vDay + " " + vMonth + " " + vYear);
             }
+            date = new Calendar() {
+                @Override
+                protected void computeTime() {
+
+                }
+
+                @Override
+                protected void computeFields() {
+
+                }
+
+                @Override
+                public void add(int field, int amount) {
+
+                }
+
+                @Override
+                public void roll(int field, boolean up) {
+
+                }
+
+                @Override
+                public int getMinimum(int field) {
+                    return 0;
+                }
+
+                @Override
+                public int getMaximum(int field) {
+                    return 0;
+                }
+
+                @Override
+                public int getGreatestMinimum(int field) {
+                    return 0;
+                }
+
+                @Override
+                public int getLeastMaximum(int field) {
+                    return 0;
+                }
+            };
+            date = Calendar.getInstance();
+            date.set(Calendar.DATE, vDay);
+            date.set(Calendar.MONTH, vMonth-1);
+            date.set(Calendar.YEAR, vYear);
+
+            Log.i("date", date.getTime().toString());
+            ProgressData newData = new ProgressData(null, null, null, date, null, null, null);
+
+            progressViewModel.updateProgressData(newData);
             Navigation.findNavController(root).navigate(R.id.action_Calendar_to_CalendarExercise);
         });
 
@@ -145,12 +198,19 @@ public class CalendarFragment extends Fragment {
 
         // Get month from date
         vMonth = currentDate.getMonthValue();
-
+        Log.i("month", vMonth.toString());
         // Get year from date
         vYear = currentDate.getYear();
     }
 
-//    public void checkSignedIn() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        vDay = null;
+        vMonth = null;
+        vYear = null;
+    }
+    //    public void checkSignedIn() {
 //
 //        if (auth.getCurrentUser() == null) {
 //            signOut.setText("Sign In");

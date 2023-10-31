@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -19,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class CalendarExerciseFragment extends Fragment {
@@ -31,6 +34,9 @@ public class CalendarExerciseFragment extends Fragment {
     ImageView goBack;
 
     private ExerciseViewModel exerciseViewModel;
+    private ProgressViewModel progressViewModel;
+
+    Calendar date;
 
     public CalendarExerciseFragment() {}
 
@@ -62,6 +68,7 @@ public class CalendarExerciseFragment extends Fragment {
         goBack = view.findViewById(R.id.goBack);
 
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
+        progressViewModel = ((MainActivity) requireActivity()).getProgressViewModel();
 
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
@@ -103,6 +110,16 @@ public class CalendarExerciseFragment extends Fragment {
             }
         });
 
+        progressViewModel.getProgressLiveData().observe(getViewLifecycleOwner(), new Observer<ProgressData>() {
+            @Override
+            public void onChanged(ProgressData progressData) {
+                if (progressData != null) {
+                    date = progressData.getDate();
+                    Log.i("date got", date.getTime().toString());
+                }
+            }
+        });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -118,15 +135,11 @@ public class CalendarExerciseFragment extends Fragment {
 
 
     void createProgressEnrty(Exercises exercise) {
-        ExerciseData newData = new ExerciseData();
-        newData.setNewTitle(exercise.getName());
-        newData.setNewMuscleGroups(exercise.getMuscleGroup());
-        newData.setNewImage1(exercise.getImage1());
-        newData.setNewImage2(exercise.getImage2());
-        newData.setNewLink(exercise.getLink());
-        newData.setNewType(exercise.getType());
+        Exercises dataExercise = new Exercises(exercise.getName(), exercise.getType(), exercise.getLink(), exercise.getMuscleGroup(), exercise.getImage1(), exercise.getImage2());
+        ProgressData newData = new ProgressData(dataExercise, null, null, date, null, null, null);
 
-        exerciseViewModel.updateExerciseData(newData);
+
+        progressViewModel.updateProgressData(newData);
         Navigation.findNavController(root).navigate(R.id.action_CalendarExercise_to_ProgressEntry);
     }
 

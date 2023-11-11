@@ -94,14 +94,14 @@ public class RegisterActivity extends AppCompatActivity {
                 nickname = editNickname.getText().toString();
                 LocalDate currentDate = LocalDate.now();
                 List<String> workouts = new ArrayList<>();
-                List<String> drafts = new ArrayList<>();
+                List<String> progress = new ArrayList<>();
                 Map<String, Object> newuser = new HashMap<>();
                 newuser.put("nickname", nickname);
                 newuser.put("email", userEmail);
                 newuser.put("password", userPassword);
                 newuser.put("joined", currentDate.toString());
                 newuser.put("workouts", workouts);
-                newuser.put("drafts", drafts);
+                newuser.put("progress", progress);
                 db.collection("users")
                         .add(newuser)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {

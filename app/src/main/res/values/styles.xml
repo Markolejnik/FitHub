@@ -29,4 +29,8 @@
         <!-- Customize the selected day indicator color -->
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="MenuTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Customize the selected day indicator color -->
+        <item name="android:fontFamily">@font/oswald_semibold</item>
+    </style>
 </resources>

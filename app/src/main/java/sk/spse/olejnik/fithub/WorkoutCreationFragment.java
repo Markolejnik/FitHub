@@ -35,13 +35,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.installations.remote.TokenResult;
-import com.google.firestore.v1.WriteResult;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -401,7 +398,7 @@ public class WorkoutCreationFragment extends Fragment {
                 View layoutExercise = inflater.inflate(R.layout.layout_exercise_wc, tableRow);
                 TextView etitle = layoutExercise.findViewById(R.id.exercise);
                 ImageView thumbnail = layoutExercise.findViewById(R.id.thumbnail);
-                ImageView remove = layoutExercise.findViewById(R.id.removeExercise);
+                ImageView remove = layoutExercise.findViewById(R.id.removeEntry);
                 EditText sets = layoutExercise.findViewById(R.id.sets);
                 EditText reps = layoutExercise.findViewById(R.id.reps);
                 ToggleButton repstosec = layoutExercise.findViewById(R.id.repstosec);
@@ -655,10 +652,7 @@ public class WorkoutCreationFragment extends Fragment {
                                                     Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
                                                 }
                                             }
-
-
                                         });
-
                                 }
 
                                 Log.i("workout user: ", auth.getCurrentUser().getEmail());

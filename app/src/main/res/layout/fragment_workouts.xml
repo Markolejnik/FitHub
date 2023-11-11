@@ -12,11 +12,11 @@
         android:id="@+id/workoutTitle"
         android:layout_width="match_parent"
         android:layout_height="68dp"
-        android:fontFamily="@font/days_one"
+        android:fontFamily="@font/oswald_semibold"
         android:gravity="center"
         android:text="Workouts"
         android:textColor="@color/colorAccent"
-        android:textSize="32sp"
+        android:textSize="40sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -107,7 +107,7 @@
 <!--                    android:id="@+id/workoutContentTitle"-->
 <!--                    android:layout_width="match_parent"-->
 <!--                    android:layout_height="39dp"-->
-<!--                    android:fontFamily="@font/days_one"-->
+<!--                    android:fontFamily="@font/oswald_semibold"-->
 <!--                    android:gravity="start"-->
 <!--                    android:text="CBUM's back workout"-->
 <!--                    android:textColor="@color/foreground"-->
@@ -121,7 +121,7 @@
 <!--                    android:layout_width="match_parent"-->
 <!--                    android:layout_height="wrap_content"-->
 <!--                    android:layout_marginTop="8dp"-->
-<!--                    android:fontFamily="@font/days_one"-->
+<!--                    android:fontFamily="@font/oswald_semibold"-->
 <!--                    android:text="Muscle Group: "-->
 <!--                    android:textColor="@color/foreground"-->
 <!--                    app:layout_constraintBottom_toTopOf="@+id/duration"-->
@@ -133,7 +133,7 @@
 <!--                    android:id="@+id/duration"-->
 <!--                    android:layout_width="match_parent"-->
 <!--                    android:layout_height="wrap_content"-->
-<!--                    android:fontFamily="@font/days_one"-->
+<!--                    android:fontFamily="@font/oswald_semibold"-->
 <!--                    android:text="Duration: "-->
 <!--                    android:textColor="@color/foreground"-->
 <!--                    app:layout_constraintBottom_toBottomOf="@+id/content"-->
@@ -172,6 +172,7 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:background="@color/colorPrimary"
+        app:itemTextAppearanceActive="@style/MenuTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

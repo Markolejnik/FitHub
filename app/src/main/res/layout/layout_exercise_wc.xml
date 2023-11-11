@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:paddingTop="5dp"
@@ -26,38 +26,38 @@
         android:layout_width="270dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
         android:ellipsize="end"
-        android:fontFamily="@font/days_one"
+        android:fontFamily="@font/oswald_semibold"
         android:maxLines="1"
         android:text="TextView"
         android:textColor="@color/foreground"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toStartOf="@+id/removeExercise"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
+        app:layout_constraintEnd_toStartOf="@+id/removeEntry"
         app:layout_constraintHorizontal_bias="0.093"
         app:layout_constraintStart_toEndOf="@+id/thumbnail"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/thumbnail"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.815" />
 
     <ImageView
-        android:id="@+id/removeExercise"
+        android:id="@+id/removeEntry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="13dp"
         android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/thumbnail"
         app:srcCompat="@drawable/ic_baseline_close_24" />
 
     <EditText
         android:id="@+id/sets"
-        android:layout_width="70dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="12dp"
-        android:ems="3"
-        android:fontFamily="@font/days_one"
+        android:layout_marginTop="8dp"
+        android:ems="2"
+        android:fontFamily="@font/oswald_semibold"
         android:hint="Sets"
         android:inputType="number"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,15 +68,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
-        android:ems="3"
-        android:fontFamily="@font/days_one"
+        android:ems="2"
+        android:fontFamily="@font/oswald_semibold"
         android:hint="Reps"
         android:inputType="number"
         app:layout_constraintBottom_toBottomOf="@+id/sets"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/thumbnail"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/sets" />
 
     <TextView
         android:id="@+id/textView"
@@ -84,7 +82,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginBottom="4dp"
-        android:fontFamily="@font/days_one"
+        android:fontFamily="@font/oswald_semibold"
         android:text="x"
         android:textColor="@color/foreground"
         android:textSize="30sp"
@@ -97,7 +95,7 @@
     <!--        android:layout_height="41dp"-->
     <!--        android:layout_marginStart="12dp"-->
     <!--        android:background="@drawable/round_filter"-->
-    <!--        android:fontFamily="@font/days_one"-->
+    <!--        android:fontFamily="@font/oswald_semibold"-->
     <!--        android:padding="5dp"-->
     <!--        android:text="Use Seconds"-->
     <!--        android:textColor="@color/foreground"-->
@@ -110,16 +108,18 @@
     <ToggleButton
         android:id="@+id/repstosec"
         android:layout_width="wrap_content"
-        android:layout_height="41dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:background="@drawable/round_filter"
-        android:fontFamily="@font/days_one"
-        android:padding="5dp"
+        android:fontFamily="@font/oswald_semibold"
+        android:padding="8dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:text="Use Seconds"
         android:textColor="@color/foreground"
         android:textOff="Use Seconds"
         android:textOn="Use Reps"
-        android:textSize="15sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/reps"
         app:layout_constraintStart_toEndOf="@+id/reps"
         app:layout_constraintTop_toTopOf="@+id/reps"

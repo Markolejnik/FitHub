@@ -136,7 +136,7 @@ public class CalendarExerciseFragment extends Fragment {
 
     void createProgressEnrty(Exercises exercise) {
         Exercises dataExercise = new Exercises(exercise.getName(), exercise.getType(), exercise.getLink(), exercise.getMuscleGroup(), exercise.getImage1(), exercise.getImage2());
-        ProgressData newData = new ProgressData(dataExercise, null, null, date, null, null, null);
+        ProgressData newData = new ProgressData(dataExercise, null, null, date, null, null, null, null);
 
 
         progressViewModel.updateProgressData(newData);

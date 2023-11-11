@@ -1,16 +1,16 @@
 package sk.spse.olejnik.fithub;
 
-import android.content.Context;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.Toast;
 
@@ -27,17 +26,26 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 
+import java.lang.reflect.Type;
 import java.time.LocalDate;
-import java.time.Month;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class CalendarFragment extends Fragment {
+public class CalendarFragment extends Fragment implements ProgressAdapter.AlertDialogListener {
     ConstraintLayout root;
     BottomNavigationView bottomNavigationView;
     FloatingActionButton fab;
@@ -50,11 +58,17 @@ public class CalendarFragment extends Fragment {
     FirebaseFirestore db;
     FirebaseUser user;
 
+    Query query;
+    Gson gson;
+    Type type;
+
+    List<ProgressData> progressList;
     Integer vDay, vMonth, vYear;
     Calendar date;
 
     private SharedPreferences preferences, preferences2;
     private ProgressViewModel progressViewModel;
+    ProgressAdapter progressAdapter;
 
     public CalendarFragment() {}
 
@@ -171,7 +185,7 @@ public class CalendarFragment extends Fragment {
             date.set(Calendar.YEAR, vYear);
 
             Log.i("date", date.getTime().toString());
-            ProgressData newData = new ProgressData(null, null, null, date, null, null, null);
+            ProgressData newData = new ProgressData(null, null, null, date, null, null, null, null);
 
             progressViewModel.updateProgressData(newData);
             Navigation.findNavController(root).navigate(R.id.action_Calendar_to_CalendarExercise);
@@ -183,12 +197,20 @@ public class CalendarFragment extends Fragment {
                 vYear = year;
                 vMonth = month + 1;
                 vDay = dayOfMonth;
-
             }
         });
-//        checkSignedIn();
-//
-//        delete.setOnClickListener(v1 -> deleteUser());
+
+        progressAdapter = new ProgressAdapter(getProgressData(), getContext());
+        progressAdapter.setAlertDialogListener(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        entryList.setLayoutManager(layoutManager);
+        entryList.setAdapter(progressAdapter);
+        progressAdapter.notifyDataSetChanged();
+        Log.i("TAG", progressAdapter.getItemCount() + " ");
+
+
+
     }
 
     public void getCurrentDate() {
@@ -210,63 +232,115 @@ public class CalendarFragment extends Fragment {
         vMonth = null;
         vYear = null;
     }
-    //    public void checkSignedIn() {
-//
-//        if (auth.getCurrentUser() == null) {
-//            signOut.setText("Sign In");
-//            signOut.setOnClickListener(v1 -> {
-//                getActivity().finish();
-//                Intent intent = new Intent(getActivity(), RegisterActivity.class);
-//                startActivity(intent);
-//            });
-//        } else {
-//
-//            user = FirebaseAuth.getInstance().getCurrentUser();
-//            final String current = user.getEmail();
-//            db.collection("users")
-//                    .whereEqualTo("email", current)
-//                    .get()
-//                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                            if (task.isSuccessful()) {
-//                                signOut.setText("Sign Out");
-//                                signOut.setOnClickListener(v1 -> {
-//                                    FirebaseAuth.getInstance().signOut();
-//                                    getActivity().finish();
-//                                    Intent intent = new Intent(getActivity(), RegisterActivity.class);
-//                                    startActivity(intent);
-//                                });
-//                                Log.i("here is the user", auth.getCurrentUser().getEmail());
-//                            }
-//
-//                        }
-//                    });}
-//    }
-//
-//    public void deleteUser(){
-//        try {
-//
-//            user.delete()
-//                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<Void> task) {
-//                            if (task.isSuccessful()) {
-//                                preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
-//                                SharedPreferences.Editor editor = preferences.edit();
-//                                editor.clear();
-//                                editor.apply();
-//                                preferences2 = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
-//                                SharedPreferences.Editor editor2 = preferences2.edit();
-//                                editor2.clear();
-//                                editor2.apply();
-//                                Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
-//                                checkSignedIn();
-//                            }
-//                        }
-//                    });
-//        } catch (Exception e) {
-//            Toast.makeText(getActivity(), "Account deletion failed", Toast.LENGTH_SHORT).show();
-//        }
-//    }
+
+    public List<ProgressData> getProgressData() {
+        progressList = new ArrayList<>();
+        if (auth.getCurrentUser() == null) {
+            Log.i("not logged in", auth.getCurrentUser().getEmail());
+            Toast.makeText(getContext(), "Sign In To Save Or Load Progress", Toast.LENGTH_SHORT).show();
+            return null;
+        } else {
+                user = FirebaseAuth.getInstance().getCurrentUser();
+                final String current = user.getEmail();
+                db.collection("users").whereEqualTo("email", current).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot data = task.getResult();
+
+                            for (QueryDocumentSnapshot document : data) {
+//                            Log.i("map", document.toString());
+//                            Log.d("Ahoj", document.getId() + " => " + document.getData());
+                                List<Map<String, Object>> docdata = (List<Map<String, Object>>) document.get("progress");
+//                            ArrayList<String> dataa = (ArrayList<String>) ahoj;
+                                try {
+                                    if (docdata.size() == 0) Log.i("ProgressData", "No progress data saved");
+                                    else {
+                                        for (Map<String, Object> entry : docdata) {
+                                            Timestamp getDate = (Timestamp) entry.get("date");
+                                            Date date = getDate.toDate();
+                                            Calendar dateData = Calendar.getInstance();
+                                            dateData.setTime(date);
+                                            HashMap<String, Object> exerciseData = (HashMap<String, Object>) entry.get("exercise");
+
+                                            Exercises exercise = new Exercises((String) exerciseData.get("name"), (String) exerciseData.get("type"), (String) exerciseData.get("link"), (List<String>) exerciseData.get("muscleGroup"), Long.valueOf((String) String.valueOf(exerciseData.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("image2"))).intValue());
+                                            ProgressData entryData = new ProgressData(exercise, Long.valueOf((String) String.valueOf(entry.get("reps"))).intValue(), Long.valueOf((String) String.valueOf(entry.get("weight"))).intValue(), dateData, (Boolean) entry.get("repstosec"), (Boolean) entry.get("bodyweight"), (Boolean) entry.get("lbtokg"), (String) entry.get("note"));
+                                            progressList.add(entryData);
+                                            progressAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                } catch (Exception e) {
+
+                                }
+                            }
+                        }
+                    }
+                });
+            return progressList;
+        }
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Delete Progress Entry?")
+                .setMessage("Deleting will remove this entry forever!")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        FirebaseAuth auth = FirebaseAuth.getInstance();
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        final String current = user.getEmail();
+
+                        Map<String, Object> entryExercise = new HashMap<>();
+                        entryExercise.put("name", progressList.get(position).getExercise().getName());
+                        entryExercise.put("type", progressList.get(position).getExercise().getType());
+                        entryExercise.put("link", progressList.get(position).getExercise().getLink());
+                        entryExercise.put("muscleGroup", progressList.get(position).getExercise().getMuscleGroup());
+                        entryExercise.put("image1", progressList.get(position).getExercise().getImage1());
+                        entryExercise.put("image2", progressList.get(position).getExercise().getImage2());
+
+                        Map<String, Object> entry = new HashMap<>();
+                        entry.put("exercise", entryExercise);
+                        entry.put("reps", progressList.get(position).getReps());
+                        entry.put("weight", progressList.get(position).getWeight());
+                        entry.put("date", progressList.get(position).getDate().getTime());
+                        entry.put("repstosec", progressList.get(position).getRepstosec());
+                        entry.put("bodyweight", progressList.get(position).getBodyweight());
+                        entry.put("lbtokg", progressList.get(position).getLbtokg());
+                        entry.put("note", progressList.get(position).getNote());
+
+
+                        db.collection("users").whereEqualTo("email", current).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    QuerySnapshot data = task.getResult();
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        String documentId = document.getId();
+                                        db.collection("users").document(documentId).update("progress", FieldValue.arrayRemove(entry)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                progressList.remove(progressList.get(position));
+                                                progressAdapter.notifyItemRemoved(position);
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        });
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+
 }

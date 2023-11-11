@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/workouts"
         android:title="Workouts"
         android:icon="@drawable/ic_weight_foreground"
-        android:iconTint="@color/foreground"/>
+        android:iconTint="@color/foreground"
+        app:itemTextAppearance="@font/oswald_semibold"/>
     <item
         android:id="@+id/exercises"
         android:title="Exercises"
         android:icon="@drawable/icon_exercise_foreground"
-        android:iconTint="@color/foreground"/>
+        android:iconTint="@color/foreground"
+        app:itemTextAppearance="@font/oswald_semibold"/>
     <item
         android:id="@+id/profile"
         android:title="Profile"
         android:icon="@drawable/ic_person_foreground"
-        android:iconTint="@color/foreground"/>
+        android:iconTint="@color/foreground"
+        app:itemTextAppearance="@font/oswald_semibold"/>
     <item
         android:id="@+id/calendar"
         android:title="Calendar"
         android:icon="@drawable/icon_calendar_foreground"
-        android:iconTint="@color/foreground"/>
+        android:iconTint="@color/foreground"
+        app:itemTextAppearance="@font/oswald_semibold"/>
 </menu>

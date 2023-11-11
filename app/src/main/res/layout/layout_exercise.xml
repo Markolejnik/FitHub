@@ -24,7 +24,7 @@
         app:layout_constraintWidth_percent="0.815"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:fontFamily="@font/days_one"
+        android:fontFamily="@font/oswald_semibold"
         android:text="TextView"
         android:textColor="@color/foreground"
         android:textSize="14sp"

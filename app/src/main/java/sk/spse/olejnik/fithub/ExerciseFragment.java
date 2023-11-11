@@ -50,7 +50,7 @@ public class ExerciseFragment extends Fragment {
     BottomNavigationView bottomNavigationView;
     TableLayout tableLayout;
     TableRow filler;
-    ConstraintLayout layoutExercise, filterContainer, root;
+    ConstraintLayout layoutExercise, root;
 
     private ExerciseViewModel exerciseViewModel;
     private FilterViewModel filterViewModel;
@@ -91,7 +91,6 @@ public class ExerciseFragment extends Fragment {
         filterButton = view.findViewById(R.id.filterbutton);
         tableLayout = view.findViewById(R.id.tableLayout);
         layoutExercise = view.findViewById(R.id.conLayout);
-        filterContainer = view.findViewById(R.id.filterContainer);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.exercises);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -129,9 +128,9 @@ public class ExerciseFragment extends Fragment {
                 int keypadHeight = screenHeight - r.bottom;
 
                 if (keypadHeight > screenHeight * 0.15) {
-                    filterContainer.setVisibility(View.GONE);
+                    filterButton.setVisibility(View.GONE);
                 } else {
-                    filterContainer.setVisibility(View.VISIBLE);
+                    filterButton.setVisibility(View.VISIBLE);
                 }
             }
         });

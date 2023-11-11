@@ -31,50 +31,38 @@
 
 
     </SearchView>
-    <androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="8dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginEnd="8dp"
-    android:id="@+id/filterContainer"
-    app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.571"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/searchBar">
 
-        <Button
-            android:id="@+id/filterbutton"
-            android:layout_width="345dp"
-            android:layout_height="39dp"
-            android:background="@drawable/round_filter"
-            android:fontFamily="@font/days_one"
-            android:text="Filter"
-            android:textSize="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="400dp"
-            app:layout_constraintWidth_min="300dp" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <Button
+        android:id="@+id/filterbutton"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/round_filter"
+        android:fontFamily="@font/oswald_semibold"
+        android:text="Filter"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchBar"
+        app:layout_constraintWidth_max="400dp"
+        app:layout_constraintWidth_min="300dp" />
 
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
-        app:layout_constraintHeight_min="380dp"
-        app:layout_constraintHeight_max="680dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:foregroundGravity="bottom"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="680dp"
+        app:layout_constraintHeight_min="380dp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filterContainer"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintTop_toBottomOf="@+id/filterbutton">
 
 
         <TableLayout
@@ -85,7 +73,6 @@
         </TableLayout>
 
 
-
     </ScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -93,6 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:background="@color/colorPrimary"
+        app:itemTextAppearanceActive="@style/MenuTheme"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

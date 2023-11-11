@@ -28,7 +28,7 @@
             android:id="@+id/entryTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/days_one"
+            android:fontFamily="@font/oswald_semibold"
             android:gravity="center"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
@@ -46,10 +46,10 @@
         android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:ellipsize="end"
-        android:fontFamily="@font/days_one"
+        android:fontFamily="@font/oswald_semibold"
         android:maxLines="1"
         android:text="Entry Date"
         android:textAlignment="center"
@@ -77,14 +77,14 @@
             android:id="@+id/exercise_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="24dp"
             android:ellipsize="end"
-            android:fontFamily="@font/days_one"
+            android:fontFamily="@font/oswald_semibold"
             android:maxLines="1"
             android:text="Exercise Title"
             android:textColor="@color/foreground"
-            android:textSize="18sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/exercise_thumbnail"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -92,22 +92,22 @@
             android:id="@+id/reps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="16dp"
             android:ems="3"
-            android:fontFamily="@font/days_one"
+            android:fontFamily="@font/oswald_semibold"
             android:hint="Reps"
             android:inputType="number"
             app:layout_constraintStart_toEndOf="@+id/exercise_thumbnail"
             app:layout_constraintTop_toBottomOf="@+id/exercise_title" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/x"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginBottom="4dp"
-            android:fontFamily="@font/days_one"
+            android:fontFamily="@font/oswald_semibold"
             android:text="x"
             android:textColor="@color/foreground"
             android:textSize="30sp"
@@ -118,13 +118,28 @@
             android:id="@+id/weight"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:ems="4"
-            android:fontFamily="@font/days_one"
+            android:layout_marginStart="8dp"
+            android:ems="3"
+            android:fontFamily="@font/oswald_semibold"
             android:hint="Weight"
             android:inputType="number"
             app:layout_constraintBottom_toBottomOf="@+id/reps"
-            app:layout_constraintStart_toEndOf="@+id/textView" />
+            app:layout_constraintStart_toEndOf="@+id/x" />
+
+        <TextView
+            android:id="@+id/lbtokgText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:text="kg"
+            android:textColor="@color/foreground"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="@+id/reps"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.137"
+            app:layout_constraintStart_toEndOf="@+id/weight" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -136,10 +151,10 @@
         <ToggleButton
             android:id="@+id/repstosec"
             android:layout_width="wrap_content"
-            android:layout_height="41dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/round_filter"
-            android:fontFamily="@font/days_one"
+            android:fontFamily="@font/oswald_semibold"
             android:padding="8dp"
             android:text="Use Seconds"
             android:textColor="@color/foreground"
@@ -150,13 +165,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/note2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:maxLines="3"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:text="*Use Seconds For Static Or Timed Exercises "
+            android:textAlignment="center"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/repstosec" />
+
         <ToggleButton
             android:id="@+id/without_weight"
             android:layout_width="wrap_content"
-            android:layout_height="41dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/round_filter"
-            android:fontFamily="@font/days_one"
+            android:fontFamily="@font/oswald_semibold"
             android:padding="8dp"
             android:text="Without Weight"
             android:textColor="@color/foreground"
@@ -167,7 +199,41 @@
             app:layout_constraintStart_toStartOf="@+id/guideline"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/note1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:maxLines="3"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:text="*Use Without Weight For Bodyweight Exercises"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.636"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/without_weight" />
 
+
+        <ToggleButton
+            android:id="@+id/lbtokg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/round_filter"
+            android:fontFamily="@font/oswald_semibold"
+            android:padding="8dp"
+            android:text="Use kg"
+            android:textColor="@color/foreground"
+            android:textOff="Use kg"
+            android:textOn="Use lbs"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/note1" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
@@ -176,89 +242,69 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.5" />
 
-        <TextView
-            android:id="@+id/note1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/days_one"
-            android:maxLines="3"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp"
-            android:text="*Use Without Weight For Bodyweight Exercises"
-            android:textAlignment="center"
-            android:textSize="10sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.636"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/without_weight" />
 
-        <TextView
-            android:id="@+id/note2"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/noteLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:fontFamily="@font/days_one"
-            android:maxLines="3"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp"
-            android:text="*Use Seconds For Static Or Timed Exercises "
-            android:textAlignment="center"
-            android:textSize="10sp"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/repstosec" />
+            app:layout_constraintTop_toBottomOf="@+id/lbtokg">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/oswald_semibold"
+                android:maxLines="1"
+                android:text="Add a note"
+                android:textColor="@color/foreground"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/note"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/oswald_semibold"
+                    android:hint="Your note"
+                    android:inputType="textLongMessage"
+                    android:maxLines="5"
+                    android:minLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
-            android:id="@+id/AddToWorkout"
+            android:id="@+id/SaveEntry"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
             android:layout_marginBottom="16dp"
             android:background="@drawable/round_filter"
-            android:fontFamily="@font/days_one"
+            android:fontFamily="@font/oswald_semibold"
             android:padding="8dp"
             android:text="Save Calendar Entry"
             android:textColor="@color/foreground"
-            android:textSize="20sp"
+            android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/days_one"
-            android:maxLines="1"
-            android:text="Add a note"
-            android:textColor="@color/foreground"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/note2" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/AddToWorkout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView5">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/days_one"
-                android:hint="Your note"
-                android:inputType="textLongMessage"
-                android:maxLines="5"
-                android:minLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

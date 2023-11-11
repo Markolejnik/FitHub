@@ -11,18 +11,23 @@ public class ProgressData {
     Boolean bodyweight;
 
 
+
+    Boolean lbtokg;
+
+
     String note;
 
 
     Boolean repstosec; // seconds is true
 
-    public ProgressData(Exercises exercise, Integer reps, Integer weight, Calendar date, Boolean repstosec, Boolean bodyweight, String note) {
+    public ProgressData(Exercises exercise, Integer reps, Integer weight, Calendar date, Boolean repstosec, Boolean bodyweight, Boolean lbtokg, String note) {
         this.exercise = exercise;
         this.reps = reps;
         this.weight = weight;
         this.date = date;
         this.repstosec = repstosec;
         this.bodyweight = bodyweight;
+        this.lbtokg = lbtokg;
         this.note = note;
 
     }
@@ -75,6 +80,10 @@ public class ProgressData {
     public void setRepstosec(Boolean repstosec) {
         this.repstosec = repstosec;
     }
+
+    public Boolean getLbtokg() {return lbtokg;}
+
+    public void setLbtokg(Boolean lbtokg) {this.lbtokg = lbtokg;}
 
     public String getNote() {
         return note;

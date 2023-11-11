@@ -208,11 +208,13 @@ public class ProfileFragment extends Fragment {
                     return true;
                 }
                 else{return false;}
-            }});
+            }
+        });
 
         settings.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_Profile_to_Settings);
         });
+
         draftButton.setOnClickListener(v -> {
             if (!(draftButton.getBackgroundTintList() == ContextCompat.getColorStateList(getContext(), R.color.colorAccent))) {
                 workoutContainer.setVisibility(View.GONE);

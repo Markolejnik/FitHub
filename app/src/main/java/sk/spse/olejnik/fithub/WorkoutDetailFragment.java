@@ -45,6 +45,8 @@ public class WorkoutDetailFragment extends Fragment {
     Button startWorkout;
     TableLayout tableLayout;
 
+    String titleValue, targetedMGValue;
+
 
 
 
@@ -86,8 +88,10 @@ public class WorkoutDetailFragment extends Fragment {
             public void onChanged(@Nullable WorkoutData workoutData) {
                 if (workoutData != null) {
                     exercises = new ArrayList<>();
-                    titleText.setText(workoutData.getTitle());
-                    targetedMGText.setText(workoutData.getTargetedMuscleGroups());
+                    titleValue = workoutData.getTitle();
+                    targetedMGValue = workoutData.getTargetedMuscleGroups();
+                    titleText.setText(titleValue);
+                    targetedMGText.setText(targetedMGValue);
                     exercises = workoutData.getExercises();
                     createExerciseList(exercises);
                 }
@@ -95,7 +99,7 @@ public class WorkoutDetailFragment extends Fragment {
         });
 
         startWorkout.setOnClickListener(v -> {
-            Log.i("starting workout", "here");
+            
         });
 
         goBack.setOnClickListener(v -> {
@@ -134,7 +138,6 @@ public class WorkoutDetailFragment extends Fragment {
                     thumbnail.setImageBitmap(scaledBitmap);
                     tableRow.addView(layoutExercise);
                     tableLayout.addView(tableRow);
-
         }
     }
     void createExerciseDetail (String name, List < String > muscleGroup, int image1, int image2, String link, String type){

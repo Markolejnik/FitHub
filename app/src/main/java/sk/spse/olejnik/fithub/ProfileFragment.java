@@ -53,6 +53,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -245,7 +246,7 @@ public class ProfileFragment extends Fragment {
         workoutsAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
             @Override
             public void onEntryClick(View view, int position) {
-                createWorkoutDetail(workouts.get(position).getTitle(), workouts.get(position).getTargetedMuscleGroups(), workouts.get(position).getExercises());
+                createWorkoutDetail(userWorkouts.get(position).getTitle(), userWorkouts.get(position).getTargetedMuscleGroups(), userWorkouts.get(position).getExercises());
             }
         });
         checkSignedIn();
@@ -278,6 +279,56 @@ public class ProfileFragment extends Fragment {
                                     currentNickname = document.get("nickname").toString();
                                     nickname.setText(currentNickname);
                                     joined.setText("Joined: " + (CharSequence) document.get("joined"));
+                                    db.collection("workouts")
+                                            .orderBy("published", Query.Direction.DESCENDING)
+                                            .get()
+                                            .addOnCompleteListener(task2 -> {
+                                                if (task2.isComplete()) {
+                                                    for (QueryDocumentSnapshot document2 : task2.getResult()) {
+                                                        int size = document2.getData().size();
+
+                                                        Map<String, Object> data = document2.getData();
+//                    for (Map.Entry<String, Object> entry : data.entrySet()) {
+                                                        for (int i = 0; i < size/3; i++) {
+                                                            Log.i("author", (String) data.get("author"));
+                                                            Log.i("author", currentNickname);
+                                                            if (Objects.equals((String) data.get("author"), currentNickname)) {
+                                                                Log.i("executing", currentNickname);
+                                                                String author = (String) data.get("author");
+                                                                HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
+                                                                Timestamp time = (Timestamp) data.get("published");
+
+                                                                if (author != null) {
+                                                                    usernames.add(author);
+                                                                }
+                                                                if (workout != null) {
+                                                                    ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                                                                    ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                                                                    for (HashMap<String, Object> exercise: exercises) {
+                                                                        WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                                                        workoutExercises.add(workoutExercise);
+                                                                    }
+                                                                    String title = (String) workout.get("title");
+                                                                    String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                                                                    WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+                                                                    userWorkouts.add(w);
+                                                                    //                            workouts.add((WorkoutData) entry.getValue());
+                                                                }
+                                                                if (time != null) {
+                                                                    Instant instant = time.toDate().toInstant();
+                                                                    LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                                                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
+                                                                    String formattedDate = formatter.format(localDateTime);
+                                                                    times.add(formattedDate);
+                                                                }
+                                                                workoutsAdapter.notifyItemInserted(i);
+                                                                Log.i("workoutsUser", userWorkouts.size() + "");
+                                                            }
+                                                        }
+                                                    }
+
+                                                }
+                                            });
 //                                    userWorkouts = new ArrayList<>();
 //                                    List<String> temp = (List<String>) document.get("workouts");
 //                                    gson = new Gson();
@@ -301,52 +352,7 @@ public class ProfileFragment extends Fragment {
 
         }
     });}
-    db.collection("workouts")
-            .orderBy("published", Query.Direction.DESCENDING)
-            .get()
-            .addOnCompleteListener(task -> {
-                if (task.isComplete()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        int size = document.getData().size();
 
-                        Map<String, Object> data = document.getData();
-//                    for (Map.Entry<String, Object> entry : data.entrySet()) {
-                        for (int i = 0; i < size/3; i++) {
-                                Log.i("author", (String) data.get("author"));
-                                Log.i("author", currentNickname);
-                            if (Objects.equals((String) data.get("author"), currentNickname)) {
-                                Log.i("executing", currentNickname);
-                                String author = (String) data.get("author");
-                                String workout = (String) data.get("workout");
-                                Timestamp time = (Timestamp) data.get("published");
-
-                                if (author != null) {
-                                    usernames.add(author);
-                                }
-                                if (workout != null) {
-                                    Log.i("asgds", workout);
-                                    gson = new Gson();
-                                    type = new TypeToken<WorkoutData>() {
-                                    }.getType();
-                                    WorkoutData w = gson.fromJson(workout, type);
-                                    userWorkouts.add(w);
-                                    //                            workouts.add((WorkoutData) entry.getValue());
-                                }
-                                if (time != null) {
-                                    Instant instant = time.toDate().toInstant();
-                                    LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                                    String formattedDate = formatter.format(localDateTime);
-                                    times.add(formattedDate);
-                                }
-                                workoutsAdapter.notifyItemInserted(i);
-                                Log.i("workoutsUser", userWorkouts.size() + "");
-                            }
-                        }
-                    }
-
-                }
-            });
     }
 
     @SuppressLint("SetTextI18n")

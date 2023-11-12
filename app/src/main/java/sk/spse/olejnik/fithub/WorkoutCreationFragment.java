@@ -46,6 +46,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class WorkoutCreationFragment extends Fragment {
@@ -72,6 +73,7 @@ public class WorkoutCreationFragment extends Fragment {
     List<Integer> indexList;
     List<List<String>> setsReps;
     List<Integer> finalIndices;
+    Map<String, Object> data;
 
     Gson gson;
     Type type;
@@ -362,14 +364,17 @@ public class WorkoutCreationFragment extends Fragment {
                     repsEditText.setText(exerciseList.get(i).getReps().toString());
                 } catch (Exception e) {
                 }
-                if (exerciseList.get(i).getRepstosec()) repsTosec.setChecked(true);
+                try {
+                    if (exerciseList.get(i).getRepstosec()) repsTosec.setChecked(true);
+                } catch (Exception e) {
+                    Log.i("catch", "no button state to load on pos: " + i);
+                }
             }
         }
 
 
     }
 
-    @SuppressLint("SetTextI18n")
     void createExerciseList() {
         exercises = new ArrayList<>();
         displayList = new ArrayList<>();
@@ -381,7 +386,7 @@ public class WorkoutCreationFragment extends Fragment {
         setsList = new ArrayList<>();
         repstosecList = new ArrayList<>();
 
-        if(tableLayout.getChildCount() != exercises.size()) {
+        if (tableLayout.getChildCount() != exercises.size()) {
             tableLayout.removeAllViews();
             int index = 0;
             for (Exercises item : exercises) {
@@ -471,20 +476,27 @@ public class WorkoutCreationFragment extends Fragment {
                             Log.i("hahaahah", exerciseList.get(index).getRepstosec().toString());
                             sets.setText(exerciseList.get(index).getSets().toString());
                             reps.setText(exerciseList.get(index).getReps().toString());
-//                            isTimeFormat = exerciseList.get(index).getRepstosec();
-//                            if (isTimeFormat) repstosec.setChecked(true);
-//                            else repstosec.setChecked(false);
-                        } catch (Exception e) {}
+                            //                            isTimeFormat = exerciseList.get(index).getRepstosec();
+                            //                            if (isTimeFormat) repstosec.setChecked(true);
+                            //                            else repstosec.setChecked(false);
+                        } catch (Exception e) {
+                        }
                     }
-                }else {
+                } else {
                     exerciseList = new ArrayList<>();
                     exerciseList.add(new WCExerciseData(setsVal, repsVal, isTimeFormat));
                 }
-                if (exerciseList.get(index).getRepstosec() != null) { isTimeFormat = exerciseList.get(index).getRepstosec(); }
-                else {isTimeFormat = false;}
+                if (exerciseList.get(index).getRepstosec() != null) {
+                    isTimeFormat = exerciseList.get(index).getRepstosec();
+                } else {
+                    isTimeFormat = false;
+                }
                 repstosec.setChecked(isTimeFormat);
-                if (isTimeFormat) {reps.setHint("Secs");}
-                else {reps.setHint("Reps");}
+                if (isTimeFormat) {
+                    reps.setHint("Secs");
+                } else {
+                    reps.setHint("Reps");
+                }
                 remove.setOnClickListener(v -> {
                     int indexToRemove = tableLayout.indexOfChild(tableRow);
                     if (indexToRemove >= 0) {
@@ -525,25 +537,24 @@ public class WorkoutCreationFragment extends Fragment {
                     int indexToUpdate = tableLayout.indexOfChild(tableRow);
                     if (repstosec.isChecked()) {
                         exerciseList.get(indexToUpdate).setRepstosec(true);
-                         updateViews(indexToUpdate);
-//                        repsList.get(indexToUpdate).setHint("Secs");
-////                        updateViews();
-////                        repstosec.setText("Use Reps");
-//                        for (WCExerciseData he: exerciseList) {
-//                            Log.i("list", he.toString());
-//                        }
-
+                        updateViews(indexToUpdate);
+                        //                        repsList.get(indexToUpdate).setHint("Secs");
+                        ////                        updateViews();
+                        ////                        repstosec.setText("Use Reps");
+                        //                        for (WCExerciseData he: exerciseList) {
+                        //                            Log.i("list", he.toString());
+                        //                        }
 
 
                     } else {
                         exerciseList.get(indexToUpdate).setRepstosec(false);
                         updateViews(indexToUpdate);
-//                        repsList.get(indexToUpdate).setHint("Reps");
-////                        updateViews();
-////                        repstosec.setText("Use Seconds");
-//                        for (WCExerciseData he: exerciseList) {
-//                            Log.i("list", he.getRepstosec().toString());
-//                        }
+                        //                        repsList.get(indexToUpdate).setHint("Reps");
+                        ////                        updateViews();
+                        ////                        repstosec.setText("Use Seconds");
+                        //                        for (WCExerciseData he: exerciseList) {
+                        //                            Log.i("list", he.getRepstosec().toString());
+                        //                        }
                     }
                 });
                 repstosecList.add(repstosec);
@@ -556,7 +567,7 @@ public class WorkoutCreationFragment extends Fragment {
 
                 index++;
 
-            Log.i("ni", exerciseList.size() + " " + exercises.size() + " " + tableLayout.getChildCount());
+                Log.i("ni", exerciseList.size() + " " + exercises.size() + " " + tableLayout.getChildCount());
             }
         }
     }
@@ -614,7 +625,7 @@ public class WorkoutCreationFragment extends Fragment {
         }
     }
 
-    public void publishWorkout(WorkoutData data) {
+    public void publishWorkout(WorkoutData workoutData) {
 
         if (auth.getCurrentUser() == null) {
             Log.i("workouts local", auth.getCurrentUser().getEmail());
@@ -625,6 +636,27 @@ public class WorkoutCreationFragment extends Fragment {
             assert user != null;
             final String current = user.getEmail();
 
+            List<HashMap<String, Object>> exercises = new ArrayList<>();
+            for (WorkoutExercises exercise: workoutData.getExercises()) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("name", exercise.getTitle());
+                map.put("type", exercise.getType());
+                map.put("link", exercise.getLink());
+                map.put("muscleGroup", exercise.getMuscleGroupsUsed());
+                map.put("image1", exercise.getImage1());
+                map.put("image2", exercise.getImage2());
+                map.put("reps", exercise.getReps());
+                map.put("sets", exercise.getSets());
+                map.put("repstosec", exercise.isTimeFormat());
+                exercises.add(map);
+
+            }
+
+            data = new HashMap<>();
+            data.put("title", workoutData.getTitle());
+            data.put("targetMuscleGroups", workoutData.getTargetedMuscleGroups());
+            data.put("exercises", exercises);
+
             db.collection("users")
                     .whereEqualTo("email", current)
                     .get()
@@ -633,19 +665,20 @@ public class WorkoutCreationFragment extends Fragment {
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
                                 gson = new Gson();
-                                String jsonData = gson.toJson(data);
+//                                String jsonData = gson.toJson(data);
+
 //                                    String doc = "users";
 //                                    DocumentReference user = db.collection("users").document(uid);
 //                                    user.update("workouts", FieldValue.arrayUnion(jsonData));
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     // You can access the matched document here
                                     String documentId = document.getId();
-                                    db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(jsonData));
-                                    HashMap<String, Object> data = new HashMap<>();
-                                    data.put("author", document.get("nickname"));
-                                    data.put("workout", jsonData);
-                                    data.put("published", FieldValue.serverTimestamp());
-                                        db.collection("workouts").add(data).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                    db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(data));
+                                    HashMap<String, Object> finalData = new HashMap<>();
+                                    finalData.put("author", document.get("nickname"));
+                                    finalData.put("workout", data);
+                                    finalData.put("published", FieldValue.serverTimestamp());
+                                        db.collection("workouts").add(finalData).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                             @Override
                                             public void onComplete(@NonNull Task<DocumentReference> task) {
                                                 if (task.isSuccessful()) {

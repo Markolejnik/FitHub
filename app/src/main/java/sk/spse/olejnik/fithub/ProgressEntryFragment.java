@@ -245,8 +245,6 @@ public class ProgressEntryFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                gson = new Gson();
-                                String jsonData = gson.toJson(data);
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     // You can access the matched document here
                                     String documentId = document.getId();

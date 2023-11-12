@@ -37,6 +37,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.lang.reflect.Type;
 import java.sql.Time;
 import java.time.Instant;
@@ -215,20 +217,22 @@ public class WorkoutsFragment extends Fragment {
                 if (task.isComplete()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         int size = document.getData().size();
-
                         Map<String, Object> data = document.getData();
-//                    for (Map.Entry<String, Object> entry : data.entrySet()) {
                         for (int i = 0; i < size / 3; i++) {
                             String author = (String) data.get("author");
-                            String workout = (String) data.get("workout");
+                            HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
                             Timestamp time = (Timestamp) data.get("published");
 
                             if (workout != null) {
-                                Log.i("asgds", workout);
-                                gson = new Gson();
-                                type = new TypeToken<WorkoutData>() {
-                                }.getType();
-                                WorkoutData w = gson.fromJson(workout, type);
+                                ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                                ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                                for (HashMap<String, Object> exercise: exercises) {
+                                    WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                    workoutExercises.add(workoutExercise);
+                                }
+                                String title = (String) workout.get("title");
+                                String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                                WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
                                 workouts.add(w);
 //                            workouts.add((WorkoutData) entry.getValue());
                             }
@@ -244,14 +248,11 @@ public class WorkoutsFragment extends Fragment {
                                 Log.i("time", formattedDate);
                                 times.add(formattedDate);
 
-                            } else {
-                                Log.i("nick get", "getWorkoutData: ");
                             }
                             workoutsAdapter.notifyItemInserted(i);
                         }
                         if (task.getResult().size() > 0) {
                             lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
-                            Log.i("last visible docuemnt set", lastVisibleDocument.getString("workout"));
                         }
                     }
 

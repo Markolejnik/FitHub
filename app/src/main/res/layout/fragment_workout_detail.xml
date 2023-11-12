@@ -5,36 +5,44 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:layout_weight="1"
     android:background="@color/background"
+    android:orientation="vertical"
     tools:context=".WorkoutDetailFragment">
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/goBack"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginTop="9dp"
-            android:src="@drawable/icon_back_foreground" />
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:src="@drawable/icon_back_foreground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/wDetailTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
             android:layout_marginEnd="50dp"
-            android:layout_weight="2"
+            android:ellipsize="end"
             android:fontFamily="@font/oswald_semibold"
             android:gravity="center"
-            android:text="Unnamed Workout"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:text="Workout Title"
             android:textColor="@color/colorAccent"
-            android:textSize="25sp" />
-    </LinearLayout>
+            android:textSize="25sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/goBack"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,11 +65,9 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_weight="5">
+        android:layout_weight="1">
 
         <TableLayout
             android:id="@+id/wDetailTable"
@@ -75,11 +81,13 @@
         android:id="@+id/startWorkout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
         android:layout_weight="0"
+        android:background="@drawable/round_filter"
         android:fontFamily="@font/oswald_semibold"
         android:text="Start Workout"
         android:textColor="@color/foreground"
-        android:textSize="20sp"
-        android:background="@drawable/round_filter" />
+        android:textSize="22sp" />
 
 </LinearLayout>

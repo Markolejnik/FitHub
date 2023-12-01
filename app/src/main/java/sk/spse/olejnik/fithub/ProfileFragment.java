@@ -259,99 +259,98 @@ public class ProfileFragment extends Fragment {
     }
 
     public void checkSignedIn() {
+        if (NetworkUtils.isNetworkAvailable(getContext())) {
 
-        if (auth.getCurrentUser() == null) {
-            nickname.setText("Not logged in");
-            Log.i("workouts local", auth.getCurrentUser().getEmail());
+            if (auth.getCurrentUser() == null) {
+                nickname.setText("Not logged in");
+                Log.i("workouts local", auth.getCurrentUser().getEmail());
 
 
-        } else {
-            user = FirebaseAuth.getInstance().getCurrentUser();
-            final String current = user.getEmail();
-            db.collection("users")
-                    .whereEqualTo("email", current)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (DocumentSnapshot document : task.getResult()) {
-                                    currentNickname = document.get("nickname").toString();
-                                    nickname.setText(currentNickname);
-                                    joined.setText("Joined: " + (CharSequence) document.get("joined"));
-                                    db.collection("workouts")
-                                            .orderBy("published", Query.Direction.DESCENDING)
-                                            .get()
-                                            .addOnCompleteListener(task2 -> {
-                                                if (task2.isComplete()) {
-                                                    for (QueryDocumentSnapshot document2 : task2.getResult()) {
-                                                        int size = document2.getData().size();
+            } else {
+                user = FirebaseAuth.getInstance().getCurrentUser();
+                final String current = user.getEmail();
+                db.collection("users")
+                        .whereEqualTo("email", current)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (DocumentSnapshot document : task.getResult()) {
+                                        currentNickname = document.get("nickname").toString();
+                                        nickname.setText(currentNickname);
+                                        joined.setText("Joined: " + (CharSequence) document.get("joined"));
+                                        db.collection("workouts")
+                                                .orderBy("published", Query.Direction.DESCENDING)
+                                                .get()
+                                                .addOnCompleteListener(task2 -> {
+                                                    if (task2.isComplete()) {
+                                                        for (QueryDocumentSnapshot document2 : task2.getResult()) {
+                                                            int size = document2.getData().size();
 
-                                                        Map<String, Object> data = document2.getData();
-//                    for (Map.Entry<String, Object> entry : data.entrySet()) {
-                                                        for (int i = 0; i < size/3; i++) {
-                                                            Log.i("author", (String) data.get("author"));
-                                                            Log.i("author", currentNickname);
-                                                            if (Objects.equals((String) data.get("author"), currentNickname)) {
-                                                                Log.i("executing", currentNickname);
-                                                                String author = (String) data.get("author");
-                                                                HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
-                                                                Timestamp time = (Timestamp) data.get("published");
+                                                            Map<String, Object> data = document2.getData();
+                                                            //                    for (Map.Entry<String, Object> entry : data.entrySet()) {
+                                                            for (int i = 0; i < size / 3; i++) {
+                                                                Log.i("author", (String) data.get("author"));
+                                                                Log.i("author", currentNickname);
+                                                                if (Objects.equals((String) data.get("author"), currentNickname)) {
+                                                                    Log.i("executing", currentNickname);
+                                                                    String author = (String) data.get("author");
+                                                                    HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
+                                                                    Timestamp time = (Timestamp) data.get("published");
 
-                                                                if (author != null) {
-                                                                    usernames.add(author);
-                                                                }
-                                                                if (workout != null) {
-                                                                    ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
-                                                                    ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
-                                                                    for (HashMap<String, Object> exercise: exercises) {
-                                                                        WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), (Boolean) exercise.get("repstosec"));
-                                                                        workoutExercises.add(workoutExercise);
+                                                                    if (author != null) {
+                                                                        usernames.add(author);
                                                                     }
-                                                                    String title = (String) workout.get("title");
-                                                                    String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                                                                    WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-                                                                    userWorkouts.add(w);
-                                                                    //                            workouts.add((WorkoutData) entry.getValue());
+                                                                    if (workout != null) {
+                                                                        ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                                                                        ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                                                                        for (HashMap<String, Object> exercise : exercises) {
+                                                                            WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                                                            workoutExercises.add(workoutExercise);
+                                                                        }
+                                                                        String title = (String) workout.get("title");
+                                                                        String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                                                                        WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+                                                                        userWorkouts.add(w);
+                                                                        //                            workouts.add((WorkoutData) entry.getValue());
+                                                                    }
+                                                                    if (time != null) {
+                                                                        Instant instant = time.toDate().toInstant();
+                                                                        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                                                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
+                                                                        String formattedDate = formatter.format(localDateTime);
+                                                                        times.add(formattedDate);
+                                                                    }
+                                                                    workoutsAdapter.notifyItemInserted(i);
+                                                                    Log.i("workoutsUser", userWorkouts.size() + "");
                                                                 }
-                                                                if (time != null) {
-                                                                    Instant instant = time.toDate().toInstant();
-                                                                    LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-                                                                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                                                                    String formattedDate = formatter.format(localDateTime);
-                                                                    times.add(formattedDate);
-                                                                }
-                                                                workoutsAdapter.notifyItemInserted(i);
-                                                                Log.i("workoutsUser", userWorkouts.size() + "");
                                                             }
                                                         }
+
                                                     }
-
-                                                }
-                                            });
-//                                    userWorkouts = new ArrayList<>();
-//                                    List<String> temp = (List<String>) document.get("workouts");
-//                                    gson = new Gson();
-//                                    type = new TypeToken<WorkoutData>() {
-//                                    }.getType();
-//                                    for (String t: temp) {
-//                                        WorkoutData w = gson.fromJson(t, type);
-//                                        userWorkouts.add(w);
-//                                    }
-//                                    for (WorkoutData workout: userWorkouts) {
-//                                        createNewWorkout(workout.getTitle(), workout.getTargetedMuscleGroups(), workout.getExercises());
-//                                    }
+                                                });
+                                        //                                    userWorkouts = new ArrayList<>();
+                                        //                                    List<String> temp = (List<String>) document.get("workouts");
+                                        //                                    gson = new Gson();
+                                        //                                    type = new TypeToken<WorkoutData>() {
+                                        //                                    }.getType();
+                                        //                                    for (String t: temp) {
+                                        //                                        WorkoutData w = gson.fromJson(t, type);
+                                        //                                        userWorkouts.add(w);
+                                        //                                    }
+                                        //                                    for (WorkoutData workout: userWorkouts) {
+                                        //                                        createNewWorkout(workout.getTitle(), workout.getTargetedMuscleGroups(), workout.getExercises());
+                                        //                                    }
+                                    }
                                 }
+                                Log.i("here is the user", auth.getCurrentUser().getEmail());
+                                Log.i("workouts public", auth.getCurrentUser().getEmail());
+
                             }
-
-
-
-
-            Log.i("here is the user", auth.getCurrentUser().getEmail());
-            Log.i("workouts public", auth.getCurrentUser().getEmail());
-
-        }
-    });}
+                        });
+            }
+        } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
 
     }
 

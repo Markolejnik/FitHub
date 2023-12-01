@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -199,85 +201,89 @@ public class WorkoutsFragment extends Fragment {
 
     void getWorkoutData() {
 
-
-        if (lastVisibleDocument == null) {
-            query = db.collection("workouts")
-                    .orderBy("published", Query.Direction.DESCENDING)
-                    .limit(5);
-        } else {
-            query = db.collection("workouts")
-                    .orderBy("published", Query.Direction.DESCENDING)
-                    .startAfter(lastVisibleDocument)
-                    .limit(5);
-        }
+        if (NetworkUtils.isNetworkAvailable(getContext())) {
 
 
-        query.get()
-            .addOnCompleteListener(task -> {
-                if (task.isComplete()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        int size = document.getData().size();
-                        Map<String, Object> data = document.getData();
-                        for (int i = 0; i < size / 3; i++) {
-                            String author = (String) data.get("author");
-                            HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
-                            Timestamp time = (Timestamp) data.get("published");
+            if (lastVisibleDocument == null) {
+                query = db.collection("workouts")
+                        .orderBy("published", Query.Direction.DESCENDING)
+                        .limit(5);
+            } else {
+                query = db.collection("workouts")
+                        .orderBy("published", Query.Direction.DESCENDING)
+                        .startAfter(lastVisibleDocument)
+                        .limit(5);
+            }
 
-                            if (workout != null) {
-                                ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
-                                ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
-                                for (HashMap<String, Object> exercise: exercises) {
-                                    WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), (Boolean) exercise.get("repstosec"));
-                                    workoutExercises.add(workoutExercise);
+
+            query.get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isComplete()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                int size = document.getData().size();
+                                Map<String, Object> data = document.getData();
+                                for (int i = 0; i < size / 3; i++) {
+                                    String author = (String) data.get("author");
+                                    HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
+                                    Timestamp time = (Timestamp) data.get("published");
+
+                                    if (workout != null) {
+                                        ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                                        ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                                        for (HashMap<String, Object> exercise : exercises) {
+                                            WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                            workoutExercises.add(workoutExercise);
+                                        }
+                                        String title = (String) workout.get("title");
+                                        String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                                        WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+                                        workouts.add(w);
+                                        //                            workouts.add((WorkoutData) entry.getValue());
+                                    }
+                                    if (author != null) {
+                                        usernames.add(author);
+
+                                    }
+                                    if (time != null) {
+                                        Instant instant = time.toDate().toInstant();
+                                        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
+                                        String formattedDate = formatter.format(localDateTime);
+                                        Log.i("time", formattedDate);
+                                        times.add(formattedDate);
+
+                                    }
+                                    workoutsAdapter.notifyItemInserted(i);
                                 }
-                                String title = (String) workout.get("title");
-                                String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                                WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-                                workouts.add(w);
-//                            workouts.add((WorkoutData) entry.getValue());
+                                if (task.getResult().size() > 0) {
+                                    lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                                }
                             }
-                            if (author != null) {
-                                usernames.add(author);
 
-                            }
-                            if (time != null) {
-                                Instant instant = time.toDate().toInstant();
-                                LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                                String formattedDate = formatter.format(localDateTime);
-                                Log.i("time", formattedDate);
-                                times.add(formattedDate);
-
-                            }
-                            workoutsAdapter.notifyItemInserted(i);
                         }
-                        if (task.getResult().size() > 0) {
-                            lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
-                        }
-                    }
-
-                }
-            });
-
+                    });
+        } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
 
     }
     private void loadMoreData() {
-        isLoading = true;
-        loadingSpinner.setVisibility(View.VISIBLE);
+        if (NetworkUtils.isNetworkAvailable(getContext())) {
+            isLoading = true;
+            loadingSpinner.setVisibility(View.VISIBLE);
 
-        // Implement your data retrieval logic here (e.g., Firestore query, API call)
-        // Append the new data to dataList
+            // Implement your data retrieval logic here (e.g., Firestore query, API call)
+            // Append the new data to dataList
 
-        // Simulate a delay (remove in production)
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getWorkoutData();
-                isLoading = false;
-                loadingSpinner.setVisibility(View.GONE);
-            }
-        }, 2000);
-        workoutsAdapter.notifyDataSetChanged();
+            // Simulate a delay (remove in production)
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getWorkoutData();
+                    isLoading = false;
+                    loadingSpinner.setVisibility(View.GONE);
+                }
+            }, 2000);
+            workoutsAdapter.notifyDataSetChanged();
+        } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
     }
 
     void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {

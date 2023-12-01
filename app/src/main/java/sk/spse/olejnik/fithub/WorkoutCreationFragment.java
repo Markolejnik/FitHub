@@ -1,6 +1,5 @@
 package sk.spse.olejnik.fithub;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -124,7 +123,7 @@ public class WorkoutCreationFragment extends Fragment {
         tableLayout = view.findViewById(R.id.tableLayoutWorkout);
         save = view.findViewById(R.id.workoutSave);
         goBack = view.findViewById(R.id.goBack);
-        addExercise = view.findViewById(R.id.AddExercise);
+        addExercise = view.findViewById(R.id.setCounterButton);
         title = view.findViewById(R.id.titleInput);
         targetedMG = view.findViewById(R.id.targetedMGInput);
 

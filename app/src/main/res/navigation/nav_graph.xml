@@ -61,6 +61,21 @@
         <action
             android:id="@+id/action_WorkoutDetail_to_ExerciseDetail"
             app:destination="@id/fragmentExerciseDetail" />
+        <action
+            android:id="@+id/action_WorkoutDetail_to_WorkoutViewer"
+            app:destination="@id/fragmentWorkoutViewer" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragmentWorkoutViewer"
+        android:name="sk.spse.olejnik.fithub.WorkoutViewerFragment"
+        android:label="Fragment Workout Viewer"
+        tools:layout="@layout/fragment_workout_viewer">
+        <!-- Additional fragment attributes -->
+        <action
+            android:id="@+id/action_WorkoutViewer_to_WorkoutDetail"
+            app:destination="@id/fragmentWorkoutDetail" />
 
     </fragment>
 

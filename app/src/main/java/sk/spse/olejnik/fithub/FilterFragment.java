@@ -215,8 +215,7 @@ public class FilterFragment extends Fragment {
             }
             filterData.setFilterMuscleGroups(filterOutput);
             filterViewModel.updateExerciseData(filterData);
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            fragmentManager.popBackStack();
+            Navigation.findNavController(view).navigate(R.id.action_Filter_to_Exercise);
 //            MainActivity mainActivity = (MainActivity) getActivity();
 //            mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         });

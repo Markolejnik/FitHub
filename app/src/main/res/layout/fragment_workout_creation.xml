@@ -98,7 +98,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/AddExercise"
+        app:layout_constraintBottom_toTopOf="@+id/setCounterButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -111,7 +111,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/AddExercise"
+        android:id="@+id/setCounterButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"

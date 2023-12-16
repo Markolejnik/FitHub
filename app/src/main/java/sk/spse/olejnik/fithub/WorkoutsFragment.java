@@ -270,10 +270,6 @@ public class WorkoutsFragment extends Fragment {
             isLoading = true;
             loadingSpinner.setVisibility(View.VISIBLE);
 
-            // Implement your data retrieval logic here (e.g., Firestore query, API call)
-            // Append the new data to dataList
-
-            // Simulate a delay (remove in production)
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -281,7 +277,7 @@ public class WorkoutsFragment extends Fragment {
                     isLoading = false;
                     loadingSpinner.setVisibility(View.GONE);
                 }
-            }, 2000);
+            },2000);
             workoutsAdapter.notifyDataSetChanged();
         } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
     }

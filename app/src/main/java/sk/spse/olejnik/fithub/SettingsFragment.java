@@ -1,16 +1,21 @@
 package sk.spse.olejnik.fithub;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,21 +29,29 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.Objects;
 
 public class SettingsFragment extends Fragment {
 
-    Button signOut, delete;
+    Button signOut, delete, upload;
 
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseUser user;
+    FirebaseStorage storage;
 
-    ImageView goBack;
+    ImageView goBack, imageView;
     LinearLayout root;
     private SharedPreferences preferences, preferences2;
 
+    static final Integer imageRequest = 1;
 
     public SettingsFragment() {}
 
@@ -52,6 +65,7 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
     }
 
     @Override
@@ -68,6 +82,8 @@ public class SettingsFragment extends Fragment {
         goBack = view.findViewById(R.id.goBack);
         signOut = view.findViewById(R.id.signOut);
         delete = view.findViewById(R.id.deleteUser);
+        upload = view.findViewById(R.id.upload);
+        imageView = view.findViewById(R.id.imageView2);
 
         preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
         preferences2 = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
@@ -81,6 +97,9 @@ public class SettingsFragment extends Fragment {
             deleteUser();
         });
 
+        upload.setOnClickListener(v -> {
+            openGallery();
+        });
         checkSignedIn();
 
     }
@@ -143,6 +162,57 @@ public class SettingsFragment extends Fragment {
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Account deletion failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == imageRequest && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri imageUri = data.getData();
+
+            // Set the selected image to the ImageView
+            imageView.setImageURI(imageUri);
+            uploadProfileImage(imageUri);
+        }
+    }
+
+    private void openGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, imageRequest);
+    }
+
+    private void uploadProfileImage(Uri imageUri) {
+        String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        StorageReference imageReference = storage.getReference().child("profilePictures").child(userId + ".jpg");
+
+        imageReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+
+            imageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                String imageUrl = uri.toString();
+                assert user != null;
+                final String current = user.getEmail();
+                db.collection("users")
+                    .whereEqualTo("email", current)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String documentId = document.getId();
+                                    db.collection("users").document(documentId).update("pfpUrl", imageUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Toast.makeText(getContext(), "Profile Picture Changed Successfully!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+            });
+        });
     }
 
 }

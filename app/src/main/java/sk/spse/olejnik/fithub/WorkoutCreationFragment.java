@@ -31,6 +31,7 @@ import android.widget.ToggleButton;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -235,7 +236,8 @@ public class WorkoutCreationFragment extends Fragment {
 
             workoutViewModel.updateWorkoutData(newData);
 
-            publishWorkout(newData);
+            showPublishDialog(newData);
+
 
             ExerciseData data = new ExerciseData();
             data.setNewTitle(null);
@@ -598,29 +600,57 @@ public class WorkoutCreationFragment extends Fragment {
 
     }
 
-    void localSave() {
-        valueTitle = title.getText().toString();
-        valueTargetedMG = targetedMG.getText().toString();
-        if (titles != null && titles.size() != 0) {
-            SharedPreferences.Editor editor = preferences.edit();
+    public void makePrivate(WorkoutData workoutData) {
 
-            gson = new Gson();
-            String titlesJson = gson.toJson(titles);
-            String typesJson = gson.toJson(types);
-            String linksJson = gson.toJson(links);
-            String images1Json = gson.toJson(images1);
-            String images2Json = gson.toJson(images2);
-            String muscleGroupsJson = gson.toJson(muscleGroupList);
+        if (auth.getCurrentUser() == null) {
+            Log.i("workouts offline", auth.getCurrentUser().getEmail());
+            Toast.makeText(getContext(), "Log in to Make a Workout", Toast.LENGTH_SHORT).show();
 
-            editor.putString("Title", valueTitle);
-            editor.putString("TitleMG", valueTargetedMG);
-            editor.putString("titlesJson", titlesJson);
-            editor.putString("typesJson", typesJson);
-            editor.putString("linksJson", linksJson);
-            editor.putString("images1Json", images1Json);
-            editor.putString("images2Json", images2Json);
-            editor.putString("muscleGroupsJson", muscleGroupsJson);
-            editor.apply();
+        } else {
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            assert user != null;
+            final String current = user.getEmail();
+
+            List<HashMap<String, Object>> exercises = new ArrayList<>();
+            for (WorkoutExercises exercise: workoutData.getExercises()) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("name", exercise.getTitle());
+                map.put("type", exercise.getType());
+                map.put("link", exercise.getLink());
+                map.put("muscleGroup", exercise.getMuscleGroupsUsed());
+                map.put("image1", exercise.getImage1());
+                map.put("image2", exercise.getImage2());
+                map.put("reps", exercise.getReps());
+                map.put("sets", exercise.getSets());
+                map.put("repstosec", exercise.isTimeFormat());
+                exercises.add(map);
+            }
+
+            db.collection("users")
+                    .whereEqualTo("email", current)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String documentId = document.getId();
+                                    HashMap<String, Object> data = new HashMap<>();
+                                    data.put("title", workoutData.getTitle());
+                                    data.put("targetMuscleGroups", workoutData.getTargetedMuscleGroups());
+                                    data.put("exercises", exercises);
+                                    data.put("author", document.get("nickname"));
+                                    db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(data)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
+                                        }
+                                    });
+                                }
+                                Log.i("workout user: ", auth.getCurrentUser().getEmail());
+                            }
+                        }
+                    });
         }
     }
 
@@ -648,7 +678,6 @@ public class WorkoutCreationFragment extends Fragment {
                 map.put("sets", exercise.getSets());
                 map.put("repstosec", exercise.isTimeFormat());
                 exercises.add(map);
-
             }
 
             data = new HashMap<>();
@@ -663,28 +692,21 @@ public class WorkoutCreationFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
-                                gson = new Gson();
-//                                String jsonData = gson.toJson(data);
-
-//                                    String doc = "users";
-//                                    DocumentReference user = db.collection("users").document(uid);
-//                                    user.update("workouts", FieldValue.arrayUnion(jsonData));
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     // You can access the matched document here
                                     String documentId = document.getId();
-                                    db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(data));
                                     HashMap<String, Object> finalData = new HashMap<>();
                                     finalData.put("author", document.get("nickname"));
                                     finalData.put("workout", data);
                                     finalData.put("published", FieldValue.serverTimestamp());
-                                        db.collection("workouts").add(finalData).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentReference> task) {
-                                                if (task.isSuccessful()) {
-                                                    Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
-                                                }
+                                    db.collection("workouts").add(finalData).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                                            if (task.isSuccessful()) {
+                                                Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
                                             }
-                                        });
+                                        }
+                                    });
                                 }
 
                                 Log.i("workout user: ", auth.getCurrentUser().getEmail());
@@ -695,6 +717,36 @@ public class WorkoutCreationFragment extends Fragment {
         }
     }
 
+    private void showPublishDialog(WorkoutData workoutData) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Make Workout Public Or Private?");
+        builder.setMessage("Private is only accessible by the creator and public is accessible for anyone");
+        builder.setPositiveButton("Public", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                publishWorkout(workoutData);
+                dialog.dismiss();
+
+            }
+        });
+        builder.setNegativeButton("Private", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                makePrivate(workoutData);
+                dialog.dismiss();
+
+            }
+
+        });
+        builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
 
 
     private void showExitDialog() {
@@ -802,12 +854,12 @@ public class WorkoutCreationFragment extends Fragment {
         builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                boolean output;
                 dialog.dismiss();
             }
         });
         builder.show();
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

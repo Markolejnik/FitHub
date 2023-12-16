@@ -33,7 +33,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/profilePicture" />
 
     <TextView
         android:id="@+id/joinedText"
@@ -49,13 +49,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nicknameText" />
 
+
+
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="132dp"
+        android:id="@+id/profilePicture"
+        android:layout_width="95dp"
         android:layout_height="95dp"
         android:layout_marginTop="12dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_profile_foreground"
+        android:background="@drawable/round_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,30 +77,30 @@
         app:layout_constraintTop_toBottomOf="@+id/joinedText">
 
         <Button
-            android:id="@+id/workoutButton"
+            android:id="@+id/publicButton"
             android:layout_width="140dp"
             android:layout_height="40dp"
             android:background="@drawable/profile_button1"
             android:backgroundTint="@color/colorAccent"
             android:fontFamily="@font/oswald_semibold"
-            android:text="Your Workouts"
+            android:text="Public Workouts"
             android:textAllCaps="false"
             android:textSize="15sp" />
 
         <Button
-            android:id="@+id/draftButton"
+            android:id="@+id/privateButton"
             android:layout_width="140dp"
             android:layout_height="40dp"
             android:background="@drawable/profile_button2"
             android:backgroundTint="@color/barbackground"
             android:fontFamily="@font/oswald_semibold"
-            android:text="Workout Drafts"
+            android:text="Private Workouts"
             android:textAllCaps="false"
             android:textSize="15sp" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/workoutContainer"
+        android:id="@+id/publicContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
@@ -131,7 +134,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/draftContainer"
+        android:id="@+id/privateContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
@@ -140,20 +143,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonContainer">
 
-        <ScrollView
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TableLayout
-                android:id="@+id/tableDraftList"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
 
-            </TableLayout>
-        </ScrollView>
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"/>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+<!--        <ScrollView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent">-->
+
+<!--            <TableLayout-->
+<!--                android:id="@+id/tableDraftList"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content">-->
+
+<!--            </TableLayout>-->
+<!--        </ScrollView>-->
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 <!--    <androidx.constraintlayout.widget.ConstraintLayout-->

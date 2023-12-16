@@ -12,6 +12,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import org.w3c.dom.Text;
 
 import java.util.Collections;
@@ -24,6 +31,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         ImageView profilePicture;
         TextView username, workoutTitle, targetedMG, published, exerciseCount;
         View view;
+
 
         WorkoutViewHolder(View itemView) {
             super(itemView);
@@ -48,7 +56,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
 
     private List<WorkoutData> workouts;
     private List<String> usernames, times;
-
+    FirebaseFirestore db;
     Context context;
 
     public WorkoutsAdapter(List<WorkoutData> workouts, List<String> usernames, List<String> times, Context context) {
@@ -78,10 +86,29 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         try {
             holder.published.setText(times.get(position));
         } catch (Exception e) {
-            holder.published.setText("Just now");
+            holder.published.setText("");
         }
         if (workouts.get(position).getExercises().size() > 1) holder.exerciseCount.setText(workouts.get(position).getExercises().size() + " Exercises");
         else holder.exerciseCount.setText(workouts.get(position).getExercises().size() + " Exercise");
+        try {
+            db = FirebaseFirestore.getInstance();
+            db.collection("users").whereEqualTo("nickname", usernames.get(position)).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    for (DocumentSnapshot document : task.getResult()) {
+
+                        String imageUrl = document.getString("pfpUrl");
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .into(holder.profilePicture);
+                        holder.profilePicture.setClipToOutline(true);
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
@@ -107,35 +134,3 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         mOnEntryClickListener = onEntryClickListener;
     }
 }
-    //    @NonNull
-//    @Override
-//    public WorkoutsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        return null;
-//    }
-//
-//    @Override
-//    public void onBindViewHolder(@NonNull WorkoutsAdapter.ViewHolder holder, int position) {
-//
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        return 0;
-//    }
-//    public WorkoutViewHolder onCreateViewHolder(ViewGroup parent, int viewtype) {
-//        Context context
-//                = parent.getContext();
-//        LayoutInflater inflater
-//                = LayoutInflater.from(context);
-//
-//        // Inflate the layout
-//
-//        View photoView
-//                = inflater
-//                .inflate(R.layout.card_exam,
-//                        parent, false);
-//
-//        workoutViewHolder viewHolder
-//                = new workoutViewHolder(photoView);
-//        return viewHolder;
-//    }

@@ -309,29 +309,30 @@ public class ProfileFragment extends Fragment {
                                             Log.d("Profile Picture Exception", "No Profile Picture Found");
                                         }
                                         int size = document.getData().size();
+                                            Map<String, Object> data = document.getData();
+                                            ArrayList<HashMap<String, Object>> workouts = (ArrayList<HashMap<String, Object>>) data.get("workouts");
+                                        if (workouts.size() != 0) {
+                                            HashMap<String, Object> workout = workouts.get(i);
 
-                                        Map<String, Object> data = document.getData();
-                                        ArrayList<HashMap<String, Object>> workouts = (ArrayList<HashMap<String, Object>>) data.get("workouts");
-                                        HashMap<String, Object> workout = workouts.get(i);
-
-                                        if (workout.get("author") != null) {
-                                            privateUsernames.add(workout.get("author").toString());
-                                        }
-                                        if (workout != null) {
-                                            ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
-                                            ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
-                                            for (HashMap<String, Object> exercise : exercises) {
-                                                WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), (Boolean) exercise.get("repstosec"));
-                                                workoutExercises.add(workoutExercise);
+                                            if (workout.get("author") != null) {
+                                                privateUsernames.add(workout.get("author").toString());
                                             }
-                                            String title = (String) workout.get("title");
-                                            String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                                            WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-                                            userWorkouts.add(w);
+                                            if (workout != null) {
+                                                ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                                                ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                                                for (HashMap<String, Object> exercise : exercises) {
+                                                    WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("imageMini"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                                    workoutExercises.add(workoutExercise);
+                                                }
+                                                String title = (String) workout.get("title");
+                                                String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                                                WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+                                                userWorkouts.add(w);
+                                            }
+                                            privateAdapter.notifyItemInserted(i);
+                                            Log.i("workoutsUser", userWorkouts.size() + "");
+                                            i++;
                                         }
-                                        privateAdapter.notifyItemInserted(i);
-                                        Log.i("workoutsUser", userWorkouts.size() + "");
-                                        i++;
                                     }
 
                                 }
@@ -357,7 +358,7 @@ public class ProfileFragment extends Fragment {
                                         ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
                                         ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
                                         for (HashMap<String, Object> exercise : exercises) {
-                                            WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                            WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("imageMini"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
                                             workoutExercises.add(workoutExercise);
                                         }
                                         String title = (String) workout.get("title");

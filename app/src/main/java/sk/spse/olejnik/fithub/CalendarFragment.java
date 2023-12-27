@@ -263,7 +263,7 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
                                             dateData.setTime(date);
                                             HashMap<String, Object> exerciseData = (HashMap<String, Object>) entry.get("exercise");
 
-                                            Exercises exercise = new Exercises((String) exerciseData.get("name"), (String) exerciseData.get("type"), (String) exerciseData.get("link"), (List<String>) exerciseData.get("muscleGroup"), Long.valueOf((String) String.valueOf(exerciseData.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("image2"))).intValue());
+                                            Exercises exercise = new Exercises((String) exerciseData.get("name"), (String) exerciseData.get("type"), (String) exerciseData.get("link"), (List<String>) exerciseData.get("muscleGroup"), Long.valueOf((String) String.valueOf(exerciseData.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("imageMini"))).intValue());
                                             ProgressData entryData = new ProgressData(exercise, Long.valueOf((String) String.valueOf(entry.get("reps"))).intValue(), Long.valueOf((String) String.valueOf(entry.get("weight"))).intValue(), dateData, (Boolean) entry.get("repstosec"), (Boolean) entry.get("bodyweight"), (Boolean) entry.get("lbtokg"), (String) entry.get("note"));
                                             progressList.add(entryData);
                                             progressAdapter.notifyDataSetChanged();
@@ -300,6 +300,7 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
                         entryExercise.put("muscleGroup", progressList.get(position).getExercise().getMuscleGroup());
                         entryExercise.put("image1", progressList.get(position).getExercise().getImage1());
                         entryExercise.put("image2", progressList.get(position).getExercise().getImage2());
+                        entryExercise.put("imageMini", progressList.get(position).getExercise().getImageMini());
 
                         Map<String, Object> entry = new HashMap<>();
                         entry.put("exercise", entryExercise);

@@ -1,130 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="140dp"
-    android:layout_marginBottom="10dp"
-    android:background="@drawable/round_card"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:outlineAmbientShadowColor="@color/colorAccent"
+    android:outlineSpotShadowColor="@color/colorAccent"
+    android:background="@color/background"
     android:backgroundTint="@color/background"
-    android:padding="4dp">
-
+    app:cardElevation="25dp"
+    app:cardCornerRadius="30dp"
+    app:cardUseCompatPadding="false"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/profileContainer"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginHorizontal="0dp"
-        android:background="@drawable/workout_header"
-        android:backgroundTint="@color/colorAccent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="140dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/round_card"
+        android:backgroundTint="@color/background">
 
-        <ImageView
-            android:id="@+id/profilePicture"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/round_image"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_profile_foreground" />
 
-        <TextView
-            android:id="@+id/username"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="20dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/oswald_semibold"
-            android:maxLines="1"
-            android:text="Unnamed User"
-            android:textColor="@color/foreground"
-            android:textSize="20sp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/profileContainer"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="0dp"
+            android:background="@drawable/workout_header"
+            android:backgroundTint="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/profilePicture"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/profilePicture"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/round_image"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/oswald_semibold"
+                android:maxLines="1"
+                android:text="Unnamed User"
+                android:textColor="@color/foreground"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/profilePicture"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/published"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:ellipsize="end"
+                android:fontFamily="@font/oswald_semibold"
+                android:maxLines="1"
+                android:text="Published at"
+                android:textColor="@color/foreground"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/profilePicture"
+                app:layout_constraintTop_toBottomOf="@+id/username" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/published"
+            android:id="@+id/workoutTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
             android:ellipsize="end"
             android:fontFamily="@font/oswald_semibold"
             android:maxLines="1"
-            android:text="Published at"
+            android:text="Unnamed Workout"
+            android:textColor="@color/foreground"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profileContainer" />
+
+        <TextView
+            android:id="@+id/targetedMG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/oswald_semibold"
+            android:maxLines="1"
+            android:text="No Targeted Muscle Groups"
             android:textColor="@color/foreground"
             android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/profilePicture"
-            app:layout_constraintTop_toBottomOf="@+id/username" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/workoutTitle"
+            app:layout_constraintTop_toBottomOf="@+id/workoutTitle"
+            app:layout_constraintVertical_bias="0.157" />
+
+        <TextView
+            android:id="@+id/exerciseCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/oswald_semibold"
+            android:maxLines="1"
+            android:text="0 Exercises"
+            android:textColor="@color/foreground"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/targetedMG"
+            app:layout_constraintStart_toEndOf="@+id/view" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/dot"
+            app:layout_constraintBottom_toBottomOf="@+id/targetedMG"
+            app:layout_constraintStart_toEndOf="@+id/targetedMG"
+            app:layout_constraintTop_toTopOf="@+id/targetedMG"
+            app:layout_constraintVertical_bias="0.461" />
+
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/workoutTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/oswald_semibold"
-        android:maxLines="1"
-        android:text="Unnamed Workout"
-        android:textColor="@color/foreground"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileContainer" />
-
-    <TextView
-        android:id="@+id/targetedMG"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/oswald_semibold"
-        android:maxLines="1"
-        android:text="No Targeted Muscle Groups"
-        android:textColor="@color/foreground"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/workoutTitle"
-        app:layout_constraintTop_toBottomOf="@+id/workoutTitle"
-        app:layout_constraintVertical_bias="0.157" />
-
-    <TextView
-        android:id="@+id/exerciseCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:ellipsize="end"
-        android:fontFamily="@font/oswald_semibold"
-        android:maxLines="1"
-        android:text="0 Exercises"
-        android:textColor="@color/foreground"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/targetedMG"
-        app:layout_constraintStart_toEndOf="@+id/view" />
-
-    <View
-        android:id="@+id/view"
-        android:layout_width="5dp"
-        android:layout_height="5dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/dot"
-        app:layout_constraintBottom_toBottomOf="@+id/targetedMG"
-        app:layout_constraintStart_toEndOf="@+id/targetedMG"
-        app:layout_constraintTop_toTopOf="@+id/targetedMG"
-        app:layout_constraintVertical_bias="0.461" />
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

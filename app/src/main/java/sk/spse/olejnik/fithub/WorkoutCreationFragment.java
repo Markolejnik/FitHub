@@ -66,7 +66,7 @@ public class WorkoutCreationFragment extends Fragment {
     List<WCExerciseData> exerciseList;
     List<WCExerciseData> displayList;
     List<String> titles, links, types;
-    List<Integer> images1, images2;
+    List<Integer> images1, images2, imagesMini;
     List<List<String>> muscleGroupList;
     List<EditText> setsList, repsList;
     List<Button> repstosecList;
@@ -93,7 +93,6 @@ public class WorkoutCreationFragment extends Fragment {
 
     public static WorkoutCreationFragment newInstance() {
         WorkoutCreationFragment fragment = new WorkoutCreationFragment();
-        Bundle args = new Bundle();
         return fragment;
     }
 
@@ -164,6 +163,11 @@ public class WorkoutCreationFragment extends Fragment {
         }.getType();
         images2 = gson.fromJson(json, type);
 
+        json = preferences.getString("imagesMiniJson", "");
+        type = new TypeToken<List<Integer>>() {
+        }.getType();
+        imagesMini = gson.fromJson(json, type);
+
         json = preferences.getString("muscleGroupsJson", "");
         type = new TypeToken<List<List<String>>>() {
         }.getType();
@@ -206,7 +210,7 @@ public class WorkoutCreationFragment extends Fragment {
                     EditText repsEditText = constraintLayout.findViewById(R.id.reps);
                     ToggleButton repsTosec = constraintLayout.findViewById(R.id.repstosec);
 
-                    // Now you can retrieve the values from these views
+
                     try {
                         int sets = Integer.parseInt(setsEditText.getText().toString());
                         int reps = Integer.parseInt(repsEditText.getText().toString());
@@ -228,7 +232,7 @@ public class WorkoutCreationFragment extends Fragment {
             }
             List<WorkoutExercises> workoutExercises = new ArrayList<>();
             for (int i = 0; i < exercises.size(); i++) {
-                workoutExercises.add(new WorkoutExercises(exercises.get(i).getName(), exercises.get(i).getType(), exercises.get(i).getLink(), exercises.get(i).getImage1(), exercises.get(i).getImage2(), exercises.get(i).getMuscleGroup(), exerciseList.get(i).getSets(), exerciseList.get(i).getReps(), exerciseList.get(i).getRepstosec()));
+                workoutExercises.add(new WorkoutExercises(exercises.get(i).getName(), exercises.get(i).getType(), exercises.get(i).getLink(), exercises.get(i).getImage1(), exercises.get(i).getImage2(), exercises.get(i).getImageMini(), exercises.get(i).getMuscleGroup(), exerciseList.get(i).getSets(), exerciseList.get(i).getReps(), exerciseList.get(i).getRepstosec()));
             }
 
 
@@ -239,15 +243,7 @@ public class WorkoutCreationFragment extends Fragment {
             showPublishDialog(newData);
 
 
-            ExerciseData data = new ExerciseData();
-            data.setNewTitle(null);
-            data.setNewMuscleGroups(null);
-            data.setNewImage1(0);
-            data.setNewImage2(0);
-            data.setNewLink(null);
-            data.setNewType(null);
-
-            exerciseViewModel.updateExerciseData(data);
+            exerciseViewModel.updateCreationData(new ExerciseData(null, null, null, null, null, null, null));
             tableLayout.removeAllViews();
             exerciseList.removeAll(exerciseList);
             exercises.removeAll(exercises);
@@ -256,42 +252,105 @@ public class WorkoutCreationFragment extends Fragment {
         });
 
         addExercise.setOnClickListener(v -> {
+            try {
+                exerciseList.removeAll(exerciseList);
+            } catch (Exception e) {
+                Log.i("WCF", "258: no data to be deleted");
+            }
+            preferences.edit().clear().apply();
 
+            for (int i = 0; i < tableLayout.getChildCount(); i++) {
+                View tableRow = tableLayout.getChildAt(i);
+                if (tableRow instanceof TableRow) {
+                    ConstraintLayout constraintLayout = tableRow.findViewById(R.id.constraintLayout); // Get ConstraintLayout inside TableRow
+
+                    EditText setsEditText = constraintLayout.findViewById(R.id.sets);
+                    EditText repsEditText = constraintLayout.findViewById(R.id.reps);
+                    ToggleButton repsTosec = constraintLayout.findViewById(R.id.repstosec);
+                    Integer sets, reps;
+                    try {
+                        sets = Integer.parseInt(setsEditText.getText().toString());
+                    } catch (Exception e) {
+                        sets = null;
+                        Log.i("E4 + " + i, "onClick: ");
+                    }
+
+                    try {
+                        reps = Integer.parseInt(repsEditText.getText().toString());
+                    } catch (Exception e) {
+                        reps = null;
+                        Log.i("E5 + " + i, "onClick: ");
+                    }
+
+                    boolean isTimeFormat = repsTosec.isChecked();
+                    WCExerciseData data = new WCExerciseData(sets, reps, isTimeFormat);
+                    exerciseList.add(data);
+                }
+            }
             valueTitle = title.getText().toString();
             valueTargetedMG = targetedMG.getText().toString();
             SharedPreferences.Editor editor = preferences.edit();
 
+            gson = new Gson();
+            String titlesJson = gson.toJson(titles);
+            String typesJson = gson.toJson(types);
+            String linksJson = gson.toJson(links);
+            String images1Json = gson.toJson(images1);
+            String images2Json = gson.toJson(images2);
+            String imagesMiniJson = gson.toJson(imagesMini);
+            String muscleGroupsJson = gson.toJson(muscleGroupList);
+            String detailsJson = gson.toJson(exerciseList);
+
             editor.putString("Title", valueTitle);
             editor.putString("TitleMG", valueTargetedMG);
-            if (titles != null && titles.size() != 0) {
-                gson = new Gson();
-                String titlesJson = gson.toJson(titles);
-                String typesJson = gson.toJson(types);
-                String linksJson = gson.toJson(links);
-                String images1Json = gson.toJson(images1);
-                String images2Json = gson.toJson(images2);
-                String muscleGroupsJson = gson.toJson(muscleGroupList);
-                String detailsJson = gson.toJson(exerciseList);
-
-
-                editor.putString("titlesJson", titlesJson);
-                editor.putString("typesJson", typesJson);
-                editor.putString("linksJson", linksJson);
-                editor.putString("images1Json", images1Json);
-                editor.putString("images2Json", images2Json);
-                editor.putString("muscleGroupsJson", muscleGroupsJson);
-                editor.putString("detailsJson", detailsJson);
-
-            } else {
-                editor.putString("titlesJson", null);
-                editor.putString("typesJson", null);
-                editor.putString("linksJson", null);
-                editor.putString("images1Json", null);
-                editor.putString("images2Json", null);
-                editor.putString("muscleGroupsJson", null);
-                editor.putString("detailsJson", null);
-            }
+            editor.putString("titlesJson", titlesJson);
+            editor.putString("typesJson", typesJson);
+            editor.putString("linksJson", linksJson);
+            editor.putString("images1Json", images1Json);
+            editor.putString("images2Json", images2Json);
+            editor.putString("imagesMiniJson", imagesMiniJson);
+            editor.putString("muscleGroupsJson", muscleGroupsJson);
+            editor.putString("detailsJson", detailsJson);
             editor.apply();
+
+//            valueTitle = title.getText().toString();
+//            valueTargetedMG = targetedMG.getText().toString();
+//            SharedPreferences.Editor editor = preferences.edit();
+//
+//            editor.putString("Title", valueTitle);
+//            editor.putString("TitleMG", valueTargetedMG);
+//            if (titles != null && titles.size() != 0) {
+//                gson = new Gson();
+//                String titlesJson = gson.toJson(titles);
+//                String typesJson = gson.toJson(types);
+//                String linksJson = gson.toJson(links);
+//                String images1Json = gson.toJson(images1);
+//                String images2Json = gson.toJson(images2);
+//                String imagesMiniJson = gson.toJson(imagesMini);
+//                String muscleGroupsJson = gson.toJson(muscleGroupList);
+//                String detailsJson = gson.toJson(exerciseList);
+//
+//
+//                editor.putString("titlesJson", titlesJson);
+//                editor.putString("typesJson", typesJson);
+//                editor.putString("linksJson", linksJson);
+//                editor.putString("images1Json", images1Json);
+//                editor.putString("images2Json", images2Json);
+//                editor.putString("imagesMiniJson", imagesMiniJson);
+//                editor.putString("muscleGroupsJson", muscleGroupsJson);
+//                editor.putString("detailsJson", detailsJson);
+//
+//            } else {
+//                editor.putString("titlesJson", null);
+//                editor.putString("typesJson", null);
+//                editor.putString("linksJson", null);
+//                editor.putString("images1Json", null);
+//                editor.putString("images2Json", null);
+//                editor.putString("imagesMiniJson", null);
+//                editor.putString("muscleGroupsJson", null);
+//                editor.putString("detailsJson", null);
+//            }
+//            editor.apply();
             Navigation.findNavController(v).navigate(R.id.action_WorkoutCreation_to_Exercise);
 
         });
@@ -307,33 +366,24 @@ public class WorkoutCreationFragment extends Fragment {
                             links = new ArrayList<>();
                             images1 = new ArrayList<>();
                             images2 = new ArrayList<>();
+                            imagesMini = new ArrayList<>();
                             muscleGroupList = new ArrayList<>();
+                            Log.i("ExerciseViewModel", "creating arrays");
                         }
-                        Log.i("titles1", titles.toString());
-                        if (titles.size() == 0 || !Objects.equals(titles.get(titles.size() - 1), exerciseData.getNewTitle())) {
+                        if (titles.size() == 0 || !Objects.equals(titles.get(titles.size() - 1), exerciseData.getNewTitle()) ) {
                             titles.add(exerciseData.getNewTitle());
                             types.add(exerciseData.getNewType());
                             links.add(exerciseData.getNewLink());
                             images1.add(exerciseData.getNewImage1());
                             images2.add(exerciseData.getNewImage2());
+                            imagesMini.add(exerciseData.getNewImageMini());
                             muscleGroupList.add(exerciseData.getNewMuscleGroups());
+                            Log.i("ExerciseViewModel", exerciseData.getNewTitle() + " added to workout");
                         }
-                        Log.i("titles2", titles.toString());
-                        Log.i("size", titles.size() + " ");
-                        Log.i("size", tableLayout.getChildCount() + " ");
-                        ExerciseData newData = new ExerciseData();
-                        newData.setNewTitle(null);
-                        newData.setNewMuscleGroups(null);
-                        newData.setNewImage1(null);
-                        newData.setNewImage2(null);
-                        newData.setNewLink(null);
-                        newData.setNewType(null);
-
-                        exerciseViewModel.updateExerciseData(newData);
+                        exerciseViewModel.updateCreationData(new ExerciseData(null, null, null, null, null, null, null));
+                        Log.i("ExerciseViewModel", "data deleted");
                         if (tableLayout.getChildCount() != titles.size()) {
-
                             createExerciseList();
-                            Log.i("cought", "onChanged: ");
                         }
                     }
                 }
@@ -360,10 +410,12 @@ public class WorkoutCreationFragment extends Fragment {
                 try {
                     setsEditText.setText(exerciseList.get(i).getSets().toString());
                 } catch (Exception e) {
+                    Log.i("E2", "onViewCreated: ");
                 }
                 try {
                     repsEditText.setText(exerciseList.get(i).getReps().toString());
                 } catch (Exception e) {
+                    Log.i("E3", "onViewCreated: ");
                 }
                 try {
                     if (exerciseList.get(i).getRepstosec()) repsTosec.setChecked(true);
@@ -380,7 +432,7 @@ public class WorkoutCreationFragment extends Fragment {
         exercises = new ArrayList<>();
         displayList = new ArrayList<>();
         for (int i = 0; i < titles.size(); i++) {
-            Exercises exercise = new Exercises(titles.get(i), types.get(i), links.get(i), muscleGroupList.get(i), images1.get(i), images2.get(i));
+            Exercises exercise = new Exercises(titles.get(i), types.get(i), links.get(i), muscleGroupList.get(i), images1.get(i), images2.get(i), imagesMini.get(i));
             exercises.add(exercise);
         }
         repsList = new ArrayList<>();
@@ -391,14 +443,6 @@ public class WorkoutCreationFragment extends Fragment {
             tableLayout.removeAllViews();
             int index = 0;
             for (Exercises item : exercises) {
-                Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), item.getImage1());
-
-                int originalWidth = originalBitmap.getWidth();
-                int originalHeight = originalBitmap.getHeight();
-
-                int desiredWidth = originalWidth / 4; // Scale down to half of the original width
-                int desiredHeight = originalHeight / 4; // Scale down to half of the original height
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, desiredWidth, desiredHeight, true);
                 TableRow tableRow = new TableRow(getContext());
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 View layoutExercise = inflater.inflate(R.layout.layout_exercise_wc, tableRow);
@@ -410,14 +454,15 @@ public class WorkoutCreationFragment extends Fragment {
                 ToggleButton repstosec = layoutExercise.findViewById(R.id.repstosec);
                 remove.setElevation(10);
                 layoutExercise.setOnClickListener(v -> {
-                    createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getLink(), item.getType());
-                    Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_ExerciseDetail);
-                    valueTitle = title.getText().toString();
-                    valueTargetedMG = targetedMG.getText().toString();
+
+                    exerciseList.removeAll(exerciseList);
+                    exerciseList = new ArrayList<>();
+                    preferences.edit().clear().apply();
+
                     for (int i = 0; i < tableLayout.getChildCount(); i++) {
-                        View tablerow = tableLayout.getChildAt(i);
-                        if (tablerow instanceof TableRow) {
-                            ConstraintLayout constraintLayout = tablerow.findViewById(R.id.constraintLayout); // Get ConstraintLayout inside TableRow
+                        View tableR = tableLayout.getChildAt(i);
+                        if (tableR instanceof TableRow) {
+                            ConstraintLayout constraintLayout = tableR.findViewById(R.id.constraintLayout); // Get ConstraintLayout inside TableRow
 
                             EditText setsEditText = constraintLayout.findViewById(R.id.sets);
                             EditText repsEditText = constraintLayout.findViewById(R.id.reps);
@@ -427,12 +472,14 @@ public class WorkoutCreationFragment extends Fragment {
                                 set = Integer.parseInt(setsEditText.getText().toString());
                             } catch (Exception e) {
                                 set = null;
+                                Log.i("E4 + " + i, "onClick: ");
                             }
 
                             try {
                                 rep = Integer.parseInt(repsEditText.getText().toString());
                             } catch (Exception e) {
                                 rep = null;
+                                Log.i("E5 + " + i, "onClick: ");
                             }
 
                             boolean isTimeFormat = repsTosec.isChecked();
@@ -441,35 +488,94 @@ public class WorkoutCreationFragment extends Fragment {
                         }
 
                     }
+                    valueTitle = title.getText().toString();
+                    valueTargetedMG = targetedMG.getText().toString();
+                    SharedPreferences.Editor editor = preferences.edit();
 
-                    if (titles != null && titles.size() != 0) {
-                        preferences.edit().clear().apply();
-                        SharedPreferences.Editor editor = preferences.edit();
+                    gson = new Gson();
+                    String titlesJson = gson.toJson(titles);
+                    String typesJson = gson.toJson(types);
+                    String linksJson = gson.toJson(links);
+                    String images1Json = gson.toJson(images1);
+                    String images2Json = gson.toJson(images2);
+                    String imagesMiniJson = gson.toJson(imagesMini);
+                    String muscleGroupsJson = gson.toJson(muscleGroupList);
+                    String detailsJson = gson.toJson(exerciseList);
 
-                        gson = new Gson();
-                        String titlesJson = gson.toJson(titles);
-                        String typesJson = gson.toJson(types);
-                        String linksJson = gson.toJson(links);
-                        String images1Json = gson.toJson(images1);
-                        String images2Json = gson.toJson(images2);
-                        String muscleGroupsJson = gson.toJson(muscleGroupList);
-                        String detailsJson = gson.toJson(exerciseList);
+                    editor.putString("Title", valueTitle);
+                    editor.putString("TitleMG", valueTargetedMG);
+                    editor.putString("titlesJson", titlesJson);
+                    editor.putString("typesJson", typesJson);
+                    editor.putString("linksJson", linksJson);
+                    editor.putString("images1Json", images1Json);
+                    editor.putString("images2Json", images2Json);
+                    editor.putString("imagesMiniJson", imagesMiniJson);
+                    editor.putString("muscleGroupsJson", muscleGroupsJson);
+                    editor.putString("detailsJson", detailsJson);
+                    editor.apply();
 
-                        editor.putString("Title", valueTitle);
-                        editor.putString("TitleMG", valueTargetedMG);
-                        editor.putString("titlesJson", titlesJson);
-                        editor.putString("typesJson", typesJson);
-                        editor.putString("linksJson", linksJson);
-                        editor.putString("images1Json", images1Json);
-                        editor.putString("images2Json", images2Json);
-                        editor.putString("muscleGroupsJson", muscleGroupsJson);
-                        editor.putString("detailsJson", detailsJson);
-                        editor.apply();
-                    }
+//                    valueTitle = title.getText().toString();
+//                    valueTargetedMG = targetedMG.getText().toString();
+//                    for (int i = 0; i < tableLayout.getChildCount(); i++) {
+//                        View tablerow = tableLayout.getChildAt(i);
+//                        if (tablerow instanceof TableRow) {
+//                            ConstraintLayout constraintLayout = tablerow.findViewById(R.id.constraintLayout); // Get ConstraintLayout inside TableRow
+//
+//                            EditText setsEditText = constraintLayout.findViewById(R.id.sets);
+//                            EditText repsEditText = constraintLayout.findViewById(R.id.reps);
+//                            ToggleButton repsTosec = constraintLayout.findViewById(R.id.repstosec);
+//                            Integer set, rep;
+//                            try {
+//                                set = Integer.parseInt(setsEditText.getText().toString());
+//                            } catch (Exception e) {
+//                                set = null;
+//                            }
+//
+//                            try {
+//                                rep = Integer.parseInt(repsEditText.getText().toString());
+//                            } catch (Exception e) {
+//                                rep = null;
+//                            }
+//
+//                            boolean isTimeFormat = repsTosec.isChecked();
+//                            WCExerciseData data = new WCExerciseData(set, rep, isTimeFormat);
+//                            exerciseList.add(data);
+//                        }
+//
+//                    }
+//
+//                    if (titles != null && titles.size() != 0) {
+//                        preferences.edit().clear().apply();
+//                        SharedPreferences.Editor editor = preferences.edit();
+//
+//                        gson = new Gson();
+//                        String titlesJson = gson.toJson(titles);
+//                        String typesJson = gson.toJson(types);
+//                        String linksJson = gson.toJson(links);
+//                        String images1Json = gson.toJson(images1);
+//                        String images2Json = gson.toJson(images2);
+//                        String imagesMiniJson = gson.toJson(imagesMini);
+//                        String muscleGroupsJson = gson.toJson(muscleGroupList);
+//                        String detailsJson = gson.toJson(exerciseList);
+//
+//                        editor.putString("Title", valueTitle);
+//                        editor.putString("TitleMG", valueTargetedMG);
+//                        editor.putString("titlesJson", titlesJson);
+//                        editor.putString("typesJson", typesJson);
+//                        editor.putString("linksJson", linksJson);
+//                        editor.putString("images1Json", images1Json);
+//                        editor.putString("images2Json", images2Json);
+//                        editor.putString("imagesMiniJson", imagesMiniJson);
+//                        editor.putString("muscleGroupsJson", muscleGroupsJson);
+//                        editor.putString("detailsJson", detailsJson);
+//                        editor.apply();
+//                    }
+                    createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getImageMini(), item.getLink(), item.getType());
+                    Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_ExerciseDetail);
                 });
                 if (exerciseList != null) {
                     if (index >= exerciseList.size()) {
-                        exerciseList.add(new WCExerciseData(setsVal, repsVal, isTimeFormat));
+                        exerciseList.add(new WCExerciseData(null, null, false));
                     } else {
                         try {
                             Log.i("hahaahah", exerciseList.get(index).getSets().toString());
@@ -477,23 +583,18 @@ public class WorkoutCreationFragment extends Fragment {
                             Log.i("hahaahah", exerciseList.get(index).getRepstosec().toString());
                             sets.setText(exerciseList.get(index).getSets().toString());
                             reps.setText(exerciseList.get(index).getReps().toString());
-                            //                            isTimeFormat = exerciseList.get(index).getRepstosec();
-                            //                            if (isTimeFormat) repstosec.setChecked(true);
-                            //                            else repstosec.setChecked(false);
+//                            if (exerciseList.get(index).getRepstosec()) repstosec.setChecked(true);
+//                            else repstosec.setChecked(false);
                         } catch (Exception e) {
+                            Log.i("E1", "createExerciseList: ");
                         }
                     }
                 } else {
                     exerciseList = new ArrayList<>();
-                    exerciseList.add(new WCExerciseData(setsVal, repsVal, isTimeFormat));
+                    exerciseList.add(new WCExerciseData(null, null, false));
                 }
-                if (exerciseList.get(index).getRepstosec() != null) {
-                    isTimeFormat = exerciseList.get(index).getRepstosec();
-                } else {
-                    isTimeFormat = false;
-                }
-                repstosec.setChecked(isTimeFormat);
-                if (isTimeFormat) {
+                repstosec.setChecked(exerciseList.get(index).getRepstosec());
+                if (exerciseList.get(index).getRepstosec()) {
                     reps.setHint("Secs");
                 } else {
                     reps.setHint("Reps");
@@ -509,6 +610,7 @@ public class WorkoutCreationFragment extends Fragment {
                         types.remove(indexToRemove);
                         images1.remove(indexToRemove);
                         images2.remove(indexToRemove);
+                        imagesMini.remove(indexToRemove);
                         muscleGroupList.remove(indexToRemove);
                         preferences.edit().clear().apply();
                         SharedPreferences.Editor editor = preferences.edit();
@@ -518,6 +620,7 @@ public class WorkoutCreationFragment extends Fragment {
                         String linksJson = gson.toJson(links);
                         String images1Json = gson.toJson(images1);
                         String images2Json = gson.toJson(images2);
+                        String imagesMiniJson = gson.toJson(imagesMini);
                         String muscleGroupsJson = gson.toJson(muscleGroupList);
                         String detailsJson = gson.toJson(exerciseList);
 
@@ -528,6 +631,7 @@ public class WorkoutCreationFragment extends Fragment {
                         editor.putString("linksJson", linksJson);
                         editor.putString("images1Json", images1Json);
                         editor.putString("images2Json", images2Json);
+                        editor.putString("imagesMiniJson", imagesMiniJson);
                         editor.putString("muscleGroupsJson", muscleGroupsJson);
                         editor.putString("detailsJson", detailsJson);
                         editor.apply();
@@ -539,23 +643,11 @@ public class WorkoutCreationFragment extends Fragment {
                     if (repstosec.isChecked()) {
                         exerciseList.get(indexToUpdate).setRepstosec(true);
                         updateViews(indexToUpdate);
-                        //                        repsList.get(indexToUpdate).setHint("Secs");
-                        ////                        updateViews();
-                        ////                        repstosec.setText("Use Reps");
-                        //                        for (WCExerciseData he: exerciseList) {
-                        //                            Log.i("list", he.toString());
-                        //                        }
-
 
                     } else {
                         exerciseList.get(indexToUpdate).setRepstosec(false);
                         updateViews(indexToUpdate);
-                        //                        repsList.get(indexToUpdate).setHint("Reps");
-                        ////                        updateViews();
-                        ////                        repstosec.setText("Use Seconds");
-                        //                        for (WCExerciseData he: exerciseList) {
-                        //                            Log.i("list", he.getRepstosec().toString());
-                        //                        }
+
                     }
                 });
                 repstosecList.add(repstosec);
@@ -563,7 +655,7 @@ public class WorkoutCreationFragment extends Fragment {
                 repsList.add(reps);
 
                 etitle.setText(item.getName());
-                thumbnail.setImageBitmap(scaledBitmap);
+                thumbnail.setImageResource(item.getImageMini());
                 tableLayout.addView(tableRow);
 
                 index++;
@@ -585,7 +677,7 @@ public class WorkoutCreationFragment extends Fragment {
         }
         Log.i("succes on", i + "");
     }
-    void createExerciseDetail (String name, List <String> muscleGroup, int image1, int image2, String link, String type){
+    void createExerciseDetail (String name, List <String> muscleGroup, int image1, int image2, int imageMini, String link, String type){
 
         // Update the data in one go
         ExerciseData newData = new ExerciseData();
@@ -593,6 +685,7 @@ public class WorkoutCreationFragment extends Fragment {
         newData.setNewMuscleGroups(muscleGroup);
         newData.setNewImage1(image1);
         newData.setNewImage2(image2);
+        newData.setNewImageMini(imageMini);
         newData.setNewLink(link);
         newData.setNewType(type);
 
@@ -620,6 +713,7 @@ public class WorkoutCreationFragment extends Fragment {
                 map.put("muscleGroup", exercise.getMuscleGroupsUsed());
                 map.put("image1", exercise.getImage1());
                 map.put("image2", exercise.getImage2());
+                map.put("imageMini", exercise.getImageMini());
                 map.put("reps", exercise.getReps());
                 map.put("sets", exercise.getSets());
                 map.put("repstosec", exercise.isTimeFormat());
@@ -674,6 +768,7 @@ public class WorkoutCreationFragment extends Fragment {
                 map.put("muscleGroup", exercise.getMuscleGroupsUsed());
                 map.put("image1", exercise.getImage1());
                 map.put("image2", exercise.getImage2());
+                map.put("imageMini", exercise.getImageMini());
                 map.put("reps", exercise.getReps());
                 map.put("sets", exercise.getSets());
                 map.put("repstosec", exercise.isTimeFormat());
@@ -757,10 +852,12 @@ public class WorkoutCreationFragment extends Fragment {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                exerciseList.removeAll(exerciseList);
+                try {
+                    exerciseList.removeAll(exerciseList);
+                } catch (Exception e) {
+                }
                 exerciseList = new ArrayList<>();
                 preferences.edit().clear().apply();
-                Log.i("titles", titles.toString());
 
                 for (int i = 0; i < tableLayout.getChildCount(); i++) {
                     View tableRow = tableLayout.getChildAt(i);
@@ -775,12 +872,14 @@ public class WorkoutCreationFragment extends Fragment {
                             sets = Integer.parseInt(setsEditText.getText().toString());
                         } catch (Exception e) {
                             sets = null;
+                            Log.i("E4 + " + i, "onClick: ");
                         }
 
                         try {
                             reps = Integer.parseInt(repsEditText.getText().toString());
                         } catch (Exception e) {
                             reps = null;
+                            Log.i("E5 + " + i, "onClick: ");
                         }
 
                         boolean isTimeFormat = repsTosec.isChecked();
@@ -799,6 +898,7 @@ public class WorkoutCreationFragment extends Fragment {
                 String linksJson = gson.toJson(links);
                 String images1Json = gson.toJson(images1);
                 String images2Json = gson.toJson(images2);
+                String imagesMiniJson = gson.toJson(imagesMini);
                 String muscleGroupsJson = gson.toJson(muscleGroupList);
                 String detailsJson = gson.toJson(exerciseList);
 
@@ -809,9 +909,11 @@ public class WorkoutCreationFragment extends Fragment {
                 editor.putString("linksJson", linksJson);
                 editor.putString("images1Json", images1Json);
                 editor.putString("images2Json", images2Json);
+                editor.putString("imagesMiniJson", imagesMiniJson);
                 editor.putString("muscleGroupsJson", muscleGroupsJson);
                 editor.putString("detailsJson", detailsJson);
                 editor.apply();
+                exerciseViewModel.updateCreationData(null);
                 Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
                 dialog.dismiss();
 
@@ -820,22 +922,16 @@ public class WorkoutCreationFragment extends Fragment {
         builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                titles = null;
-//                types = null;
-//                links = null;
-//                images1 = null;
-//                images2 = null;
-//                muscleGroupList = null;
-                dialog.dismiss();
-                ExerciseData newData = new ExerciseData();
-                newData.setNewTitle(null);
-                newData.setNewMuscleGroups(null);
-                newData.setNewImage1(0);
-                newData.setNewImage2(0);
-                newData.setNewLink(null);
-                newData.setNewType(null);
+                titles = null;
+                types = null;
+                links = null;
+                images1 = null;
+                images2 = null;
+                imagesMini = null;
+                muscleGroupList = null;
+                exerciseList = null;
 
-                exerciseViewModel.updateExerciseData(newData);
+                exerciseViewModel.updateCreationData(null);
                 tableLayout.removeAllViews();
                 try {
                     exerciseList.removeAll(exerciseList);
@@ -846,8 +942,8 @@ public class WorkoutCreationFragment extends Fragment {
                 }
                 SharedPreferences.Editor editor = preferences.edit().clear();
                 editor.apply();
+                dialog.dismiss();
                 Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_Workouts);
-
             }
 
         });

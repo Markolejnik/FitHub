@@ -42,7 +42,6 @@ public class FilterFragment extends Fragment {
 
     public static FilterFragment newInstance() {
         FilterFragment fragment = new FilterFragment();
-        Bundle args = new Bundle();
         return fragment;
     }
 
@@ -101,19 +100,9 @@ public class FilterFragment extends Fragment {
         groupFilterViews.add(filterGroup14);
         groupFilterViews.add(filterGroup15);
         groupFilterViews.add(filterGroup16);
-//        typeAny = groupAny = true;
-//        type1 = type2 = group1 = group2 = group3 = group4 = group5 = group6 = group7 = group8 = group9 = group10 = group11 = group12 = group13 = group14 = group15 = group16 = false;
+
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_Filter_to_Exercise);
-//            ExerciseFragment exerciseFragment = new ExerciseFragment();
-//            getActivity().getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.frameLayout2, exerciseFragment, "ExerciseFragment")
-//                    .commit();
-//
-//            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//            fragmentManager.popBackStack();
-//            MainActivity mainActivity = (MainActivity) getActivity();
-//            mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         });
 
         FilterData filterData = new FilterData();
@@ -137,6 +126,14 @@ public class FilterFragment extends Fragment {
                     }
                     if (filterData.getFilterMuscleGroups() != null) {
                         groupFilter = filterData.getFilterMuscleGroups();
+                        for (TextView view : groupFilterViews) {
+                            if (groupFilter.contains(view.getText().toString())) {
+                                view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                            } else {
+                                view.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                            }
+                        }
                     }
                 }
             }
@@ -153,19 +150,6 @@ public class FilterFragment extends Fragment {
         });
         saveFilters.setOnClickListener(v -> {
 
-//            exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
-//                @Override
-//                public void onChanged(@Nullable ExerciseData exerciseData) {
-//                    if (exerciseData != null) {
-//                        typeData.setNewTitle(null);
-//                        typeData.setNewMuscleGroups(null);
-//                        typeData.setNewImage1(0);
-//                        typeData.setNewImage2(0);
-//                        typeData.setNewLink(null);
-//                        typeData.setNewType(null);
-//                    }
-//                }
-//            });
             filterData.setFilterType(null);
             filterData.setFilterMuscleGroups(null);
 
@@ -185,7 +169,7 @@ public class FilterFragment extends Fragment {
             } if (filterGroup2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterOutput.add("Biceps");
             } if (filterGroup3.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
-                filterOutput.add("Calfs");
+                filterOutput.add("Calves");
             } if (filterGroup4.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterOutput.add("Chest");
             } if (filterGroup5.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
@@ -216,8 +200,6 @@ public class FilterFragment extends Fragment {
             filterData.setFilterMuscleGroups(filterOutput);
             filterViewModel.updateExerciseData(filterData);
             Navigation.findNavController(view).navigate(R.id.action_Filter_to_Exercise);
-//            MainActivity mainActivity = (MainActivity) getActivity();
-//            mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         });
         filterTypeAny.setOnClickListener(v1 -> {
             filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
@@ -461,7 +443,7 @@ public class FilterFragment extends Fragment {
 
     boolean performViewColorCheck() {
         boolean result = false;
-        for (TextView filter: groupFilterViews) {
+        for (TextView filter : groupFilterViews) {
             if (filter.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) result = true;
         }
         return result;

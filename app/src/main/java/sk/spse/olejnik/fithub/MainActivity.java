@@ -1,14 +1,18 @@
 package sk.spse.olejnik.fithub;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -49,6 +53,12 @@ public class MainActivity extends AppCompatActivity  {
         ProfileFragment profileFragment = new ProfileFragment();
         CalendarFragment calendarFragment = new CalendarFragment();
         ExerciseFragment exerciseFragment = new ExerciseFragment();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.background));
+        }
 
 //        workoutsContainer = findViewById(R.id.workoutsContainerView);
 //        exerciseContainer = findViewById(R.id.exerciseContainerView);

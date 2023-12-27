@@ -6,18 +6,19 @@ public class ExerciseData {
 
     private String newTitle, newLink, newType;
     private List<String> newMuscleGroups;
-    private Integer newImage1, newImage2;
+    private Integer newImage1, newImage2, newImageMini;
 
 
     public ExerciseData() {}
 
-    public ExerciseData(String newTitle, String newLink, String newType, List<String> newMuscleGroups, Integer newImage1, Integer newImage2) {
+    public ExerciseData(String newTitle, String newLink, String newType, List<String> newMuscleGroups, Integer newImage1, Integer newImage2, Integer newImageMini) {
         this.newTitle = newTitle;
         this.newLink = newLink;
         this.newType = newType;
         this.newMuscleGroups = newMuscleGroups;
         this.newImage1 = newImage1;
         this.newImage2 = newImage2;
+        this.newImageMini = newImageMini;
     }
 
 
@@ -67,6 +68,14 @@ public class ExerciseData {
 
     public void setNewImage2(Integer newImage2) {
         this.newImage2 = newImage2;
+    }
+
+    public Integer getNewImageMini() {
+        return newImageMini;
+    }
+
+    public void setNewImageMini(Integer newImageMini) {
+        this.newImageMini = newImageMini;
     }
 
 

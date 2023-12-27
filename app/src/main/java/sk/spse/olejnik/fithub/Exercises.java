@@ -9,14 +9,15 @@ public class Exercises extends ViewModel {
 
     private String name, type, link;
     private List<String> muscleGroup;
-    private int image1, image2;
-    public Exercises(String name, String type, String link, List<String> muscleGroup, int image1, int image2) {
+    private int image1, image2, imageMini;
+    public Exercises(String name, String type, String link, List<String> muscleGroup, int image1, int image2, int imageMini) {
         this.name = name;
         this.type = type;
         this.link = link;
         this.muscleGroup = muscleGroup;
         this.image1 = image1;
         this.image2 = image2;
+        this.imageMini = imageMini;
     }
     public String getName() {
         return name;
@@ -64,6 +65,14 @@ public class Exercises extends ViewModel {
 
     public void setImage2(int image2) {
         this.image2 = image2;
+    }
+
+    public int getImageMini() {
+        return imageMini;
+    }
+
+    public void setImageMini(int imageMini) {
+        this.imageMini = imageMini;
     }
 
 

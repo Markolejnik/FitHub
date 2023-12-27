@@ -32,7 +32,7 @@ public class ExerciseDetailFragment extends Fragment {
     String title, link, type;
     StringBuilder muscleGroupContent;
     List<String> muscleGroups;
-    int image1, image2;
+    int image1, image2, imageMini;
     TextView titleText, muscleGroupsText, typeText, linkText;
     ImageView imageView1, imageView2, goBack;
     Button addToWorkout;
@@ -41,17 +41,9 @@ public class ExerciseDetailFragment extends Fragment {
 
     public ExerciseDetailFragment() {}
 
-    public static ExerciseDetailFragment newInstance(String title, List<String> muscleGroups, String link, String type, int image1, int image2) {
+    public static ExerciseDetailFragment newInstance() {
 
         ExerciseDetailFragment fragment = new ExerciseDetailFragment();
-//        Bundle args = new Bundle();
-//        args.putString("title", title);
-//        args.putStringArrayList("groups", (ArrayList<String>) muscleGroups);
-//        args.putString("link", link);
-//        args.putString("type", type);
-//        args.putInt("img1", image1);
-//        args.putInt("img2", image2);
-//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -99,7 +91,7 @@ public class ExerciseDetailFragment extends Fragment {
         addToWorkout = view.findViewById(R.id.AddToWorkout);
 
         goBack.setOnClickListener(v -> {
-            exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null));
+            exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null, null));
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });
@@ -110,14 +102,14 @@ public class ExerciseDetailFragment extends Fragment {
             newData.setNewTitle(titleText.getText().toString());
             newData.setNewMuscleGroups(muscleGroups);
             newData.setNewImage1(image1);
-            if(imageView2.getVisibility() != View.GONE) newData.setNewImage2(image2);
-
+            if (imageView2.getVisibility() != View.GONE) newData.setNewImage2(image2);
+            newData.setNewImageMini(imageMini);
             newData.setNewLink(linkText.getText().toString());
             newData.setNewType(typeText.getText().toString());
 
             exerciseViewModel.updateCreationData(newData);
             Navigation.findNavController(v).navigate(R.id.action_ExerciseDetail_to_WorkoutCreation);
-            exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null));
+            exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null, null));
 
         });
 
@@ -139,6 +131,7 @@ public class ExerciseDetailFragment extends Fragment {
                         image1 = exerciseData.getNewImage1();
                         imageView1.setImageResource(image1);
                         image2 = exerciseData.getNewImage2();
+                        imageMini = exerciseData.getNewImageMini();
                         if (image2 == 0) {
                             imageView2.setVisibility(View.GONE);
                         }
@@ -148,8 +141,7 @@ public class ExerciseDetailFragment extends Fragment {
             }
         });
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        Fragment currentFragment = fragmentManager.findFragmentById(R.id.frameLayout); // Replace with your container's ID
-//        Log.i("fragment", currentFragment);
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.frameLayout);
         int backStackEntryCount = fragmentManager.getBackStackEntryCount();
 
         for (int i = 0; i < backStackEntryCount; i++) {

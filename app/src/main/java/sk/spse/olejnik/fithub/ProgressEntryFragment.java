@@ -59,7 +59,7 @@ public class ProgressEntryFragment extends Fragment {
     private ProgressViewModel progressViewModel;
 
     String title, types, link, noteValue;
-    Integer image1, image2;
+    Integer image1, image2, imageMini;
     List<String> muscleGroups;
     Boolean repstosecValue, weightedValue, lbtokgValue;
     Calendar dateValue;
@@ -227,6 +227,7 @@ public class ProgressEntryFragment extends Fragment {
             entryExercise.put("muscleGroup", data.getExercise().getMuscleGroup());
             entryExercise.put("image1", data.getExercise().getImage1());
             entryExercise.put("image2", data.getExercise().getImage2());
+            entryExercise.put("imageMini", data.getExercise().getImageMini());
 
             entry = new HashMap<>();
             entry.put("exercise", entryExercise);

@@ -82,7 +82,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         holder.username.setText(usernames.get(position));
         holder.workoutTitle.setText(workouts.get(position).getTitle());
         holder.targetedMG.setText(workouts.get(position).getTargetedMuscleGroups());
-        holder.profilePicture.setImageResource(R.drawable.ic_profile_foreground);
+
         try {
             holder.published.setText(times.get(position));
         } catch (Exception e) {
@@ -98,16 +98,19 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
                     for (DocumentSnapshot document : task.getResult()) {
 
                         String imageUrl = document.getString("pfpUrl");
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .into(holder.profilePicture);
-                        holder.profilePicture.setClipToOutline(true);
+                        if (imageUrl != null) {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .into(holder.profilePicture);
+                            holder.profilePicture.setClipToOutline(true);
+                        } else {
+                            holder.profilePicture.setImageResource(R.mipmap.icon_logo_round);
+                        }
                     }
                 }
             });
-
         } catch (Exception e) {
-
+            Log.i("WA", "error setting pfp on workout: " + position);
         }
     }
 

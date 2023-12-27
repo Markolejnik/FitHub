@@ -111,14 +111,6 @@ public class WorkoutDetailFragment extends Fragment {
     @SuppressLint("SetTextI18n")
     void createExerciseList(List<WorkoutExercises> exercises) {
         for (WorkoutExercises exercise: exercises) {
-            Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), exercise.getImage1());
-
-            int originalWidth = originalBitmap.getWidth();
-            int originalHeight = originalBitmap.getHeight();
-
-            int desiredWidth = originalWidth / 4;
-            int desiredHeight = originalHeight / 4;
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, desiredWidth, desiredHeight, true);
             TableRow tableRow = new TableRow(getContext());
             LayoutInflater inflater = LayoutInflater.from(getContext());
             View layoutExercise = inflater.inflate(R.layout.layout_workout_exercise, null);
@@ -135,7 +127,7 @@ public class WorkoutDetailFragment extends Fragment {
             sets.setText(exercise.getSets().toString());
             reps.setText(exercise.getReps().toString());
             if (exercise.isTimeFormat()) repsOrSec.setText("Sec");
-            thumbnail.setImageBitmap(scaledBitmap);
+            thumbnail.setImageResource(exercise.getImageMini());
             tableRow.addView(layoutExercise);
             tableLayout.addView(tableRow);
         }

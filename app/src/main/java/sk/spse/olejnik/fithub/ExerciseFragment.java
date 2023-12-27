@@ -220,27 +220,19 @@ public class ExerciseFragment extends Fragment {
         if (tableLayout.getChildCount() != exercises.size()) {
             tableLayout.removeAllViews();
             for (Exercises item : exercises) {
-                Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), item.getImage1());
-
-                int originalWidth = originalBitmap.getWidth();
-                int originalHeight = originalBitmap.getHeight();
-
-                int desiredWidth = originalWidth / 4; // Scale down to half of the original width
-                int desiredHeight = originalHeight / 4; // Scale down to half of the original height
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, desiredWidth, desiredHeight, true);
                 TableRow tableRow = new TableRow(getContext());
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 View layoutExercise = inflater.inflate(R.layout.layout_exercise, null);
                 TextView title = layoutExercise.findViewById(R.id.exercise);
                 ImageView thumbnail = layoutExercise.findViewById(R.id.thumbnail);
                 layoutExercise.setOnClickListener(v -> {
-                    createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getLink(), item.getType());
+                    createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getImageMini(), item.getLink(), item.getType());
 
                 });
 
                 title.setText(item.getName());
 //            title.setWidth(mainActivity.width - (mainActivity.width/4));
-                thumbnail.setImageBitmap(scaledBitmap);
+                thumbnail.setImageResource(item.getImageMini());
                 tableRow.addView(layoutExercise);
                 tableLayout.addView(tableRow);
 //            Log.i("jo", item.getMuscleGroup().toString());
@@ -349,7 +341,7 @@ public class ExerciseFragment extends Fragment {
 //        filterContainer.setElevation(10);
     }
 
-    void createExerciseDetail(String name, List<String> muscleGroup, int image1, int image2, String link, String type) {
+    void createExerciseDetail(String name, List<String> muscleGroup, int image1, int image2, int imageMini, String link, String type) {
 
         // Update the data in one go
         ExerciseData newData = new ExerciseData();
@@ -357,6 +349,7 @@ public class ExerciseFragment extends Fragment {
         newData.setNewMuscleGroups(muscleGroup);
         newData.setNewImage1(image1);
         newData.setNewImage2(image2);
+        newData.setNewImageMini(imageMini);
         newData.setNewLink(link);
         newData.setNewType(type);
 

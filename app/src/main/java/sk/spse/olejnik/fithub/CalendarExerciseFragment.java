@@ -26,7 +26,7 @@ import java.util.List;
 
 public class CalendarExerciseFragment extends Fragment {
 
-    List<Exercises> exercises;
+    List<Exercises> exercises, filteredExercises;
     RecyclerView recyclerView;
     SearchView searchBar;
     LinearLayout root;
@@ -78,13 +78,15 @@ public class CalendarExerciseFragment extends Fragment {
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                exerciseAdapter.filter(query);
+                filteredExercises = exerciseAdapter.filter(query);
+                exerciseAdapter.notifyDataSetChanged();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                exerciseAdapter.filter(newText);
+                filteredExercises = exerciseAdapter.filter(newText);
+                exerciseAdapter.notifyDataSetChanged();
                 return false;
             }
         });
@@ -94,19 +96,22 @@ public class CalendarExerciseFragment extends Fragment {
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) {
                     searchBar.setQueryHint("Search Exercises");
+                    exerciseAdapter.notifyDataSetChanged();
                 } else {
                     searchBar.setQueryHint("Search Exercises");
-                    exerciseAdapter.filter("");
+                    filteredExercises = exercises;
+                    exerciseAdapter.notifyDataSetChanged();
 
                 }
             }
         });
-
-        exerciseAdapter = new ExerciseAdapter(exercises, getContext());
+        filteredExercises = exercises;
+        exerciseAdapter = new ExerciseAdapter(filteredExercises, getContext());
+//        exerciseAdapter.filter("");
         exerciseAdapter.setOnEntryClickListener(new ExerciseAdapter.OnEntryClickListener() {
             @Override
             public void onEntryClick(View view, int position) {
-                createProgressEnrty(exercises.get(position));
+                createProgressEntry(filteredExercises.get(position));
             }
         });
 
@@ -134,8 +139,9 @@ public class CalendarExerciseFragment extends Fragment {
     }
 
 
-    void createProgressEnrty(Exercises exercise) {
-        Exercises dataExercise = new Exercises(exercise.getName(), exercise.getType(), exercise.getLink(), exercise.getMuscleGroup(), exercise.getImage1(), exercise.getImage2());
+    public void createProgressEntry(Exercises exercise) {
+        Log.i("ex", exercise.getName());
+        Exercises dataExercise = new Exercises(exercise.getName(), exercise.getType(), exercise.getLink(), exercise.getMuscleGroup(), exercise.getImage1(), exercise.getImage2(), exercise.getImageMini());
         ProgressData newData = new ProgressData(dataExercise, null, null, date, null, null, null, null);
 
 

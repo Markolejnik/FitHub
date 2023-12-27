@@ -42,9 +42,10 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     }
 
     private List<Exercises> exercises, filteredExercises;
+    CalendarExerciseFragment calendarExerciseFragment = new CalendarExerciseFragment();
 
     Context context;
-
+    private OnEntryClickListener onEntryClickListener;
     public ExerciseAdapter(List<Exercises> exercises, Context context) {
         this.exercises = exercises;
         this.filteredExercises = new ArrayList<>(exercises);
@@ -64,8 +65,11 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ExerciseAdapter.ExerciseViewHolder holder, int position) {
-        holder.thumbnail.setImageResource(filteredExercises.get(position).getImage1());
+        holder.thumbnail.setImageResource(filteredExercises.get(position).getImageMini());
         holder.exercise.setText(filteredExercises.get(position).getName());
+//        holder.itemView.setOnClickListener(v -> {
+//            calendarExerciseFragment.createProgressEntry(filteredExercises.get(position));
+//        });
     }
 
     @Override
@@ -73,7 +77,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         return filteredExercises.size();
     }
 
-    public void filter(String query) {
+    public List<Exercises> filter(String query) {
         filteredExercises.clear();
         if (query.isEmpty()) {
             filteredExercises.addAll(exercises);
@@ -84,7 +88,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
                 }
             }
         }
-        notifyDataSetChanged();
+        return filteredExercises;
     }
 
 

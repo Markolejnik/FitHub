@@ -9,18 +9,20 @@ public class WorkoutExercises {
     private String link;
     private Integer image1;
     private Integer image2;
+    private Integer imageMini;
     private List<String> muscleGroupsUsed;
     private Integer sets;
     private Integer reps;
     private boolean isTimeFormat;
 
 
-    public WorkoutExercises(String title, String type, String link, Integer image1, Integer image2, List<String> muscleGroupsUsed, Integer sets, Integer reps, boolean isTimeFormat) {
+    public WorkoutExercises(String title, String type, String link, Integer image1, Integer image2, Integer imageMini, List<String> muscleGroupsUsed, Integer sets, Integer reps, boolean isTimeFormat) {
         this.title = title;
         this.type = type;
         this.link = link;
         this.image1 = image1;
         this.image2 = image2;
+        this.imageMini = imageMini;
         this.muscleGroupsUsed = muscleGroupsUsed;
         this.sets = sets;
         this.reps = reps;
@@ -66,6 +68,14 @@ public class WorkoutExercises {
 
     public void setImage2(Integer image2) {
         this.image2 = image2;
+    }
+
+    public Integer getImageMini() {
+        return imageMini;
+    }
+
+    public void setImageMini(Integer imageMini) {
+        this.imageMini = imageMini;
     }
 
     public List<String> getMuscleGroupsUsed() {

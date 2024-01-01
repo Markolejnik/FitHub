@@ -23,6 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -53,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
+import java.util.concurrent.CountDownLatch;
 
 public class WorkoutsFragment extends Fragment {
 
@@ -65,10 +69,13 @@ public class WorkoutsFragment extends Fragment {
     SwipeRefreshLayout swipe;
     ProgressBar loadingSpinner;
 
+    List<PublishedWorkoutData> pWorkouts;
+
     List<WorkoutData> workouts;
     List<String> usernames, times;
 
     Boolean isLoading = false;
+    String currentNickname;
 
     FirebaseAuth auth;
     FirebaseFirestore db;
@@ -98,7 +105,7 @@ public class WorkoutsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        checkSignedIn();
         return inflater.inflate(R.layout.fragment_workouts, container, false);
 
     }
@@ -114,11 +121,12 @@ public class WorkoutsFragment extends Fragment {
         fab = view.findViewById(R.id.fab);
         loadingSpinner.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorAccent), android.graphics.PorterDuff.Mode.MULTIPLY);
         if (usernames == null) {
+            pWorkouts = new ArrayList<>();
             workouts = new ArrayList<>();
             usernames = new ArrayList<>();
             times = new ArrayList<>();
         }
-        getWorkoutData();
+
 
 
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
@@ -170,19 +178,14 @@ public class WorkoutsFragment extends Fragment {
             }
         });
 
-        workoutsAdapter = new WorkoutsAdapter(workouts, usernames, times, getContext());
-        workoutsAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
-            @Override
-            public void onEntryClick(View view, int position) {
-                createWorkoutDetail(workouts.get(position).getTitle(), workouts.get(position).getTargetedMuscleGroups(), workouts.get(position).getExercises());
-            }
-        });
+
+
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(workoutsAdapter);
-//        workoutsAdapter.notifyDataSetChanged();
+
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -196,7 +199,8 @@ public class WorkoutsFragment extends Fragment {
                 }
             }
         });
-        workoutsAdapter.notifyDataSetChanged();
+
+
     }
 
     void getWorkoutData() {
@@ -223,9 +227,12 @@ public class WorkoutsFragment extends Fragment {
                                 int size = document.getData().size();
                                 Map<String, Object> data = document.getData();
                                 for (int i = 0; i < size / 3; i++) {
+                                    String formattedDate = "";
+                                    WorkoutData w = null;
                                     String author = (String) data.get("author");
                                     HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
                                     Timestamp time = (Timestamp) data.get("published");
+                                    HashMap<String, Boolean> rating = (HashMap<String, Boolean>) data.get("rating");
 
                                     if (workout != null) {
                                         ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
@@ -236,23 +243,24 @@ public class WorkoutsFragment extends Fragment {
                                         }
                                         String title = (String) workout.get("title");
                                         String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                                        WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-                                        workouts.add(w);
+                                        w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+//                                        workouts.add(w);
                                         //                            workouts.add((WorkoutData) entry.getValue());
                                     }
                                     if (author != null) {
-                                        usernames.add(author);
+//                                        usernames.add(author);
 
                                     }
                                     if (time != null) {
                                         Instant instant = time.toDate().toInstant();
                                         LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
                                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                                        String formattedDate = formatter.format(localDateTime);
+                                        formattedDate = formatter.format(localDateTime);
                                         Log.i("time", formattedDate);
-                                        times.add(formattedDate);
+//                                        times.add(formattedDate);
 
                                     }
+                                    pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
                                     workoutsAdapter.notifyItemInserted(i);
                                 }
                                 if (task.getResult().size() > 0) {
@@ -287,6 +295,42 @@ public class WorkoutsFragment extends Fragment {
         workoutViewModel.updateWorkoutData(data);
         Navigation.findNavController(root).navigate(R.id.action_Workouts_to_WorkoutDetail);
     }
+
+    private void checkSignedIn() {
+        if (NetworkUtils.isNetworkAvailable(getContext())) {
+
+            if (auth.getCurrentUser() == null) {
+                Log.i("workouts local", auth.getCurrentUser().getEmail());
+            } else {
+                user = FirebaseAuth.getInstance().getCurrentUser();
+                final String current = user.getEmail();
+                db.collection("users")
+                        .whereEqualTo("email", current)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (DocumentSnapshot document : task.getResult()) {
+                                        currentNickname = document.getString("nickname");
+                                        workoutsAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, getContext());
+                                        workoutsAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
+                                            @Override
+                                            public void onEntryClick(View view, int position) {
+                                                createWorkoutDetail(pWorkouts.get(position).getWorkout().getTitle(), pWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pWorkouts.get(position).getWorkout().getExercises());
+                                            }
+                                        });
+                                        recyclerView.setAdapter(workoutsAdapter);
+                                        workoutsAdapter.notifyDataSetChanged();
+                                        getWorkoutData();
+                                    }
+                                }
+                            }
+                        });
+            }
+        }
+    }
+
 
     @Override
     public void onPause() {

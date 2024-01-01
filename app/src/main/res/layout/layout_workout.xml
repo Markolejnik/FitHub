@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:outlineAmbientShadowColor="@color/colorAccent"
-    android:outlineSpotShadowColor="@color/colorAccent"
+    android:layout_marginBottom="8dp"
     android:background="@color/background"
     android:backgroundTint="@color/background"
-    app:cardElevation="25dp"
+    android:outlineAmbientShadowColor="@color/colorAccent"
+    android:outlineSpotShadowColor="@color/colorAccent"
     app:cardCornerRadius="30dp"
-    app:cardUseCompatPadding="false"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    app:cardElevation="25dp"
+    app:cardUseCompatPadding="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -107,7 +108,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/workoutTitle"
             app:layout_constraintTop_toBottomOf="@+id/workoutTitle"
-            app:layout_constraintVertical_bias="0.157" />
+            app:layout_constraintVertical_bias="0.312" />
 
         <TextView
             android:id="@+id/exerciseCount"
@@ -121,6 +122,8 @@
             android:textColor="@color/foreground"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@+id/targetedMG"
+            app:layout_constraintEnd_toStartOf="@+id/upvote"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/view" />
 
         <View
@@ -135,7 +138,45 @@
             app:layout_constraintTop_toTopOf="@+id/targetedMG"
             app:layout_constraintVertical_bias="0.461" />
 
+        <ImageView
+            android:id="@+id/downvote"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="12dp"
+            android:elevation="10dp"
+            android:rotation="90"
+            app:layout_constraintBottom_toBottomOf="@+id/exerciseCount"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/exerciseCount"
+            app:layout_constraintVertical_bias="0.272"
+            app:srcCompat="@drawable/icon_arrow_foreground" />
 
+        <TextView
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:text="0"
+            android:textColor="@color/foreground"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@+id/downvote"
+            app:layout_constraintEnd_toStartOf="@+id/downvote"
+            app:layout_constraintTop_toTopOf="@+id/downvote"
+            app:layout_constraintVertical_bias="0.454" />
+
+        <ImageView
+            android:id="@+id/upvote"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="8dp"
+            android:elevation="10dp"
+            android:rotation="270"
+            app:layout_constraintBottom_toBottomOf="@+id/downvote"
+            app:layout_constraintEnd_toStartOf="@+id/rating"
+            app:layout_constraintTop_toTopOf="@+id/downvote"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/icon_arrow_foreground" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

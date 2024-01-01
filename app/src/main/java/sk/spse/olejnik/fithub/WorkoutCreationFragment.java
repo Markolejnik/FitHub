@@ -734,6 +734,7 @@ public class WorkoutCreationFragment extends Fragment {
                                     data.put("targetMuscleGroups", workoutData.getTargetedMuscleGroups());
                                     data.put("exercises", exercises);
                                     data.put("author", document.get("nickname"));
+                                    data.put("rating", new HashMap<String, Boolean>());
                                     db.collection("users").document(documentId).update("workouts", FieldValue.arrayUnion(data)).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
@@ -794,6 +795,7 @@ public class WorkoutCreationFragment extends Fragment {
                                     finalData.put("author", document.get("nickname"));
                                     finalData.put("workout", data);
                                     finalData.put("published", FieldValue.serverTimestamp());
+                                    finalData.put("rating", new HashMap<String, Boolean>());
                                     db.collection("workouts").add(finalData).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                         @Override
                                         public void onComplete(@NonNull Task<DocumentReference> task) {

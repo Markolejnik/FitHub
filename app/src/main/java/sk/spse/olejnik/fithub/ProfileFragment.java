@@ -69,6 +69,7 @@ public class ProfileFragment extends Fragment {
     ImageView settings, profilePicture;
 
     List<WorkoutData> workouts, userWorkouts;
+    List<PublishedWorkoutData> pWorkouts, pUserWorkouts;
 
 
 
@@ -149,6 +150,8 @@ public class ProfileFragment extends Fragment {
         userWorkouts = new ArrayList<>();
         privateUsernames = new ArrayList<>();
         publicUsernames = new ArrayList<>();
+        pWorkouts = new ArrayList<>();
+        pUserWorkouts = new ArrayList<>();
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 //        preferences = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
 //
@@ -246,11 +249,11 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        publicAdapter = new WorkoutsAdapter(workouts, publicUsernames, publicTimes, getContext());
+        publicAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, getContext());
         publicAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
             @Override
             public void onEntryClick(View view, int position) {
-                createWorkoutDetail(workouts.get(position).getTitle(), workouts.get(position).getTargetedMuscleGroups(), workouts.get(position).getExercises());
+                createWorkoutDetail(pWorkouts.get(position).getWorkout().getTitle(), pWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pWorkouts.get(position).getWorkout().getExercises());
             }
         });
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -258,11 +261,11 @@ public class ProfileFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(publicAdapter);
 
-        privateAdapter = new WorkoutsAdapter(userWorkouts, privateUsernames, privateTimes, getContext());
+        privateAdapter = new WorkoutsAdapter(pUserWorkouts, currentNickname, getContext());
         privateAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
             @Override
             public void onEntryClick(View view, int position) {
-                createWorkoutDetail(userWorkouts.get(position).getTitle(), userWorkouts.get(position).getTargetedMuscleGroups(), userWorkouts.get(position).getExercises());
+                createWorkoutDetail(pUserWorkouts.get(position).getWorkout().getTitle(), pUserWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pUserWorkouts.get(position).getWorkout().getExercises());
             }
         });
         checkSignedIn();
@@ -313,9 +316,16 @@ public class ProfileFragment extends Fragment {
                                             ArrayList<HashMap<String, Object>> workouts = (ArrayList<HashMap<String, Object>>) data.get("workouts");
                                         if (workouts.size() != 0) {
                                             HashMap<String, Object> workout = workouts.get(i);
+                                            String author = "";
+                                            HashMap<String, Boolean> rating = new HashMap<>();
+                                            WorkoutData w = null;
+
 
                                             if (workout.get("author") != null) {
-                                                privateUsernames.add(workout.get("author").toString());
+                                                author = workout.get("author").toString();
+                                            }
+                                            if (workout.get("rating") != null) {
+                                                rating = (HashMap<String, Boolean>) workout.get("rating");
                                             }
                                             if (workout != null) {
                                                 ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
@@ -326,9 +336,10 @@ public class ProfileFragment extends Fragment {
                                                 }
                                                 String title = (String) workout.get("title");
                                                 String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                                                WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-                                                userWorkouts.add(w);
+                                                w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+//                                                userWorkouts.add(w);
                                             }
+                                            pUserWorkouts.add(new PublishedWorkoutData("", author, document.getId(), rating, w));
                                             privateAdapter.notifyItemInserted(i);
                                             Log.i("workoutsUser", userWorkouts.size() + "");
                                             i++;
@@ -350,9 +361,12 @@ public class ProfileFragment extends Fragment {
                                 int size = document.getData().size();
                                 Map<String, Object> data = document.getData();
                                 for (int i = 0; i < size / 3; i++) {
+                                    String formattedDate = "";
+                                    WorkoutData w = null;
                                     String author = (String) data.get("author");
                                     HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
                                     Timestamp time = (Timestamp) data.get("published");
+                                    HashMap<String, Boolean> rating = (HashMap<String, Boolean>) data.get("rating");
 
                                     if (workout != null) {
                                         ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
@@ -363,23 +377,24 @@ public class ProfileFragment extends Fragment {
                                         }
                                         String title = (String) workout.get("title");
                                         String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                                        WorkoutData w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-                                        workouts.add(w);
+                                        w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+//                                        workouts.add(w);
                                         //                            workouts.add((WorkoutData) entry.getValue());
                                     }
                                     if (author != null) {
-                                        publicUsernames.add(author);
+//                                        publicUsernames.add(author);
 
                                     }
                                     if (time != null) {
                                         Instant instant = time.toDate().toInstant();
                                         LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
                                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                                        String formattedDate = formatter.format(localDateTime);
+                                        formattedDate = formatter.format(localDateTime);
                                         Log.i("time", formattedDate);
-                                        publicTimes.add(formattedDate);
+//                                        publicTimes.add(formattedDate);
 
                                     }
+                                    pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
                                     publicAdapter.notifyItemInserted(i);
                                 }
                             }

@@ -14,22 +14,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Text;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.WorkoutViewHolder> {
 
 
     public class WorkoutViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        ImageView profilePicture;
-        TextView username, workoutTitle, targetedMG, published, exerciseCount;
+        ImageView profilePicture, upvote, downvote;
+        TextView username, workoutTitle, targetedMG, published, exerciseCount, rating;
         View view;
 
 
@@ -42,6 +47,10 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
             workoutTitle = (TextView) itemView.findViewById(R.id.workoutTitle);
             targetedMG = (TextView) itemView.findViewById(R.id.targetedMG);
             exerciseCount = (TextView) itemView.findViewById(R.id.exerciseCount);
+            upvote = (ImageView) itemView.findViewById(R.id.upvote);
+            downvote = (ImageView) itemView.findViewById(R.id.downvote);
+            rating = (TextView) itemView.findViewById(R.id.rating);
+
         }
 
         @Override
@@ -53,17 +62,25 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
             }
         }
     }
-
+    private List<PublishedWorkoutData> pWorkouts;
+    private String user;
     private List<WorkoutData> workouts;
-    private List<String> usernames, times;
+    private List<List<String>> ratings;
+//    private List<Integer> ratings;
     FirebaseFirestore db;
     Context context;
 
-    public WorkoutsAdapter(List<WorkoutData> workouts, List<String> usernames, List<String> times, Context context) {
-        this.workouts = workouts;
-        this.usernames = usernames;
-        this.times = times;
+    public WorkoutsAdapter(List<PublishedWorkoutData> pWorkouts, String user, Context context) {
+        notifyDataSetChanged();
+        this.pWorkouts = pWorkouts;
+        this.user = user;
+//        Log.i("user3", user);
+//        Log.i("user4", this.user);
+//        this.workouts = workouts;
+//        this.usernames = usernames;
+//        this.times = times;
         this.context = context;
+        notifyDataSetChanged();
     }
     @NonNull
     @Override
@@ -77,22 +94,105 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull WorkoutViewHolder holder, int position) {
-        Log.i("sizes", usernames.size() + " " + workouts.size() + " " + times.size());
-        holder.username.setText(usernames.get(position));
-        holder.workoutTitle.setText(workouts.get(position).getTitle());
-        holder.targetedMG.setText(workouts.get(position).getTargetedMuscleGroups());
+    public void onBindViewHolder(@NonNull WorkoutViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        Log.i("sizes", pWorkouts.size() + "");
+        Integer ratingValue = 0;
+        holder.username.setText(pWorkouts.get(position).getAuthor());
+        holder.workoutTitle.setText(pWorkouts.get(position).getWorkout().getTitle());
+        holder.targetedMG.setText(pWorkouts.get(position).getWorkout().getTargetedMuscleGroups());
+        holder.upvote.setOnClickListener(v -> {
+            try {
+                DocumentReference ref = db.collection("workouts").document(pWorkouts.get(position).getId());
+                db.collection("workouts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            if (document.getId().equals(pWorkouts.get(position).getId())) {
+
+                                pWorkouts.get(position).setRatings((HashMap<String, Boolean>) document.get("rating"));
+                                if (pWorkouts.get(position).getRatings() == null) pWorkouts.get(position).setRatings(new HashMap<>());
+                                notifyDataSetChanged();
+                                if (hasVoted(position, user)) {
+                                    try {
+                                        if (getVote(position, user)) pWorkouts.get(position).getRatings().remove(user);
+                                        else pWorkouts.get(position).getRatings().put(user, true);
+                                    } catch (Exception e) {
+                                        pWorkouts.get(position).getRatings().put(user, true);
+                                    }
+                                } else pWorkouts.get(position).getRatings().put(user, true);
+                                Map<String, Object> updateMap = new HashMap<>();
+                                updateMap.put("rating", pWorkouts.get(position).getRatings());
+
+                                for (Map.Entry<String, Object> entry : updateMap.entrySet()) Log.i("map", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
+
+                                ref.update(updateMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.i("upvote", pWorkouts.get(position).getId());
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+                notifyDataSetChanged();
+                holder.rating.setText(getRatingValue(position).toString());
+            } catch (Exception e) {
+                Log.i("upvote", "failed");
+            }
+        });
+        holder.downvote.setOnClickListener(v -> {
+            try {
+                DocumentReference ref = db.collection("workouts").document(pWorkouts.get(position).getId());
+                db.collection("workouts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            if (document.getId().equals(pWorkouts.get(position).getId())) {
+                                pWorkouts.get(position).setRatings((HashMap<String, Boolean>) document.get("rating"));
+                                if (pWorkouts.get(position).getRatings() == null) pWorkouts.get(position).setRatings(new HashMap<>());
+                                notifyDataSetChanged();
+                                if (hasVoted(position, user)) {
+                                    try {
+                                        if (!getVote(position, user)) pWorkouts.get(position).getRatings().remove(user);
+                                        else pWorkouts.get(position).getRatings().put(user, false);
+                                    } catch (Exception e) {
+                                        pWorkouts.get(position).getRatings().put(user, false);
+                                    }
+                                } else pWorkouts.get(position).getRatings().put(user, false);
+                                Map<String, Object> updateMap = new HashMap<>();
+                                updateMap.put("rating", pWorkouts.get(position).getRatings());
+
+                                for (Map.Entry<String, Object> entry : updateMap.entrySet()) Log.i("map", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
+
+                                ref.update(updateMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Log.i("downvote", pWorkouts.get(position).getId());
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+                notifyDataSetChanged();
+                holder.rating.setText(getRatingValue(position).toString());
+            } catch (Exception e) {
+                Log.i("downvote", "failed");
+            }
+        });
+        holder.rating.setText(getRatingValue(position).toString());
 
         try {
-            holder.published.setText(times.get(position));
+            holder.published.setText(pWorkouts.get(position).getTime());
         } catch (Exception e) {
             holder.published.setText("");
         }
-        if (workouts.get(position).getExercises().size() > 1) holder.exerciseCount.setText(workouts.get(position).getExercises().size() + " Exercises");
-        else holder.exerciseCount.setText(workouts.get(position).getExercises().size() + " Exercise");
+        if (pWorkouts.get(position).getWorkout().getExercises().size() > 1) holder.exerciseCount.setText(pWorkouts.get(position).getWorkout().getExercises().size() + " Exercises");
+        else holder.exerciseCount.setText(pWorkouts.get(position).getWorkout().getExercises().size() + " Exercise");
         try {
             db = FirebaseFirestore.getInstance();
-            db.collection("users").whereEqualTo("nickname", usernames.get(position)).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            db.collection("users").whereEqualTo("nickname", pWorkouts.get(position).getAuthor()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     for (DocumentSnapshot document : task.getResult()) {
@@ -112,15 +212,45 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         } catch (Exception e) {
             Log.i("WA", "error setting pfp on workout: " + position);
         }
+
     }
+
+    public Integer getRatingValue(Integer position) {
+        Integer ratingValue = 0;
+        HashMap<String, Boolean> ratings = pWorkouts.get(position).getRatings();
+        if (ratings != null) {
+            for (Map.Entry<String, Boolean> entry : ratings.entrySet()) {
+                ratingValue += entry.getValue() ? 1 : -1;
+            }
+        }
+        return ratingValue;
+    }
+
+
+    public Boolean hasVoted(Integer position, String user) {
+        HashMap<String, Boolean> ratings = pWorkouts.get(position).getRatings();
+        if (ratings.containsKey(user)) return true;
+        else return false;
+    }
+
+    public Boolean getVote(Integer position, String user) {
+        notifyDataSetChanged();
+        HashMap<String, Boolean> ratings = pWorkouts.get(position).getRatings();
+        Log.i("got vote", position + "");
+        Log.i("TAG", user);
+        for (Map.Entry<String, Boolean> entry : ratings.entrySet()) {
+            Log.i("map", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
+        }
+        Log.i("TAG", ratings.toString());
+        return ratings.get(user);
+    }
+
 
     @Override
     public int getItemCount() {
-        Log.i("gettings", workouts.size() + "");
-        return workouts.size();
+        Log.i("gettings", pWorkouts.size() + "");
+        return pWorkouts.size();
     }
-
-
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {

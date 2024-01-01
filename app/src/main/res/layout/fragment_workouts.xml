@@ -8,28 +8,56 @@
     android:background="@color/background"
     tools:context=".WorkoutsFragment">
 
-    <TextView
-        android:id="@+id/workoutTitle"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:fontFamily="@font/oswald_semibold"
-        android:gravity="center"
-        android:text="Workouts"
-        android:textColor="@color/colorAccent"
-        android:textSize="40sp"
+        android:layout_height="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/logotext"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search_foreground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--    <TextView-->
+<!--        android:id="@+id/workoutTitle"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="68dp"-->
+<!--        android:fontFamily="@font/oswald_semibold"-->
+<!--        android:gravity="center"-->
+<!--        android:text="Workouts"-->
+<!--        android:textColor="@color/colorAccent"-->
+<!--        android:textSize="40sp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/workoutTitle">
+        app:layout_constraintTop_toBottomOf="@+id/header">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -43,16 +71,16 @@
 
 
         <!--        <ProgressBar-->
-<!--            android:id="@+id/loadingSpinner"-->
-<!--            style="?android:attr/progressBarStyleHorizontal"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:progressDrawable="@drawable/progressbar"-->
-<!--            android:visibility="visible"-->
-<!--            app:layout_constraintBottom_toBottomOf="@id/recyclerView"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent" />-->
+        <!--            android:id="@+id/loadingSpinner"-->
+        <!--            style="?android:attr/progressBarStyleHorizontal"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="center"-->
+        <!--            android:progressDrawable="@drawable/progressbar"-->
+        <!--            android:visibility="visible"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@id/recyclerView"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent" />-->
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

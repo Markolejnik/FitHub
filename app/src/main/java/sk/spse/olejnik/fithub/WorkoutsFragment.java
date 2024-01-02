@@ -1,9 +1,16 @@
 package sk.spse.olejnik.fithub;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import android.os.IBinder;
+import android.view.inputmethod.ExtractedText;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.SearchView;
+
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -63,11 +70,12 @@ public class WorkoutsFragment extends Fragment {
     BottomNavigationView bottomNavigationView;
     ConstraintLayout content, root;
     TextView duration, muscleGroup, title;
-    ImageView thumbnail;
+    ImageView thumbnail, startSearch, logo;
     FloatingActionButton fab;
     RecyclerView recyclerView;
     SwipeRefreshLayout swipe;
     ProgressBar loadingSpinner;
+    SearchView search;
 
     List<PublishedWorkoutData> pWorkouts;
 
@@ -114,11 +122,15 @@ public class WorkoutsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         root = view.findViewById(R.id.workoutsLayout);
+        search = view.findViewById(R.id.search);
+        startSearch = view.findViewById(R.id.startSearch);
+        logo = view.findViewById(R.id.logo);
         recyclerView = view.findViewById(R.id.recyclerView);
         swipe = view.findViewById(R.id.swipeRefreshLayout);
         loadingSpinner = view.findViewById(R.id.loadingSpinner);
         thumbnail = view.findViewById(R.id.thumbnail);
         fab = view.findViewById(R.id.fab);
+        loadingSpinner.setVisibility(View.GONE);
         loadingSpinner.getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorAccent), android.graphics.PorterDuff.Mode.MULTIPLY);
         if (usernames == null) {
             pWorkouts = new ArrayList<>();
@@ -126,8 +138,6 @@ public class WorkoutsFragment extends Fragment {
             usernames = new ArrayList<>();
             times = new ArrayList<>();
         }
-
-
 
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
@@ -140,7 +150,6 @@ public class WorkoutsFragment extends Fragment {
 
                 int id = item.getItemId();
                 if (id == R.id.workouts) {
-
                     return true;
                 }
                 else if (id == R.id.exercises) {
@@ -158,6 +167,41 @@ public class WorkoutsFragment extends Fragment {
                 else{return false;}
             }});
 
+        startSearch.setOnClickListener(v -> {
+            startSearch.setVisibility(View.GONE);
+            logo.setVisibility(View.GONE);
+            search.setVisibility(View.VISIBLE);
+        });
+
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.i("searching this query", query);
+                updateWorkoutList(query);
+                search.setQuery("", false);
+                search.setVisibility(View.GONE);
+                startSearch.setVisibility(View.VISIBLE);
+                logo.setVisibility(View.VISIBLE);
+                workoutsAdapter.notifyDataSetChanged();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        search.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    search.setVisibility(View.GONE);
+                    logo.setVisibility(View.VISIBLE);
+                    startSearch.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         fab.setOnClickListener(v -> {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             int backStackEntryCount = fragmentManager.getBackStackEntryCount();
@@ -165,8 +209,6 @@ public class WorkoutsFragment extends Fragment {
             for (int i = 0; i < backStackEntryCount; i++) {
                 fragmentManager.popBackStackImmediate();
             }
-//            bottomNavigationView.setVisibility(View.GONE);
-//            onPause();
             Navigation.findNavController(view).navigate(R.id.action_Workouts_to_WorkoutCreation);
         });
 
@@ -194,7 +236,7 @@ public class WorkoutsFragment extends Fragment {
                 int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
                 int totalItemCount = layoutManager.getItemCount();
 
-                if (!isLoading && lastVisibleItemPosition == totalItemCount - 1) {
+                if (!isLoading && dy > 0 && lastVisibleItemPosition == totalItemCount - 1) {
                     loadMoreData();
                 }
             }
@@ -219,57 +261,9 @@ public class WorkoutsFragment extends Fragment {
                         .limit(5);
             }
 
-
-            query.get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isComplete()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                int size = document.getData().size();
-                                Map<String, Object> data = document.getData();
-                                for (int i = 0; i < size / 3; i++) {
-                                    String formattedDate = "";
-                                    WorkoutData w = null;
-                                    String author = (String) data.get("author");
-                                    HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
-                                    Timestamp time = (Timestamp) data.get("published");
-                                    HashMap<String, Boolean> rating = (HashMap<String, Boolean>) data.get("rating");
-
-                                    if (workout != null) {
-                                        ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
-                                        ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
-                                        for (HashMap<String, Object> exercise : exercises) {
-                                            WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("imageMini"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
-                                            workoutExercises.add(workoutExercise);
-                                        }
-                                        String title = (String) workout.get("title");
-                                        String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                                        w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-//                                        workouts.add(w);
-                                        //                            workouts.add((WorkoutData) entry.getValue());
-                                    }
-                                    if (author != null) {
-//                                        usernames.add(author);
-
-                                    }
-                                    if (time != null) {
-                                        Instant instant = time.toDate().toInstant();
-                                        LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-                                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                                        formattedDate = formatter.format(localDateTime);
-                                        Log.i("time", formattedDate);
-//                                        times.add(formattedDate);
-
-                                    }
-                                    pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
-                                    workoutsAdapter.notifyItemInserted(i);
-                                }
-                                if (task.getResult().size() > 0) {
-                                    lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
-                                }
-                            }
-
-                        }
-                    });
+            retrieveData(query);
+            workoutsAdapter.notifyDataSetChanged();
+            
         } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
 
     }
@@ -285,12 +279,82 @@ public class WorkoutsFragment extends Fragment {
                     isLoading = false;
                     loadingSpinner.setVisibility(View.GONE);
                 }
-            },2000);
+            },500);
             workoutsAdapter.notifyDataSetChanged();
         } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
     }
 
-    void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {
+    private void updateWorkoutList(String searchPhrase) {
+        if (pWorkouts.size() > 0) pWorkouts.clear();
+        else pWorkouts = new ArrayList<>();
+        if (NetworkUtils.isNetworkAvailable(getContext())) {
+            lastVisibleDocument = null;
+
+
+            if (lastVisibleDocument == null) {
+                query = db.collection("workouts")
+                        .whereEqualTo("workout.title", searchPhrase)
+                        .orderBy("published", Query.Direction.DESCENDING)
+                        .limit(5);
+            } else {
+                query = db.collection("workouts")
+                        .whereEqualTo("workout.title", searchPhrase)
+                        .orderBy("published", Query.Direction.DESCENDING)
+                        .startAfter(lastVisibleDocument)
+                        .limit(5);
+            }
+            retrieveData(query);
+        } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
+
+    }
+
+    private void retrieveData(Query query) {
+
+        query.get()
+            .addOnCompleteListener(task -> {
+                if (task.isComplete()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        int size = document.getData().size();
+                        Map<String, Object> data = document.getData();
+                        for (int i = 0; i < size / 3; i++) {
+                            String formattedDate = "";
+                            WorkoutData w = null;
+                            String author = (String) data.get("author");
+                            HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
+                            Timestamp time = (Timestamp) data.get("published");
+                            HashMap<String, Boolean> rating = (HashMap<String, Boolean>) data.get("rating");
+
+                            if (workout != null) {
+                                ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                                ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                                for (HashMap<String, Object> exercise : exercises) {
+                                    WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("imageMini"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                    workoutExercises.add(workoutExercise);
+                                }
+                                String title = (String) workout.get("title");
+                                String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                                w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+                            }
+                            if (time != null) {
+                                Instant instant = time.toDate().toInstant();
+                                LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
+                                formattedDate = formatter.format(localDateTime);
+                                Log.i("time", formattedDate);
+
+                            }
+                            pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
+                            workoutsAdapter.notifyItemInserted(i);
+                        }
+                        if (task.getResult().size() > 0) {
+                            lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                        }
+                    }
+                }
+            });
+    }
+
+    private void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {
         WorkoutData data = new WorkoutData(title, targetedMG, exercises);
         workoutViewModel.updateWorkoutData(data);
         Navigation.findNavController(root).navigate(R.id.action_Workouts_to_WorkoutDetail);

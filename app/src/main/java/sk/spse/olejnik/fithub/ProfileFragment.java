@@ -115,7 +115,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        checkSignedIn();
         return inflater.inflate(R.layout.fragment_profile, container, false);
 
 
@@ -133,7 +133,6 @@ public class ProfileFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         swipe = view.findViewById(R.id.swipeRefreshLayout);
         swipe2 = view.findViewById(R.id.swipeRefreshLayout2);
-//        workoutLayout = view.findViewById(R.id.layoutWorkout);
         privateContainer = view.findViewById(R.id.privateContainer);
         workoutContainer = view.findViewById(R.id.publicContainer);
         privateButton = view.findViewById(R.id.privateButton);
@@ -153,13 +152,6 @@ public class ProfileFragment extends Fragment {
         pWorkouts = new ArrayList<>();
         pUserWorkouts = new ArrayList<>();
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
-//        preferences = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
-//
-//        gson = new Gson();
-//        json = preferences.getString("workoutsJson", "");
-//        type = new TypeToken<List<WorkoutData>>() {
-//        }.getType();
-//        workouts = gson.fromJson(json, type);
 
         if (!Objects.equals(json, "")) {
             for (WorkoutData workout: workouts) {
@@ -176,11 +168,6 @@ public class ProfileFragment extends Fragment {
                     exercises = workoutData.getExercises();
                     List<WorkoutData> list = new ArrayList<>();
                     list.add(new WorkoutData(titleValue, targetedMGValue, exercises));
-//                    SharedPreferences.Editor editor = preferences.edit();
-//                    gson = new Gson();
-//                    String workoutsJson = gson.toJson(list);
-//                    editor.putString("workoutsJson", workoutsJson);
-//                    editor.apply();
                     createNewDraft(titleValue, targetedMGValue, exercises);
                 }
             }
@@ -249,30 +236,18 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        publicAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, getContext());
-        publicAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
-            @Override
-            public void onEntryClick(View view, int position) {
-                createWorkoutDetail(pWorkouts.get(position).getWorkout().getTitle(), pWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pWorkouts.get(position).getWorkout().getExercises());
-            }
-        });
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(publicAdapter);
 
-        privateAdapter = new WorkoutsAdapter(pUserWorkouts, currentNickname, getContext());
-        privateAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
-            @Override
-            public void onEntryClick(View view, int position) {
-                createWorkoutDetail(pUserWorkouts.get(position).getWorkout().getTitle(), pUserWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pUserWorkouts.get(position).getWorkout().getExercises());
-            }
-        });
-        checkSignedIn();
+
+
+
         LinearLayoutManager privateLayoutManager = new LinearLayoutManager(getContext());
         privateLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         privateRecycler.setLayoutManager(privateLayoutManager);
-        privateRecycler.setAdapter(privateAdapter);
+
 
 
 
@@ -301,6 +276,22 @@ public class ProfileFragment extends Fragment {
                                     for (DocumentSnapshot document : task.getResult()) {
                                         currentNickname = document.get("nickname").toString();
                                         nickname.setText(currentNickname);
+                                        publicAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, getContext());
+                                        publicAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
+                                            @Override
+                                            public void onEntryClick(View view, int position) {
+                                                createWorkoutDetail(pWorkouts.get(position).getWorkout().getTitle(), pWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pWorkouts.get(position).getWorkout().getExercises());
+                                            }
+                                        });
+                                        recyclerView.setAdapter(publicAdapter);
+                                        privateAdapter = new WorkoutsAdapter(pUserWorkouts, currentNickname, getContext());
+                                        privateAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
+                                            @Override
+                                            public void onEntryClick(View view, int position) {
+                                                createWorkoutDetail(pUserWorkouts.get(position).getWorkout().getTitle(), pUserWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pUserWorkouts.get(position).getWorkout().getExercises());
+                                            }
+                                        });
+                                        privateRecycler.setAdapter(privateAdapter);
                                         joined.setText("Joined: " + (CharSequence) document.get("joined"));
                                         try {
                                             url = document.get("pfpUrl").toString();
@@ -324,9 +315,6 @@ public class ProfileFragment extends Fragment {
                                             if (workout.get("author") != null) {
                                                 author = workout.get("author").toString();
                                             }
-                                            if (workout.get("rating") != null) {
-                                                rating = (HashMap<String, Boolean>) workout.get("rating");
-                                            }
                                             if (workout != null) {
                                                 ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
                                                 ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
@@ -339,7 +327,7 @@ public class ProfileFragment extends Fragment {
                                                 w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
 //                                                userWorkouts.add(w);
                                             }
-                                            pUserWorkouts.add(new PublishedWorkoutData("", author, document.getId(), rating, w));
+                                            pUserWorkouts.add(new PublishedWorkoutData("", author, document.getId(), null, w));
                                             privateAdapter.notifyItemInserted(i);
                                             Log.i("workoutsUser", userWorkouts.size() + "");
                                             i++;
@@ -378,12 +366,6 @@ public class ProfileFragment extends Fragment {
                                         String title = (String) workout.get("title");
                                         String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
                                         w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-//                                        workouts.add(w);
-                                        //                            workouts.add((WorkoutData) entry.getValue());
-                                    }
-                                    if (author != null) {
-//                                        publicUsernames.add(author);
-
                                     }
                                     if (time != null) {
                                         Instant instant = time.toDate().toInstant();
@@ -391,7 +373,6 @@ public class ProfileFragment extends Fragment {
                                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
                                         formattedDate = formatter.format(localDateTime);
                                         Log.i("time", formattedDate);
-//                                        publicTimes.add(formattedDate);
 
                                     }
                                     pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));

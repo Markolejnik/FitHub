@@ -100,6 +100,11 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         holder.username.setText(pWorkouts.get(position).getAuthor());
         holder.workoutTitle.setText(pWorkouts.get(position).getWorkout().getTitle());
         holder.targetedMG.setText(pWorkouts.get(position).getWorkout().getTargetedMuscleGroups());
+        if (pWorkouts.get(position).getRatings() == null) {
+            holder.upvote.setVisibility(View.GONE);
+            holder.downvote.setVisibility(View.GONE);
+            holder.rating.setVisibility(View.GONE);
+        }
         holder.upvote.setOnClickListener(v -> {
             try {
                 DocumentReference ref = db.collection("workouts").document(pWorkouts.get(position).getId());

@@ -46,6 +46,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -778,6 +779,7 @@ public class WorkoutCreationFragment extends Fragment {
 
             data = new HashMap<>();
             data.put("title", workoutData.getTitle());
+            data.put("lowercasetitle", workoutData.getTitle().toLowerCase(Locale.ROOT));
             data.put("targetMuscleGroups", workoutData.getTargetedMuscleGroups());
             data.put("exercises", exercises);
 

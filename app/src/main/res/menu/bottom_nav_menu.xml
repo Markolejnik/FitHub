@@ -10,7 +10,7 @@
     <item
         android:id="@+id/exercises"
         android:title="Exercises"
-        android:icon="@drawable/icon_exercise_foreground"
+        android:icon="@drawable/ic_exercise_foreground"
         android:iconTint="@color/foreground"
         app:itemTextAppearance="@font/oswald_semibold"/>
     <item

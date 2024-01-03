@@ -1,11 +1,15 @@
 package sk.spse.olejnik.fithub;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,6 +36,11 @@ public class LoginActivity extends AppCompatActivity {
         editPassword = findViewById(R.id.editTextPass);
         signIn = findViewById(R.id.signInButton);
         auth = FirebaseAuth.getInstance();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.background));
+        }
     }
 
     public void signIn(View view) {

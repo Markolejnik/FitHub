@@ -33,4 +33,8 @@
         <!-- Customize the selected day indicator color -->
         <item name="android:fontFamily">@font/oswald_semibold</item>
     </style>
+
+    <style name="LaunchTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/splashscreen</item>
+    </style>
 </resources>

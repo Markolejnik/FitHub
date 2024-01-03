@@ -178,10 +178,6 @@ public class WorkoutsFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 Log.i("searching this query", query);
                 updateWorkoutList(query);
-                search.setQuery("", false);
-                search.setVisibility(View.GONE);
-                startSearch.setVisibility(View.VISIBLE);
-                logo.setVisibility(View.VISIBLE);
                 workoutsAdapter.notifyDataSetChanged();
                 return false;
             }
@@ -195,10 +191,28 @@ public class WorkoutsFragment extends Fragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
+                    pWorkouts.clear();
+                    lastVisibleDocument = null;
+                    getWorkoutData();
                     search.setVisibility(View.GONE);
                     logo.setVisibility(View.VISIBLE);
                     startSearch.setVisibility(View.VISIBLE);
+                    workoutsAdapter.notifyDataSetChanged();
                 }
+            }
+        });
+
+        search.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                if (pWorkouts.size() > 0) pWorkouts.clear();
+                else pWorkouts = new ArrayList<>();
+                lastVisibleDocument = null;
+                getWorkoutData();
+                search.setVisibility(View.GONE);
+                logo.setVisibility(View.VISIBLE);
+                startSearch.setVisibility(View.VISIBLE);
+                return false;
             }
         });
 
@@ -215,6 +229,10 @@ public class WorkoutsFragment extends Fragment {
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if (pWorkouts.size() > 0) pWorkouts.clear();
+                else pWorkouts = new ArrayList<>();
+                lastVisibleDocument = null;
+                getWorkoutData();
                 workoutsAdapter.notifyDataSetChanged();
                 swipe.setRefreshing(false);
             }
@@ -243,12 +261,12 @@ public class WorkoutsFragment extends Fragment {
         });
 
 
+
     }
 
     void getWorkoutData() {
 
         if (NetworkUtils.isNetworkAvailable(getContext())) {
-
 
             if (lastVisibleDocument == null) {
                 query = db.collection("workouts")
@@ -263,7 +281,7 @@ public class WorkoutsFragment extends Fragment {
 
             retrieveData(query);
             workoutsAdapter.notifyDataSetChanged();
-            
+
         } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
 
     }
@@ -293,13 +311,15 @@ public class WorkoutsFragment extends Fragment {
 
             if (lastVisibleDocument == null) {
                 query = db.collection("workouts")
-                        .whereEqualTo("workout.title", searchPhrase)
-                        .orderBy("published", Query.Direction.DESCENDING)
+                        .whereGreaterThanOrEqualTo("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT))
+                        .whereLessThanOrEqualTo("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
+//                        .orderBy("published", Query.Direction.DESCENDING)
                         .limit(5);
             } else {
                 query = db.collection("workouts")
-                        .whereEqualTo("workout.title", searchPhrase)
-                        .orderBy("published", Query.Direction.DESCENDING)
+                        .whereGreaterThanOrEqualTo("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT))
+                        .whereLessThan("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT))
+//                        .orderBy("published", Query.Direction.DESCENDING)
                         .startAfter(lastVisibleDocument)
                         .limit(5);
             }

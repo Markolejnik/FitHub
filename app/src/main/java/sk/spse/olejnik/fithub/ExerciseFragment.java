@@ -1,26 +1,14 @@
 package sk.spse.olejnik.fithub;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
 
-import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -28,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TableLayout;
@@ -39,17 +26,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 
 public class ExerciseFragment extends Fragment {
 
     BottomNavigationView bottomNavigationView;
     TableLayout tableLayout;
-    TableRow filler;
     ConstraintLayout layoutExercise, root;
 
     private ExerciseViewModel exerciseViewModel;
@@ -58,7 +41,7 @@ public class ExerciseFragment extends Fragment {
     List<Exercises> exercises, filteredExercises, filteredExercisesFinal;
     List<String> groupFilter;
 
-    String searchPhrase, typeFilter;
+    String typeFilter;
     SearchView searchBar;
     Button filterButton;
 
@@ -69,14 +52,13 @@ public class ExerciseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         ExerciseRepository repository = new ExerciseRepository();
         exercises = repository.allExercises;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_exercise, container, false);
     }
 
@@ -84,14 +66,13 @@ public class ExerciseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-//        MainActivity mainActivity = (MainActivity) getActivity();
-//        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         root = view.findViewById(R.id.conLayout);
         searchBar = view.findViewById(R.id.searchBar);
         filterButton = view.findViewById(R.id.filterbutton);
         tableLayout = view.findViewById(R.id.tableLayout);
         layoutExercise = view.findViewById(R.id.conLayout);
         bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
+
         bottomNavigationView.setSelectedItemId(R.id.exercises);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -116,7 +97,6 @@ public class ExerciseFragment extends Fragment {
                 }
                 else{return false;}
             }});
-//        filler = view.findViewById(R.id.filler);
 
         layoutExercise.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -179,9 +159,6 @@ public class ExerciseFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//
-//                updateExerciseList(newText);
-//                Log.i("searching this", newText);
                 return false;
             }
         });
@@ -193,10 +170,8 @@ public class ExerciseFragment extends Fragment {
             filterExercises();
         });
 
-        int searchCloseButtonId = searchBar.getContext().getResources()
-                .getIdentifier("android:id/search_close_btn", null, null);
+        int searchCloseButtonId = searchBar.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
         ImageView closeButton = (ImageView) this.searchBar.findViewById(searchCloseButtonId);
-        // Set on click listener
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -212,35 +187,34 @@ public class ExerciseFragment extends Fragment {
 
         createExerciseList(exercises);
 
-
-
     }
 
-    void createExerciseList(List<Exercises> exercises) {
+    private void createExerciseList(List<Exercises> exercises) {
+
         if (tableLayout.getChildCount() != exercises.size()) {
             tableLayout.removeAllViews();
+
             for (Exercises item : exercises) {
                 TableRow tableRow = new TableRow(getContext());
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 View layoutExercise = inflater.inflate(R.layout.layout_exercise, null);
                 TextView title = layoutExercise.findViewById(R.id.exercise);
                 ImageView thumbnail = layoutExercise.findViewById(R.id.thumbnail);
+
                 layoutExercise.setOnClickListener(v -> {
                     createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getImageMini(), item.getLink(), item.getType());
 
                 });
 
                 title.setText(item.getName());
-//            title.setWidth(mainActivity.width - (mainActivity.width/4));
                 thumbnail.setImageResource(item.getImageMini());
                 tableRow.addView(layoutExercise);
                 tableLayout.addView(tableRow);
-//            Log.i("jo", item.getMuscleGroup().toString());
             }
         }
     }
 
-    void updateExerciseList(String searchPhrase) {
+    private void updateExerciseList(String searchPhrase) {
         filteredExercises = new ArrayList<>();
         if (!searchPhrase.equals("")) {
             for (Exercises item : exercises) {
@@ -290,33 +264,6 @@ public class ExerciseFragment extends Fragment {
         if (filteredExercisesFinal.size() != 0) createExerciseList(filteredExercisesFinal);
         else if (filteredExercises.size() != 0) createExerciseList(filteredExercises);
         else createExerciseList(exercises);
-
-//        for (Exercises item: filteredExercises) {
-//            Log.i("displayed item", item.getName());
-//            Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), item.getImage1());
-//
-//            int originalWidth = originalBitmap.getWidth();
-//            int originalHeight = originalBitmap.getHeight();
-//
-//            int desiredWidth = originalWidth / 4; // Scale down to half of the original width
-//            int desiredHeight = originalHeight / 4; // Scale down to half of the original height
-//            Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, desiredWidth, desiredHeight, true);
-//            TableRow tableRow = new TableRow(getContext());
-//            LayoutInflater inflater = LayoutInflater.from(getContext());
-//            View layoutExercise = inflater.inflate(R.layout.layout_exercise, null);
-//            TextView title = layoutExercise.findViewById(R.id.exercise);
-//            ImageView thumbnail = layoutExercise.findViewById(R.id.thumbnail);
-//            layoutExercise.setOnClickListener( v -> {
-//                createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getLink(), item.getType());
-//            });
-//
-//            title.setText(item.getName());
-////            title.setWidth(mainActivity.width - (mainActivity.width/4));
-//            thumbnail.setImageBitmap(scaledBitmap);
-//            tableRow.addView(layoutExercise);
-//            tableLayout.addView(tableRow);
-////            Log.i("jo", item.getMuscleGroup().toString());
-//        }
 
     }
     void filterExercises() {
@@ -397,25 +344,12 @@ public class ExerciseFragment extends Fragment {
                      ) {
                     result.append(group + " ");
                 }
-                Log.i("jiggas", typeFilter);
-                Log.i("groupfilter", result.toString());
                 if (filteredExercises != null) filteredExercises.removeAll(filteredExercises);
                 if (filteredExercisesFinal != null) filteredExercisesFinal.removeAll(filteredExercisesFinal);
-                Log.i("searching this query when filter", searchBar.getQuery().toString());
                 updateExerciseList(searchBar.getQuery().toString());
             }
         });
 
-
-//        exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), exerciseData -> {
-//            if (exerciseData != null) {
-//                typeFilter = exerciseData.getNewType();
-//                Log.i("jiggas", typeFilter);
-//                if (filteredExercises != null) filteredExercises.removeAll(filteredExercises);
-//                Log.i("searching this query when filter", searchBar.getQuery().toString());
-//                updateExerciseList(searchBar.getQuery().toString());
-//            }
-//        });
 
     }
 

@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void signIn(View view) {
+    private void signIn(View view) {
         String email = editEmail.getText().toString();
         String password = editPassword.getText().toString();
         if (email.isEmpty()) {
@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public void forgotPassword(View view) {
+    private void forgotPassword(View view) {
         String email = editEmail.getText().toString();
         if (email.length() == 0) Toast.makeText(this, "Enter the email to the forgotten password", Toast.LENGTH_SHORT).show();
         else {

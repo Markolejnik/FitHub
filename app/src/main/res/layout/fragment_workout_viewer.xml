@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/goBack"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:src="@drawable/icon_back_foreground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -31,15 +31,24 @@
             android:ellipsize="end"
             android:fontFamily="@font/oswald_semibold"
             android:gravity="center"
+            android:maxLines="1"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
             android:text="Workout Title"
             android:textColor="@color/colorAccent"
             android:textSize="30sp"
-            android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/goBack"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/exit"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_exit_foreground"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -178,7 +187,6 @@
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
@@ -186,6 +194,7 @@
             android:layout_width="70dp"
             android:layout_height="120dp"
             android:layout_marginBottom="30dp"
+            android:elevation="10dp"
             android:rotation="180"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_arrow_foreground"
@@ -193,16 +202,48 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/prevExerciseText"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-20dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:foregroundGravity="center"
+            android:gravity="center"
+            android:text="Previous Exercise"
+            android:textColor="@color/foreground"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="@+id/prevExercise"
+            app:layout_constraintStart_toStartOf="@+id/prevExercise"
+            app:layout_constraintTop_toBottomOf="@+id/prevExercise" />
+
         <ImageView
             android:id="@+id/nextExercise"
             android:layout_width="70dp"
             android:layout_height="120dp"
             android:layout_marginBottom="30dp"
+            android:elevation="10dp"
             android:scaleType="centerCrop"
             android:src="@drawable/icon_arrow_foreground"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/nextExerciseText"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-20dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:foregroundGravity="center"
+            android:gravity="center"
+            android:text="Next Exercise"
+            android:textColor="@color/foreground"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="@+id/nextExercise"
+            app:layout_constraintStart_toStartOf="@+id/nextExercise"
+            app:layout_constraintTop_toBottomOf="@+id/nextExercise" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

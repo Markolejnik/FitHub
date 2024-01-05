@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.navigation.Navigation;
 
@@ -18,18 +16,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FilterFragment extends Fragment {
 
     ImageView backButton;
     Button clearFilters;
     TextView saveFilters, filterTypeAny, filterType1, filterType2, filterGroupAny, filterGroup1, filterGroup2, filterGroup3, filterGroup4, filterGroup5, filterGroup6, filterGroup7, filterGroup8, filterGroup9, filterGroup10, filterGroup11, filterGroup12, filterGroup13, filterGroup14, filterGroup15, filterGroup16;
-//    Boolean typeAny, type1, type2, groupAny, group1, group2, group3, group4, group5, group6, group7, group8, group9, group10, group11, group12, group13, group14, group15, group16;
+
     List<TextView> groupFilterViews;
     String typeFilter;
     List<String> groupFilter, filterOutput;
@@ -51,15 +46,14 @@ public class FilterFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_filter, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         backButton = view.findViewById(R.id.goBack);
         clearFilters = view.findViewById(R.id.clearfilters);
         saveFilters = view.findViewById(R.id.filterSave);
@@ -83,6 +77,7 @@ public class FilterFragment extends Fragment {
         filterGroup14 = view.findViewById(R.id.filterGroup14);
         filterGroup15 = view.findViewById(R.id.filterGroup15);
         filterGroup16 = view.findViewById(R.id.filterGroup16);
+
         groupFilterViews = new ArrayList<>();
         groupFilterViews.add(filterGroup1);
         groupFilterViews.add(filterGroup2);
@@ -106,7 +101,9 @@ public class FilterFragment extends Fragment {
         });
 
         FilterData filterData = new FilterData();
+
         filterViewModel = ((MainActivity) requireActivity()).getFilterViewModel();
+
         filterViewModel.getFilterLiveData().observe(getViewLifecycleOwner(), new Observer<FilterData>() {
             @Override
             public void onChanged(FilterData filterData) {
@@ -122,7 +119,6 @@ public class FilterFragment extends Fragment {
                             filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
                             filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
                         }
-
                     }
                     if (filterData.getFilterMuscleGroups() != null) {
                         groupFilter = filterData.getFilterMuscleGroups();
@@ -138,6 +134,7 @@ public class FilterFragment extends Fragment {
                 }
             }
         });
+
         clearFilters.setOnClickListener(v -> {
             filterData.setFilterType(null);
             filterData.setFilterMuscleGroups(null);
@@ -148,6 +145,7 @@ public class FilterFragment extends Fragment {
 
 
         });
+
         saveFilters.setOnClickListener(v -> {
 
             filterData.setFilterType(null);
@@ -197,10 +195,14 @@ public class FilterFragment extends Fragment {
             } if (filterGroup16.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterOutput.add("Triceps");
             }
+
             filterData.setFilterMuscleGroups(filterOutput);
             filterViewModel.updateExerciseData(filterData);
+
             Navigation.findNavController(view).navigate(R.id.action_Filter_to_Exercise);
+
         });
+
         filterTypeAny.setOnClickListener(v1 -> {
             filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             if (filterType1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent) || filterType2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
@@ -208,6 +210,7 @@ public class FilterFragment extends Fragment {
                 filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
             }
         });
+
         filterType1.setOnClickListener(v1 -> {
             filterType1.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             if (filterTypeAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent) || filterType2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
@@ -215,13 +218,13 @@ public class FilterFragment extends Fragment {
                 filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
             }
         });
+
         filterType2.setOnClickListener(v1 -> {
             filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             if (filterTypeAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent) || filterType1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
                 filterType1.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
             }
-
         });
 
         filterGroupAny.setOnClickListener(v2 -> {
@@ -230,6 +233,7 @@ public class FilterFragment extends Fragment {
                 performViewColorChange();
             }
         });
+
         filterGroup1.setOnClickListener(v2 -> {
             if (filterGroup1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup1.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -243,6 +247,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup2.setOnClickListener(v2 -> {
             if (filterGroup2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup2.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -256,6 +261,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup3.setOnClickListener(v2 -> {
             if (filterGroup3.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup3.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -269,6 +275,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup4.setOnClickListener(v2 -> {
             if (filterGroup4.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup4.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -282,6 +289,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup5.setOnClickListener(v2 -> {
             if (filterGroup5.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup5.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -295,6 +303,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup6.setOnClickListener(v2 -> {
             if (filterGroup6.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup6.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -308,6 +317,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup7.setOnClickListener(v2 -> {
             if (filterGroup7.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup7.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -321,6 +331,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup8.setOnClickListener(v2 -> {
             if (filterGroup8.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup8.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -334,6 +345,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup9.setOnClickListener(v2 -> {
             if (filterGroup9.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup9.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -347,6 +359,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup10.setOnClickListener(v2 -> {
             if (filterGroup10.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup10.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -360,6 +373,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup11.setOnClickListener(v2 -> {
             if (filterGroup11.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup11.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -373,6 +387,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup12.setOnClickListener(v2 -> {
             if (filterGroup12.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup12.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -386,6 +401,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup13.setOnClickListener(v2 -> {
             if (filterGroup13.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup13.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -399,6 +415,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup14.setOnClickListener(v2 -> {
             if (filterGroup14.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup14.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -426,6 +443,7 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
         filterGroup16.setOnClickListener(v2 -> {
             if (filterGroup16.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterGroup16.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
@@ -439,16 +457,17 @@ public class FilterFragment extends Fragment {
 
             }
         });
+
     }
 
-    boolean performViewColorCheck() {
+    private boolean performViewColorCheck() {
         boolean result = false;
         for (TextView filter : groupFilterViews) {
             if (filter.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) result = true;
         }
         return result;
     }
-    void performViewColorChange() {
+    private void performViewColorChange() {
         filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         for (TextView filter: groupFilterViews) {
             filter.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));

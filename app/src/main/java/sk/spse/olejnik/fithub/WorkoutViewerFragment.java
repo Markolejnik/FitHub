@@ -5,10 +5,10 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
@@ -26,7 +26,7 @@ import java.util.List;
 public class WorkoutViewerFragment extends Fragment {
 
     LinearLayout root;
-    ImageView goBack, prevExercise, nextExercise, thumbnail;
+    ImageView goBack, exit, prevExercise, nextExercise, thumbnail;
     TextView workoutTitle, exerciseTitle, muscleGroups, setInfo, setCounter;
     Button addSet;
 
@@ -34,7 +34,6 @@ public class WorkoutViewerFragment extends Fragment {
     String titleValue, targetedMGValue;
     Integer sets, current;
 
-    private ExerciseViewModel exerciseViewModel;
     private WorkoutViewModel workoutViewModel;
 
 
@@ -52,17 +51,17 @@ public class WorkoutViewerFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_workout_viewer, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         root = view.findViewById(R.id.root);
         goBack = view.findViewById(R.id.goBack);
+        exit = view.findViewById(R.id.exit);
         workoutTitle = view.findViewById(R.id.wViewerTitle);
         muscleGroups = view.findViewById(R.id.wViewerGroups);
         exerciseTitle = view.findViewById(R.id.exerciseTitle);
@@ -73,7 +72,6 @@ public class WorkoutViewerFragment extends Fragment {
         setCounter = view.findViewById(R.id.setCounter);
         setInfo = view.findViewById(R.id.setInfo);
 
-        exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
 
@@ -96,6 +94,10 @@ public class WorkoutViewerFragment extends Fragment {
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
+        });
+
+        exit.setOnClickListener(v -> {
+            Navigation.findNavController(view).navigate(R.id.action_WorkoutViewer_to_Workouts);
         });
 
         addSet.setOnClickListener(v -> {
@@ -128,14 +130,15 @@ public class WorkoutViewerFragment extends Fragment {
     }
     @SuppressLint("SetTextI18n")
     private void displayExercise(Integer current) {
+
         WorkoutExercises exercise = exercises.get(current);
         exerciseTitle.setText(exercise.getTitle());
         thumbnail.setImageResource(exercise.getImage1());
+
         if (exercise.isTimeFormat()) setInfo.setText(exercise.getSets() + "Sets Of " + exercise.getReps() + " Secs");
         else setInfo.setText(exercise.getSets() + " Sets Of " + exercise.getReps() + " Reps");
+
         setCounter.setText("0");
         sets = 0;
-
-
     }
 }

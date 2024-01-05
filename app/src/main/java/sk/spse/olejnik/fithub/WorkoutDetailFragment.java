@@ -1,9 +1,6 @@
 package sk.spse.olejnik.fithub;
 
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,20 +11,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.ToggleButton;
-
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,13 +39,10 @@ public class WorkoutDetailFragment extends Fragment {
     List<WorkoutExercises> exercises;
     String titleValue, targetedMGValue;
 
-
-
-
     public WorkoutDetailFragment() {
     }
 
-    public static WorkoutDetailFragment newInstance(String param1, String param2) {
+    public static WorkoutDetailFragment newInstance() {
         WorkoutDetailFragment fragment = new WorkoutDetailFragment();
         return fragment;
     }
@@ -64,15 +53,14 @@ public class WorkoutDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_workout_detail, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         root = view.findViewById(R.id.linearLayout);
         goBack = view.findViewById(R.id.goBack);
         titleText = view.findViewById(R.id.wDetailTitle);
@@ -109,7 +97,7 @@ public class WorkoutDetailFragment extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    void createExerciseList(List<WorkoutExercises> exercises) {
+    private void createExerciseList(List<WorkoutExercises> exercises) {
         for (WorkoutExercises exercise: exercises) {
             TableRow tableRow = new TableRow(getContext());
             LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -132,9 +120,8 @@ public class WorkoutDetailFragment extends Fragment {
             tableLayout.addView(tableRow);
         }
     }
-    void createExerciseDetail (String name, List < String > muscleGroup, int image1, int image2, String link, String type){
+    private void createExerciseDetail (String name, List < String > muscleGroup, int image1, int image2, String link, String type){
 
-        // Update the data in one go
         ExerciseData newData = new ExerciseData();
         newData.setNewTitle(name);
         newData.setNewMuscleGroups(muscleGroup);

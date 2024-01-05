@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/goBack"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginStart="-5dp"
             android:src="@drawable/icon_back_foreground"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -1,7 +1,5 @@
 package sk.spse.olejnik.fithub;
 
-import java.util.List;
-
 public class WCExerciseData {
 
     private Integer sets, reps;
@@ -31,18 +29,11 @@ public class WCExerciseData {
         this.repstosec = repstosec;
     }
 
-
-
-
     public WCExerciseData(Integer sets, Integer reps, Boolean repstosec) {
         this.sets = sets;
         this.reps = reps;
         this.repstosec = repstosec;
     }
-
-
-
-
 
 }
 

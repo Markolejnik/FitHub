@@ -1,7 +1,5 @@
 package sk.spse.olejnik.fithub;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
@@ -12,26 +10,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.ProgressViewHolder> {
 
@@ -43,10 +25,6 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
     public class ProgressViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     ImageView thumbnail, removeEntry;
     TextView title, reps, weight, date, lbkg, note, x;
-    View view;
-
-
-
 
     ProgressViewHolder(View itemView) {
         super(itemView);
@@ -70,8 +48,6 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
     }
 }
     public AlertDialogListener alertDialogListener;
-
-    // Other adapter code
 
     public void setAlertDialogListener(AlertDialogListener listener) {
         this.alertDialogListener = listener;
@@ -118,7 +94,6 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
             if (alertDialogListener != null) {
                 alertDialogListener.onItemClicked(position);
             }
-
         });
     }
 
@@ -127,8 +102,6 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
         Log.i("gettings", progress.size() + "");
         return progress.size();
     }
-
-
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -140,12 +113,9 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
 
 public interface OnEntryClickListener {
     void onEntryClick(View view, int position);
-
-
 }
 
     public void setOnEntryClickListener(ProgressAdapter.OnEntryClickListener onEntryClickListener) {
         mOnEntryClickListener = onEntryClickListener;
-
     }
 }

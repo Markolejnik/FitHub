@@ -1,6 +1,5 @@
 package sk.spse.olejnik.fithub;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class WorkoutData {

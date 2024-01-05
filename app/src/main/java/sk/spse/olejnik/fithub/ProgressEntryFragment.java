@@ -28,8 +28,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -39,8 +37,6 @@ import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,17 +54,12 @@ public class ProgressEntryFragment extends Fragment {
     private ExerciseViewModel exerciseViewModel;
     private ProgressViewModel progressViewModel;
 
-    String title, types, link, noteValue;
-    Integer image1, image2, imageMini;
-    List<String> muscleGroups;
+    String noteValue;
     Boolean repstosecValue, weightedValue, lbtokgValue;
     Calendar dateValue;
     Exercises exercise;
     Integer repsValue, weightValue;
     Map<String, Object> entry, entryExercise;
-
-    Gson gson;
-    Type type;
 
     FirebaseAuth auth;
     FirebaseFirestore db;
@@ -90,16 +81,15 @@ public class ProgressEntryFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_progress_entry, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         root = view.findViewById(R.id.root);
         goBack = view.findViewById(R.id.goBack);
         date = view.findViewById(R.id.date);
@@ -118,10 +108,8 @@ public class ProgressEntryFragment extends Fragment {
         weightedValue = false;
         lbtokgValue = false;
 
-
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
         progressViewModel = ((MainActivity) requireActivity()).getProgressViewModel();
-
 
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
@@ -142,18 +130,15 @@ public class ProgressEntryFragment extends Fragment {
                     date.setText(formattedDate);
                     exerciseTitle.setText(exercise.getName());
                     thumbnail.setImageResource(exercise.getImage1());
-
                 }
             }
         });
 
         repsToSec.setOnClickListener(v -> {
             repstosecValue = repsToSec.isChecked();
-            if (repstosecValue) {
-                reps.setHint("Secs");
-            } else {
-                reps.setHint("Reps");
-            }
+            if (repstosecValue) reps.setHint("Secs");
+            else reps.setHint("Reps");
+
         });
 
         weighted.setOnClickListener(v -> {
@@ -173,11 +158,8 @@ public class ProgressEntryFragment extends Fragment {
 
         lbtokg.setOnClickListener(v -> {
             lbtokgValue = lbtokg.isChecked();
-            if (lbtokgValue) {
-                lbtokgtext.setText("lbs");
-            } else {
-                lbtokgtext.setText("kg");
-            }
+            if (lbtokgValue) lbtokgtext.setText("lbs");
+            else lbtokgtext.setText("kg");
         });
 
         saveEntry.setOnClickListener(v -> {
@@ -199,14 +181,13 @@ public class ProgressEntryFragment extends Fragment {
                     return;
                 }
             }
+
             noteValue = note.getText().toString();
             ProgressData entryData = new ProgressData(exercise, repsValue, weightValue, dateValue, repstosecValue, weightedValue, lbtokgValue, noteValue);
 
             publishEntry(entryData);
 
         });
-
-
     }
 
     public void publishEntry(ProgressData data) {
@@ -218,7 +199,6 @@ public class ProgressEntryFragment extends Fragment {
             user = FirebaseAuth.getInstance().getCurrentUser();
             assert user != null;
             final String current = user.getEmail();
-
 
             entryExercise = new HashMap<>();
             entryExercise.put("name", data.getExercise().getName());
@@ -239,30 +219,25 @@ public class ProgressEntryFragment extends Fragment {
             entry.put("lbtokg", data.getLbtokg());
             entry.put("note", data.getNote());
 
-
             db.collection("users").whereEqualTo("email", current)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    // You can access the matched document here
-                                    String documentId = document.getId();
-                                    Log.i("TAG", entry.toString());
-                                    db.collection("users").document(documentId).update("progress", FieldValue.arrayUnion(entry)).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            Navigation.findNavController(root).navigate(R.id.action_ProgressEntry_to_Calendar);
-                                        }
-                                    });
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String documentId = document.getId();
+                            db.collection("users").document(documentId).update("progress", FieldValue.arrayUnion(entry)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Navigation.findNavController(root).navigate(R.id.action_ProgressEntry_to_Calendar);
                                 }
-                                Log.i("progress user: ", auth.getCurrentUser().getEmail());
-                            }
+                            });
                         }
-                    });
+                    }
+                }
+            });
         }
     }
-
 
 }

@@ -26,17 +26,17 @@ import java.util.List;
 
 public class CalendarExerciseFragment extends Fragment {
 
-    List<Exercises> exercises, filteredExercises;
-    RecyclerView recyclerView;
-    SearchView searchBar;
-    LinearLayout root;
-    ExerciseAdapter exerciseAdapter;
-    ImageView goBack;
+    private List<Exercises> exercises, filteredExercises;
+    private RecyclerView recyclerView;
+    private SearchView searchBar;
+    private LinearLayout root;
+    private ExerciseAdapter exerciseAdapter;
+    private ImageView goBack;
 
     private ExerciseViewModel exerciseViewModel;
     private ProgressViewModel progressViewModel;
 
-    Calendar date;
+    private Calendar date;
 
     public CalendarExerciseFragment() {}
 
@@ -55,13 +55,13 @@ public class CalendarExerciseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calendar_exercise, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         root = view.findViewById(R.id.linearLayout);
         recyclerView = view.findViewById(R.id.recyclerView);
         searchBar = view.findViewById(R.id.searchBar);
@@ -132,15 +132,14 @@ public class CalendarExerciseFragment extends Fragment {
 
     }
 
-    void updateExerciseList(String searchPhrase) {
+    private void updateExerciseList(String searchPhrase) {
         exercises.removeIf(exercise -> !exercise.getName().contains(searchPhrase));
         exerciseAdapter.notifyDataSetChanged();
         exerciseAdapter = new ExerciseAdapter(exercises, getContext());
     }
 
 
-    public void createProgressEntry(Exercises exercise) {
-        Log.i("ex", exercise.getName());
+    private void createProgressEntry(Exercises exercise) {
         Exercises dataExercise = new Exercises(exercise.getName(), exercise.getType(), exercise.getLink(), exercise.getMuscleGroup(), exercise.getImage1(), exercise.getImage2(), exercise.getImageMini());
         ProgressData newData = new ProgressData(dataExercise, null, null, date, null, null, null, null);
 
@@ -148,19 +147,4 @@ public class CalendarExerciseFragment extends Fragment {
         progressViewModel.updateProgressData(newData);
         Navigation.findNavController(root).navigate(R.id.action_CalendarExercise_to_ProgressEntry);
     }
-
-//    void createExerciseDetail(String name, List<String> muscleGroup, int image1, int image2, String link, String type) {
-//
-//        // Update the data in one go
-//        ExerciseData newData = new ExerciseData();
-//        newData.setNewTitle(name);
-//        newData.setNewMuscleGroups(muscleGroup);
-//        newData.setNewImage1(image1);
-//        newData.setNewImage2(image2);
-//        newData.setNewLink(link);
-//        newData.setNewType(type);
-//
-//        exerciseViewModel.updateExerciseData(newData);
-//        Navigation.findNavController(root).navigate(R.id.action_Exercise_to_ExerciseDetail);
-//    }
 }

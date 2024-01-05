@@ -14,7 +14,6 @@ public class WorkoutViewModel extends AndroidViewModel {
     private MutableLiveData<WorkoutData> workoutLiveData = new MutableLiveData<>();
 
     // Constructor, getters, and setters
-
     public LiveData<WorkoutData> getWorkoutLiveData() {
         return workoutLiveData;
     }

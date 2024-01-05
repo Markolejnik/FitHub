@@ -2,7 +2,6 @@ package sk.spse.olejnik.fithub;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,20 +20,17 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
 
     public class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView thumbnail;
-        TextView exercise, add;
+        TextView exercise;
 
         ExerciseViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
             exercise = (TextView) itemView.findViewById(R.id.exercise);
-            add = (TextView) itemView.findViewById(R.id.add);
         }
 
         @Override
         public void onClick(View v) {
-            // The user may not set a click listener for list items, in which case our listener
-            // will be null, so we need to check for this
             if (mOnEntryClickListener != null) {
                 mOnEntryClickListener.onEntryClick(v, getLayoutPosition());
             }
@@ -42,7 +38,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     }
 
     private List<Exercises> exercises, filteredExercises;
-    CalendarExerciseFragment calendarExerciseFragment = new CalendarExerciseFragment();
 
     Context context;
     private OnEntryClickListener onEntryClickListener;
@@ -67,9 +62,6 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     public void onBindViewHolder(@NonNull ExerciseAdapter.ExerciseViewHolder holder, int position) {
         holder.thumbnail.setImageResource(filteredExercises.get(position).getImageMini());
         holder.exercise.setText(filteredExercises.get(position).getName());
-//        holder.itemView.setOnClickListener(v -> {
-//            calendarExerciseFragment.createProgressEntry(filteredExercises.get(position));
-//        });
     }
 
     @Override

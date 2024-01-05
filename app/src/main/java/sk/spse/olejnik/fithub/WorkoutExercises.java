@@ -29,7 +29,6 @@ public class WorkoutExercises {
         this.isTimeFormat = isTimeFormat;
     }
 
-
     public String getTitle() {
         return title;
     }
@@ -109,6 +108,5 @@ public class WorkoutExercises {
     public void setTimeFormat(boolean timeFormat) {
         isTimeFormat = timeFormat;
     }
-
 
 }

@@ -1,6 +1,5 @@
 package sk.spse.olejnik.fithub;
 
-import android.content.ContentResolver;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,16 +19,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class ExerciseDetailFragment extends Fragment {
 
     private ExerciseViewModel exerciseViewModel;
 
-    String title, link, type;
     StringBuilder muscleGroupContent;
     List<String> muscleGroups;
     int image1, image2, imageMini;
@@ -53,21 +48,7 @@ public class ExerciseDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-//        Bundle args = getArguments();
-//        if (args != null) {
-//            title = args.getString("title", title);
-//
-//
-//            image1 = args.getInt("img1");
-//            image2 = args.getInt("img2");
-//            link = args.getString("link");
-//            type = args.getString("type");
-//        }
-
-
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_exercise_detail, container, false);
 
 
@@ -78,9 +59,6 @@ public class ExerciseDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
-
-
         titleText = view.findViewById(R.id.exerciseTitle);
         muscleGroupsText = view.findViewById(R.id.muscleGroups);
         typeText = view.findViewById(R.id.type);
@@ -90,6 +68,8 @@ public class ExerciseDetailFragment extends Fragment {
         goBack = view.findViewById(R.id.goBack);
         addToWorkout = view.findViewById(R.id.AddToWorkout);
 
+        exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
+
         goBack.setOnClickListener(v -> {
             exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null, null));
             NavController navController = NavHostFragment.findNavController(this);
@@ -97,7 +77,6 @@ public class ExerciseDetailFragment extends Fragment {
         });
 
         addToWorkout.setOnClickListener(v -> {
-            // Update the data in one go
             ExerciseData newData = new ExerciseData();
             newData.setNewTitle(titleText.getText().toString());
             newData.setNewMuscleGroups(muscleGroups);
@@ -108,12 +87,12 @@ public class ExerciseDetailFragment extends Fragment {
             newData.setNewType(typeText.getText().toString());
 
             exerciseViewModel.updateCreationData(newData);
+
             Navigation.findNavController(v).navigate(R.id.action_ExerciseDetail_to_WorkoutCreation);
             exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null, null));
 
         });
 
-        // Observe the LiveData for changes
         exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
             @Override
             public void onChanged(@Nullable ExerciseData exerciseData) {
@@ -140,15 +119,6 @@ public class ExerciseDetailFragment extends Fragment {
                 }
             }
         });
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        Fragment currentFragment = fragmentManager.findFragmentById(R.id.frameLayout);
-        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
-
-        for (int i = 0; i < backStackEntryCount; i++) {
-            FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
-            String fragmentName = entry.getName();
-            Log.d("BackStack", "Fragment in back stack: " + fragmentName);
-        }
 
     }
 
@@ -163,11 +133,7 @@ public class ExerciseDetailFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-//        MainActivity mainActivity = (MainActivity) getActivity();
-//        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
-    }
+    public void onDetach() {super.onDetach();}
 
 
 }

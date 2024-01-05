@@ -22,9 +22,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.w3c.dom.Text;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +32,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
     public class WorkoutViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView profilePicture, upvote, downvote;
         TextView username, workoutTitle, targetedMG, published, exerciseCount, rating;
-        View view;
 
 
         WorkoutViewHolder(View itemView) {
@@ -55,8 +51,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
 
         @Override
         public void onClick(View v) {
-            // The user may not set a click listener for list items, in which case our listener
-            // will be null, so we need to check for this
             if (mOnEntryClickListener != null) {
                 mOnEntryClickListener.onEntryClick(v, getLayoutPosition());
             }
@@ -64,9 +58,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
     }
     private List<PublishedWorkoutData> pWorkouts;
     private String user;
-    private List<WorkoutData> workouts;
-    private List<List<String>> ratings;
-//    private List<Integer> ratings;
     FirebaseFirestore db;
     Context context;
 
@@ -74,11 +65,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         notifyDataSetChanged();
         this.pWorkouts = pWorkouts;
         this.user = user;
-//        Log.i("user3", user);
-//        Log.i("user4", this.user);
-//        this.workouts = workouts;
-//        this.usernames = usernames;
-//        this.times = times;
         this.context = context;
         notifyDataSetChanged();
     }
@@ -152,11 +138,16 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
                 db.collection("workouts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
+
                             if (document.getId().equals(pWorkouts.get(position).getId())) {
                                 pWorkouts.get(position).setRatings((HashMap<String, Boolean>) document.get("rating"));
+
                                 if (pWorkouts.get(position).getRatings() == null) pWorkouts.get(position).setRatings(new HashMap<>());
+
                                 notifyDataSetChanged();
+
                                 if (hasVoted(position, user)) {
                                     try {
                                         if (!getVote(position, user)) pWorkouts.get(position).getRatings().remove(user);
@@ -165,6 +156,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
                                         pWorkouts.get(position).getRatings().put(user, false);
                                     }
                                 } else pWorkouts.get(position).getRatings().put(user, false);
+
                                 Map<String, Object> updateMap = new HashMap<>();
                                 updateMap.put("rating", pWorkouts.get(position).getRatings());
 
@@ -180,12 +172,15 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
                         }
                     }
                 });
+
                 notifyDataSetChanged();
                 holder.rating.setText(getRatingValue(position).toString());
+
             } catch (Exception e) {
                 Log.i("downvote", "failed");
             }
         });
+
         holder.rating.setText(getRatingValue(position).toString());
 
         try {
@@ -193,8 +188,10 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         } catch (Exception e) {
             holder.published.setText("");
         }
+
         if (pWorkouts.get(position).getWorkout().getExercises().size() > 1) holder.exerciseCount.setText(pWorkouts.get(position).getWorkout().getExercises().size() + " Exercises");
         else holder.exerciseCount.setText(pWorkouts.get(position).getWorkout().getExercises().size() + " Exercise");
+
         try {
             db = FirebaseFirestore.getInstance();
             db.collection("users").whereEqualTo("nickname", pWorkouts.get(position).getAuthor()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -231,7 +228,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         return ratingValue;
     }
 
-
     public Boolean hasVoted(Integer position, String user) {
         HashMap<String, Boolean> ratings = pWorkouts.get(position).getRatings();
         if (ratings.containsKey(user)) return true;
@@ -249,7 +245,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         Log.i("TAG", ratings.toString());
         return ratings.get(user);
     }
-
 
     @Override
     public int getItemCount() {

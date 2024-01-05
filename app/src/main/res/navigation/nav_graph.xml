@@ -77,6 +77,10 @@
             android:id="@+id/action_WorkoutViewer_to_WorkoutDetail"
             app:destination="@id/fragmentWorkoutDetail" />
 
+        <action
+            android:id="@+id/action_WorkoutViewer_to_Workouts"
+            app:destination="@id/fragmentWorkouts" />
+
     </fragment>
 
     <fragment

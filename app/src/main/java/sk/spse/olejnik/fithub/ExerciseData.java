@@ -78,7 +78,4 @@ public class ExerciseData {
         this.newImageMini = newImageMini;
     }
 
-
-
-
 }

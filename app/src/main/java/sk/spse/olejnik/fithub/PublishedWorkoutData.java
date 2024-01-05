@@ -1,15 +1,12 @@
 package sk.spse.olejnik.fithub;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class PublishedWorkoutData {
     private String time;
     private String author;
     private String id;
     private HashMap<String, Boolean> ratings;
-
-
     private WorkoutData workout;
 
     public PublishedWorkoutData(String time, String author, String id,HashMap<String, Boolean> ratings, WorkoutData workout) {
@@ -59,6 +56,5 @@ public class PublishedWorkoutData {
     public void setWorkout(WorkoutData workout) {
         this.workout = workout;
     }
-
 
 }

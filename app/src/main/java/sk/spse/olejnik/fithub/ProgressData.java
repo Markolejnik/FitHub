@@ -1,7 +1,6 @@
 package sk.spse.olejnik.fithub;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class ProgressData {
 
@@ -9,15 +8,8 @@ public class ProgressData {
     Integer reps, weight;
     Calendar date;
     Boolean bodyweight;
-
-
-
     Boolean lbtokg;
-
-
     String note;
-
-
     Boolean repstosec; // seconds is true
 
     public ProgressData(Exercises exercise, Integer reps, Integer weight, Calendar date, Boolean repstosec, Boolean bodyweight, Boolean lbtokg, String note) {
@@ -29,9 +21,7 @@ public class ProgressData {
         this.bodyweight = bodyweight;
         this.lbtokg = lbtokg;
         this.note = note;
-
     }
-
 
     public Exercises getExercise() {
         return exercise;
@@ -92,8 +82,5 @@ public class ProgressData {
     public void setNote(String note) {
         this.note = note;
     }
-
-
-
 
 }

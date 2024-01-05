@@ -1,7 +1,6 @@
 package sk.spse.olejnik.fithub;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -22,8 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.ImageView;
@@ -43,7 +40,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.time.Instant;
@@ -60,7 +56,6 @@ import java.util.Objects;
 public class ProfileFragment extends Fragment {
 
     BottomNavigationView bottomNavigationView;
-    LinearLayout workoutLayout;
     ConstraintLayout root, workoutContainer, privateContainer;
     TextView nickname, joined;
     Button publicButton, privateButton;
@@ -68,29 +63,14 @@ public class ProfileFragment extends Fragment {
     SwipeRefreshLayout swipe, swipe2;
     ImageView settings, profilePicture;
 
-    List<WorkoutData> workouts, userWorkouts;
     List<PublishedWorkoutData> pWorkouts, pUserWorkouts;
-
-
+    String currentNickname, url;
 
     private WorkoutViewModel workoutViewModel;
-
-
 
     FirebaseAuth auth;
     FirebaseFirestore db;
     FirebaseUser user;
-
-    String titleValue, targetedMGValue, json, currentNickname, url;
-    Boolean isWorkout;
-
-    List<WorkoutExercises> exercises;
-    List<String> privateTimes, privateUsernames, publicTimes, publicUsernames;
-
-    Gson gson;
-    Type type;
-
-    private SharedPreferences preferences;
 
     WorkoutsAdapter privateAdapter, publicAdapter;
 
@@ -103,27 +83,24 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         checkSignedIn();
         return inflater.inflate(R.layout.fragment_profile, container, false);
-
 
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         root = view.findViewById(R.id.constraintLayout);
         settings = view.findViewById(R.id.settings);
         nickname = view.findViewById(R.id.nicknameText);
@@ -141,37 +118,17 @@ public class ProfileFragment extends Fragment {
 
         privateContainer.setVisibility(View.GONE);
 
-        isWorkout = true;
-        exercises = new ArrayList<>();
-        workouts = new ArrayList<>();
-        privateTimes = new ArrayList<>();
-        publicTimes = new ArrayList<>();
-        userWorkouts = new ArrayList<>();
-        privateUsernames = new ArrayList<>();
-        publicUsernames = new ArrayList<>();
         pWorkouts = new ArrayList<>();
         pUserWorkouts = new ArrayList<>();
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
-        if (!Objects.equals(json, "")) {
-            for (WorkoutData workout: workouts) {
-                createNewDraft(workout.getTitle(), workout.getTargetedMuscleGroups(), workout.getExercises());
-            }
-        }
-
-        workoutViewModel.getWorkoutLiveData().observe(getViewLifecycleOwner(), new Observer<WorkoutData>() {
-            @Override
-            public void onChanged(@Nullable WorkoutData workoutData) {
-                if (workoutData != null) {
-                    titleValue = workoutData.getTitle();
-                    targetedMGValue = workoutData.getTargetedMuscleGroups();
-                    exercises = workoutData.getExercises();
-                    List<WorkoutData> list = new ArrayList<>();
-                    list.add(new WorkoutData(titleValue, targetedMGValue, exercises));
-                    createNewDraft(titleValue, targetedMGValue, exercises);
-                }
-            }
-        });
+//        workoutViewModel.getWorkoutLiveData().observe(getViewLifecycleOwner(), new Observer<WorkoutData>() {
+//            @Override
+//            public void onChanged(@Nullable WorkoutData workoutData) {
+//                if (workoutData != null) {
+//                }
+//            }
+//        });
 
         bottomNavigationView.setSelectedItemId(R.id.profile);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
@@ -236,21 +193,13 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-
-
-
         LinearLayoutManager privateLayoutManager = new LinearLayoutManager(getContext());
         privateLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         privateRecycler.setLayoutManager(privateLayoutManager);
-
-
-
-
 
     }
 
@@ -260,7 +209,6 @@ public class ProfileFragment extends Fragment {
             if (auth.getCurrentUser() == null) {
                 nickname.setText("Not logged in");
                 Log.i("workouts local", auth.getCurrentUser().getEmail());
-
 
             } else {
                 user = FirebaseAuth.getInstance().getCurrentUser();
@@ -312,9 +260,7 @@ public class ProfileFragment extends Fragment {
                                             WorkoutData w = null;
 
 
-                                            if (workout.get("author") != null) {
-                                                author = workout.get("author").toString();
-                                            }
+                                            if (workout.get("author") != null) author = workout.get("author").toString();
                                             if (workout != null) {
                                                 ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
                                                 ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
@@ -325,11 +271,9 @@ public class ProfileFragment extends Fragment {
                                                 String title = (String) workout.get("title");
                                                 String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
                                                 w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-//                                                userWorkouts.add(w);
                                             }
                                             pUserWorkouts.add(new PublishedWorkoutData("", author, document.getId(), null, w));
                                             privateAdapter.notifyItemInserted(i);
-                                            Log.i("workoutsUser", userWorkouts.size() + "");
                                             i++;
                                         }
                                     }
@@ -337,9 +281,6 @@ public class ProfileFragment extends Fragment {
                                 }
                             }
                         });
-                Log.i("here is the user", auth.getCurrentUser().getEmail());
-                Log.i("workouts public", auth.getCurrentUser().getEmail());
-
 
                 db.collection("workouts").whereEqualTo("author", user.getDisplayName()).orderBy("published", Query.Direction.DESCENDING).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -387,48 +328,8 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    @SuppressLint("SetTextI18n")
-    void createNewDraft(String title, String targetedMG, List<WorkoutExercises> exercises) {
-        TableRow tableRow = new TableRow(getContext());
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View layoutDraft = inflater.inflate(R.layout.layout_workout_draft, null);
-        TextView workoutTitle = layoutDraft.findViewById(R.id.draftTitle);
-        TextView exerciseCount = layoutDraft.findViewById(R.id.exerciseCount);
-        TextView workoutMG = layoutDraft.findViewById(R.id.draftTargetedMG);
-        workoutTitle.setText(title);
-        workoutMG.setText(targetedMG);
-        exerciseCount.setText(exercises.size() + " Exercises");
-        tableRow.addView(layoutDraft);
-        privateRecycler.addView(tableRow);
 
-    }
-//    @SuppressLint("SetTextI18n")
-//    void createNewWorkout(String title, String targetedMG, List<WorkoutExercises> exercises) {
-//        LayoutInflater inflater = LayoutInflater.from(getContext());
-//        View layoutWorkout = inflater.inflate(R.layout.layout_workout, null);
-//        TextView user = layoutWorkout.findViewById(R.id.username);
-//        TextView published = layoutWorkout.findViewById(R.id.published);
-//        TextView workoutTitle = layoutWorkout.findViewById(R.id.workoutTitle);
-//        TextView exerciseCount = layoutWorkout.findViewById(R.id.exerciseCount);
-//        TextView workoutMG = layoutWorkout.findViewById(R.id.targetedMG);
-//        ImageView profilePicture = layoutWorkout.findViewById(R.id.profilePicture);
-//
-//
-//        layoutWorkout.setOnClickListener(v -> {
-//            createWorkoutDetail(title, targetedMG, exercises);
-//        });
-//        published.setVisibility(View.GONE);
-//        profilePicture.setVisibility(View.VISIBLE);
-//        user.setText(nickname.getText());
-//        workoutTitle.setText(title);
-//        workoutMG.setText(targetedMG);
-//        workoutLayout.setPadding(20, 20, 20, 20);
-//        exerciseCount.setText(exercises.size() + " Exercises");
-//        workoutLayout.addView(layoutWorkout);
-//
-//    }
-
-    void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {
+    private void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {
         WorkoutData data = new WorkoutData(title, targetedMG, exercises);
         workoutViewModel.updateWorkoutData(data);
         Navigation.findNavController(root).navigate(R.id.action_Profile_to_WorkoutDetail);

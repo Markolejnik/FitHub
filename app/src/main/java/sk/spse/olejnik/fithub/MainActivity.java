@@ -18,9 +18,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity  {
 
-//    BottomNavigationView bottomNavigationView;
-    MenuItem workouts, profile, settings;
-    FragmentContainerView workoutsContainer, exerciseContainer, profileContainer, settingsContainer;
 
     FirebaseAuth auth;
 
@@ -29,7 +26,7 @@ public class MainActivity extends AppCompatActivity  {
     private WorkoutViewModel workoutViewModel;
     private ProgressViewModel progressViewModel;
 
-    public static int height, width, bottomNavHeight;
+    public static int height, width;
 
 
     @Override

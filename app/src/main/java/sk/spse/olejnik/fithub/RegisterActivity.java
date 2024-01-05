@@ -34,18 +34,16 @@ import java.util.Map;
 
 
 public class RegisterActivity extends AppCompatActivity {
+
     FirebaseAuth auth;
     FirebaseFirestore db;
-
 
     TextView signIn;
     EditText editPassword, editEmail, editNickname;
     Button signUp;
+    String nickname;
 
-    public String nickname;
-
-    int MIN_PASS_LEN = 8;
-
+    final int MIN_PASS_LEN = 8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.background));
         }
     }
+
     public void userRegistration(View view) {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -90,16 +89,13 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-
-        auth.createUserWithEmailAndPassword(editEmail.getText().toString(),
-                editPassword.getText().toString()).addOnCompleteListener(task -> {
+        auth.createUserWithEmailAndPassword(editEmail.getText().toString(), editPassword.getText().toString()).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
 
                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+
                 Toast.makeText(RegisterActivity.this, "Sign Up Successful!", Toast.LENGTH_LONG).show();
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String userUid = user.getUid();
-                CollectionReference usersCollection = db.collection("users");
                 nickname = editNickname.getText().toString();
                 LocalDate currentDate = LocalDate.now();
                 List<String> workouts = new ArrayList<>();
@@ -111,24 +107,23 @@ public class RegisterActivity extends AppCompatActivity {
                 newuser.put("joined", currentDate.toString());
                 newuser.put("workouts", workouts);
                 newuser.put("progress", progress);
+
                 db.collection("users")
-                        .add(newuser)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d("newUser", newuser.get(1) + documentReference.getId());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("newUser", "Error adding document", e);
-                            }
-                        });
-                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                        .setDisplayName(nickname).build();
+                .add(newuser)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("newUser", newuser.get(1) + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("newUser", "Error adding document", e);
+                    }
+                });
 
-
+                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(nickname).build();
                 user.updateProfile(profileUpdates);
                 finish();
             } else {

@@ -26,6 +26,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,11 +64,13 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void userRegistration(View view) {
+
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         String userEmail = editEmail.getText().toString();
         String userPassword = editPassword.getText().toString();
 
+        // Validate user inputs
         if (userEmail.isEmpty()) {
             editEmail.setError("Please enter your email");
             editEmail.requestFocus();
@@ -89,31 +93,36 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        auth.createUserWithEmailAndPassword(editEmail.getText().toString(), editPassword.getText().toString()).addOnCompleteListener(task -> {
+        // Register user in firebase
+        auth.createUserWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
 
+                // Send user to main activity
                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
 
                 Toast.makeText(RegisterActivity.this, "Sign Up Successful!", Toast.LENGTH_LONG).show();
+
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 nickname = editNickname.getText().toString();
                 LocalDate currentDate = LocalDate.now();
+
                 List<String> workouts = new ArrayList<>();
                 List<String> progress = new ArrayList<>();
                 Map<String, Object> newuser = new HashMap<>();
+
                 newuser.put("nickname", nickname);
                 newuser.put("email", userEmail);
-                newuser.put("password", userPassword);
                 newuser.put("joined", currentDate.toString());
                 newuser.put("workouts", workouts);
                 newuser.put("progress", progress);
 
+                // Create user in firestore
                 db.collection("users")
                 .add(newuser)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Log.d("newUser", newuser.get(1) + documentReference.getId());
+                        Log.d("newUser", documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -123,6 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 });
 
+                // Set users nickname
                 UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(nickname).build();
                 user.updateProfile(profileUpdates);
                 finish();
@@ -132,9 +142,13 @@ public class RegisterActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, e.getLocalizedMessage(), Toast.LENGTH_LONG).show());
     }
 
+    // Handle Sign-In button press
     public void signIn(View view) {
+
+        // Send user to Login Activity
         startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
         finish();
     }
+
 
 }

@@ -17,8 +17,8 @@ import java.util.Locale;
 
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ExerciseViewHolder> {
 
-
     public class ExerciseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
         ImageView thumbnail;
         TextView exercise;
 
@@ -40,13 +40,16 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     private List<Exercises> exercises, filteredExercises;
 
     Context context;
-    private OnEntryClickListener onEntryClickListener;
+
+
+    // Adapter Constructor
     public ExerciseAdapter(List<Exercises> exercises, Context context) {
         this.exercises = exercises;
         this.filteredExercises = new ArrayList<>(exercises);
         this.context = context;
     }
 
+    // Get context and inflate view
     @NonNull
     @Override
     public ExerciseAdapter.ExerciseViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -60,6 +63,8 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ExerciseAdapter.ExerciseViewHolder holder, int position) {
+
+        // Set widget content
         holder.thumbnail.setImageResource(filteredExercises.get(position).getImageMini());
         holder.exercise.setText(filteredExercises.get(position).getName());
     }
@@ -70,6 +75,8 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
     }
 
     public List<Exercises> filter(String query) {
+
+        // Filter exercises
         filteredExercises.clear();
         if (query.isEmpty()) {
             filteredExercises.addAll(exercises);
@@ -89,6 +96,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.Exerci
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+    // On Entry Click Listener
     private ExerciseAdapter.OnEntryClickListener mOnEntryClickListener;
 
     public interface OnEntryClickListener {

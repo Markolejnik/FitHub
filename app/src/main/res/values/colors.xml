@@ -13,6 +13,7 @@
     <color name="foreground">#E9E9E9</color>
     <color name="background">#131313</color>
     <color name="barbackground">#323232</color>
+    <color name="profilebackground">#1C1C1C</color>
 
     <color name="linecolor">#8C8B8B</color>
 </resources>

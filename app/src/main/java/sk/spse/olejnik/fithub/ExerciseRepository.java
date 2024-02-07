@@ -1,6 +1,5 @@
 package sk.spse.olejnik.fithub;
 
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -9,7 +8,7 @@ import java.util.List;
 public class ExerciseRepository {
 
     public List<Exercises> allExercises;
-    List<String> muscleGroup, muscleGroups;
+    List<String> muscleGroup;
     int image1, image2, imageMini;
 
     // Exercise types
@@ -36,6 +35,7 @@ public class ExerciseRepository {
     String hamstrings = "Hamstrings";
 
     public ExerciseRepository() {
+
         // List of all exercises
         allExercises = new ArrayList<>();
         muscleGroup = new ArrayList<>();
@@ -1006,21 +1006,8 @@ public class ExerciseRepository {
         Exercises calfRaises = new Exercises("Calf Raises", bodybuilding, "https://musclewiki.com/bodyweight/male/calves/calf-raises/", muscleGroup, image1, image2, imageMini);
         allExercises.add(calfRaises);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        // Sort all exercises
         allExercises.sort(Comparator.comparing(Exercises::getName));
+
     }
 }

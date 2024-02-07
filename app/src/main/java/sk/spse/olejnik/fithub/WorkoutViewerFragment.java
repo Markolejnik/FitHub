@@ -72,9 +72,10 @@ public class WorkoutViewerFragment extends Fragment {
         setCounter = view.findViewById(R.id.setCounter);
         setInfo = view.findViewById(R.id.setInfo);
 
+        // Get View Model
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
-
+        // Get workout data from workout view model
         workoutViewModel.getWorkoutLiveData().observe(getViewLifecycleOwner(), new Observer<WorkoutData>() {
             @Override
             public void onChanged(@Nullable WorkoutData workoutData) {
@@ -91,15 +92,18 @@ public class WorkoutViewerFragment extends Fragment {
             }
         });
 
+        // Handle back button press
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });
 
+        // Handle exit button press
         exit.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_WorkoutViewer_to_Workouts);
         });
 
+        // Handle adding sets to set counter
         addSet.setOnClickListener(v -> {
             if (exercises.get(current).getSets() > sets) {
                 setCounter.setText((++sets).toString());
@@ -107,6 +111,7 @@ public class WorkoutViewerFragment extends Fragment {
 
         });
 
+        // Go to previous exercise
         prevExercise.setOnClickListener(v -> {
             try {
                 displayExercise(--current);
@@ -117,6 +122,7 @@ public class WorkoutViewerFragment extends Fragment {
 
         });
 
+        // Go to next exercise
         nextExercise.setOnClickListener(v -> {
             try {
                 displayExercise(++current);
@@ -128,6 +134,8 @@ public class WorkoutViewerFragment extends Fragment {
         });
 
     }
+
+    // Display exercise
     @SuppressLint("SetTextI18n")
     private void displayExercise(Integer current) {
 
@@ -135,7 +143,7 @@ public class WorkoutViewerFragment extends Fragment {
         exerciseTitle.setText(exercise.getTitle());
         thumbnail.setImageResource(exercise.getImage1());
 
-        if (exercise.isTimeFormat()) setInfo.setText(exercise.getSets() + "Sets Of " + exercise.getReps() + " Secs");
+        if (exercise.isTimeFormat()) setInfo.setText(exercise.getSets() + " Sets Of " + exercise.getReps() + " Sec");
         else setInfo.setText(exercise.getSets() + " Sets Of " + exercise.getReps() + " Reps");
 
         setCounter.setText("0");

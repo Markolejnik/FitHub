@@ -108,14 +108,17 @@ public class ProgressEntryFragment extends Fragment {
         weightedValue = false;
         lbtokgValue = false;
 
+        // Get View Models
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
         progressViewModel = ((MainActivity) requireActivity()).getProgressViewModel();
 
+        // Handle back button press
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });
 
+        // Get progress data from Progress View Model
         progressViewModel.getProgressLiveData().observe(getViewLifecycleOwner(), new Observer<ProgressData>() {
             @Override
             public void onChanged(ProgressData progressData) {
@@ -134,6 +137,7 @@ public class ProgressEntryFragment extends Fragment {
             }
         });
 
+        // Handle reps or seconds switch button
         repsToSec.setOnClickListener(v -> {
             repstosecValue = repsToSec.isChecked();
             if (repstosecValue) reps.setHint("Secs");
@@ -141,6 +145,7 @@ public class ProgressEntryFragment extends Fragment {
 
         });
 
+        // Handle weighted or bodyweight switch button
         weighted.setOnClickListener(v -> {
             weightedValue = weighted.isChecked();
             if (weightedValue) {
@@ -156,12 +161,14 @@ public class ProgressEntryFragment extends Fragment {
             }
         });
 
+        // Handle lb or kg switch button
         lbtokg.setOnClickListener(v -> {
             lbtokgValue = lbtokg.isChecked();
             if (lbtokgValue) lbtokgtext.setText("lbs");
             else lbtokgtext.setText("kg");
         });
 
+        // Handle progress entry saving
         saveEntry.setOnClickListener(v -> {
             if (!weightedValue) {
                 try {
@@ -190,6 +197,7 @@ public class ProgressEntryFragment extends Fragment {
         });
     }
 
+    // Publish data to database
     public void publishEntry(ProgressData data) {
 
         if (auth.getCurrentUser() == null) {
@@ -230,6 +238,8 @@ public class ProgressEntryFragment extends Fragment {
                             db.collection("users").document(documentId).update("progress", FieldValue.arrayUnion(entry)).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
+
+                                    // Navigate to calendar fragment
                                     Navigation.findNavController(root).navigate(R.id.action_ProgressEntry_to_Calendar);
                                 }
                             });

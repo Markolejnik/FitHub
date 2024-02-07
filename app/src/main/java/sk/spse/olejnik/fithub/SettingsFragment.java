@@ -76,7 +76,7 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        root = view.findViewById(R.id.linearLayout);
+        root = view.findViewById(R.id.constraintLayout);
         goBack = view.findViewById(R.id.goBack);
         signOut = view.findViewById(R.id.signOut);
         delete = view.findViewById(R.id.deleteUser);
@@ -86,22 +86,27 @@ public class SettingsFragment extends Fragment {
         preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
         preferences2 = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
 
+        // Handle back button press
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });
 
+        // Handle delete user button press
         delete.setOnClickListener(v -> {
             deleteUser();
         });
 
+        // Handle pfp uploading button
         upload.setOnClickListener(v -> {
-            openGallery();
+            if (auth.getCurrentUser() != null) openGallery();
+            else Toast.makeText(getContext(), "Sign in to upload a profile picture", Toast.LENGTH_SHORT).show();
         });
         checkSignedIn();
 
     }
 
+    // Check if a user is signed in
     public void checkSignedIn() {
 
         if (auth.getCurrentUser() == null) {
@@ -135,6 +140,7 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    // Delete user
     public void deleteUser(){
         try {
             user.delete()
@@ -170,11 +176,13 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    // Open users phone gallery
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, imageRequest);
     }
 
+    // Upload pfp to database
     private void uploadProfileImage(Uri imageUri) {
         String userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         StorageReference imageReference = storage.getReference().child("profilePictures").child(userId + ".jpg");

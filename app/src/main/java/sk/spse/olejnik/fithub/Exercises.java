@@ -1,15 +1,14 @@
 package sk.spse.olejnik.fithub;
 
-import androidx.lifecycle.ViewModel;
-
 import java.util.List;
 
-public class Exercises extends ViewModel {
-
+public class Exercises {
 
     private String name, type, link;
     private List<String> muscleGroup;
     private int image1, image2, imageMini;
+
+    // Exercises constructor
     public Exercises(String name, String type, String link, List<String> muscleGroup, int image1, int image2, int imageMini) {
         this.name = name;
         this.type = type;
@@ -19,6 +18,8 @@ public class Exercises extends ViewModel {
         this.image2 = image2;
         this.imageMini = imageMini;
     }
+
+    // Getters and setters
     public String getName() {
         return name;
     }

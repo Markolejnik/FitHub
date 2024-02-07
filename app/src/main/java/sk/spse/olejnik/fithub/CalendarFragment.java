@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CalendarFragment extends Fragment implements ProgressAdapter.AlertDialogListener {
+
     ConstraintLayout root;
     BottomNavigationView bottomNavigationView;
     FloatingActionButton fab;
@@ -91,13 +92,18 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
         fab = view.findViewById(R.id.fab);
         bottomNavigationView.setSelectedItemId(R.id.calendar);
 
+        // Get ViewModel
         progressViewModel = ((MainActivity) requireActivity()).getProgressViewModel();
 
+
+        // Handle bottom navigation clicks
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
+                // Get clicked item
                 int id = item.getItemId();
+
                 if (id == R.id.workouts) {
                     Navigation.findNavController(view).navigate(R.id.action_Calendar_to_Workouts);
                     return true;

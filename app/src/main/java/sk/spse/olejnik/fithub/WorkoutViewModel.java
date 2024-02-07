@@ -11,14 +11,15 @@ public class WorkoutViewModel extends AndroidViewModel {
 
     public WorkoutViewModel(@NonNull Application application) {super(application);}
 
+    // Workout live data
     private MutableLiveData<WorkoutData> workoutLiveData = new MutableLiveData<>();
 
-    // Constructor, getters, and setters
+    // Getter
     public LiveData<WorkoutData> getWorkoutLiveData() {
         return workoutLiveData;
     }
 
-    // Method to update all fields in one go
+    // Update all data in one go
     public void updateWorkoutData(WorkoutData newData) {
         workoutLiveData.setValue(newData);
     }

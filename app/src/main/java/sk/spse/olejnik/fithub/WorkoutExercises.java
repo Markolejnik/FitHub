@@ -16,6 +16,7 @@ public class WorkoutExercises {
     private boolean isTimeFormat;
 
 
+    // Workout exercises constructor
     public WorkoutExercises(String title, String type, String link, Integer image1, Integer image2, Integer imageMini, List<String> muscleGroupsUsed, Integer sets, Integer reps, boolean isTimeFormat) {
         this.title = title;
         this.type = type;
@@ -29,6 +30,7 @@ public class WorkoutExercises {
         this.isTimeFormat = isTimeFormat;
     }
 
+    // Getters and setters
     public String getTitle() {
         return title;
     }

@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_constraintBottom_toTopOf="@+id/exercises"
@@ -10,29 +10,39 @@
     tools:context=".ExerciseDetailFragment">
 
 
-    <ImageView
-        android:id="@+id/goBack"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="6dp"
-        android:src="@drawable/icon_back_foreground"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/exerciseTitle" />
-
-    <TextView
-        android:id="@+id/exerciseTitle"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="55dp"
-        android:fontFamily="@font/oswald_semibold"
-        android:gravity="center"
-        android:paddingTop="10dp"
-        android:text="Exercise Title"
-        android:textColor="@color/colorAccent"
-        android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/goBack"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/goBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginVertical="5dp"
+            android:src="@drawable/goback"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/exerciseTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="50dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:gravity="center"
+            android:text="Exercise Title"
+            android:textColor="@color/colorAccent"
+            android:textSize="25sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/goBack"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constContainer"
@@ -43,7 +53,7 @@
         app:layout_constraintBottom_toTopOf="@+id/AddToWorkout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/exerciseTitle">
+        app:layout_constraintTop_toBottomOf="@id/header">
 
         <ScrollView
             android:id="@+id/ScrollView"
@@ -131,7 +141,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/barrier"
-                    tools:src="@tools:sample/avatars" />
+                    tools:src="@drawable/alternatingdumbbellpress1" />
 
                 <ImageView
                     android:id="@+id/image2"
@@ -142,7 +152,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/image1"
-                    tools:src="@tools:sample/avatars" />
+                    tools:src="@drawable/alternatingdumbbellpress2" />
 
                 <TextView
                     android:id="@+id/linktitle"
@@ -183,6 +193,10 @@
         android:background="@drawable/round_filter"
         android:fontFamily="@font/oswald_semibold"
         android:padding="8dp"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="5"
+        android:shadowRadius="5"
         android:text="Add To Workout"
         android:textColor="@color/foreground"
         android:textSize="20sp"

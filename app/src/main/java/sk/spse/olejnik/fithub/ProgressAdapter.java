@@ -23,6 +23,7 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
     }
 
     public class ProgressViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
     ImageView thumbnail, removeEntry;
     TextView title, reps, weight, date, lbkg, note, x;
 
@@ -57,10 +58,13 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
 
     Context context;
 
+    // Adapter constructor
     public ProgressAdapter(List<ProgressData> progress, Context context) {
         this.progress = progress;
         this.context = context;
     }
+
+    // Get context and inflate layout
     @NonNull
     @Override
     public ProgressAdapter.ProgressViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -74,6 +78,8 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ProgressAdapter.ProgressViewHolder holder, @SuppressLint("RecyclerView") int position) {
+
+        // Set widget content
         holder.title.setText(progress.get(position).getExercise().getName());
         holder.reps.setText(progress.get(position).getReps().toString());
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
@@ -90,6 +96,8 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
             if (progress.get(position).getLbtokg()) holder.lbkg.setText("lbs");
             else holder.lbkg.setText("kg");
         }
+
+        // Handle progress entry removing
         holder.removeEntry.setOnClickListener(v -> {
             if (alertDialogListener != null) {
                 alertDialogListener.onItemClicked(position);
@@ -99,7 +107,7 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
 
     @Override
     public int getItemCount() {
-        Log.i("gettings", progress.size() + "");
+        Log.i("progress entries count", progress.size() + "");
         return progress.size();
     }
 

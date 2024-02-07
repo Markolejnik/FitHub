@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity  {
 
     public static int height, width;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,15 +41,11 @@ public class MainActivity extends AppCompatActivity  {
         auth = FirebaseAuth.getInstance();
         checkSignedIn();
 
+        // Create View Models
         exerciseViewModel = new ViewModelProvider(this).get(ExerciseViewModel.class);
         filterViewModel = new ViewModelProvider(this).get(FilterViewModel.class);
         workoutViewModel = new ViewModelProvider(this).get(WorkoutViewModel.class);
         progressViewModel = new ViewModelProvider(this).get(ProgressViewModel.class);
-
-        WorkoutsFragment workoutsFragment = new WorkoutsFragment();
-        ProfileFragment profileFragment = new ProfileFragment();
-        CalendarFragment calendarFragment = new CalendarFragment();
-        ExerciseFragment exerciseFragment = new ExerciseFragment();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -61,6 +56,7 @@ public class MainActivity extends AppCompatActivity  {
     }
     public void checkSignedIn() {
 
+        // Check if user is signed in
         if (auth.getCurrentUser() == null) {
             startActivity(new Intent(this, RegisterActivity.class));
             finish();
@@ -68,6 +64,8 @@ public class MainActivity extends AppCompatActivity  {
             Log.i("here is the user", auth.getCurrentUser().getEmail());
         }
     }
+
+    // Methods to get View Models
     public ExerciseViewModel getExerciseViewModel() {
         return exerciseViewModel;
     }

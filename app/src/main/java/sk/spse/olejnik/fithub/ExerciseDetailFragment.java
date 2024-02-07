@@ -25,14 +25,13 @@ public class ExerciseDetailFragment extends Fragment {
 
     private ExerciseViewModel exerciseViewModel;
 
-    StringBuilder muscleGroupContent;
-    List<String> muscleGroups;
-    int image1, image2, imageMini;
     TextView titleText, muscleGroupsText, typeText, linkText;
     ImageView imageView1, imageView2, goBack;
     Button addToWorkout;
 
-
+    StringBuilder muscleGroupContent;
+    List<String> muscleGroups;
+    int image1, image2, imageMini;
 
     public ExerciseDetailFragment() {}
 
@@ -50,9 +49,6 @@ public class ExerciseDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_exercise_detail, container, false);
-
-
-
     }
 
     @Override
@@ -68,15 +64,20 @@ public class ExerciseDetailFragment extends Fragment {
         goBack = view.findViewById(R.id.goBack);
         addToWorkout = view.findViewById(R.id.AddToWorkout);
 
+        // Get ViewModel
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
 
+        // Handle back button press
         goBack.setOnClickListener(v -> {
             exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null, null));
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });
 
+        // Handle adding to workout
         addToWorkout.setOnClickListener(v -> {
+
+            // Update exercise creation data
             ExerciseData newData = new ExerciseData();
             newData.setNewTitle(titleText.getText().toString());
             newData.setNewMuscleGroups(muscleGroups);
@@ -88,11 +89,13 @@ public class ExerciseDetailFragment extends Fragment {
 
             exerciseViewModel.updateCreationData(newData);
 
+            // Navigate to workout fragment
             Navigation.findNavController(v).navigate(R.id.action_ExerciseDetail_to_WorkoutCreation);
             exerciseViewModel.updateExerciseData(new ExerciseData(null, null, null, null, null, null, null));
 
         });
 
+        // Get exercise data from Exercise View Model
         exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
             @Override
             public void onChanged(@Nullable ExerciseData exerciseData) {

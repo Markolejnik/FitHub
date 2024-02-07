@@ -21,7 +21,6 @@ import android.widget.LinearLayout;
 import android.widget.SearchView;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class CalendarExerciseFragment extends Fragment {
@@ -48,6 +47,8 @@ public class CalendarExerciseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Get the offline exercise database
         ExerciseRepository repository = new ExerciseRepository();
         exercises = repository.allExercises;
     }
@@ -62,15 +63,19 @@ public class CalendarExerciseFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        root = view.findViewById(R.id.linearLayout);
+        root = view.findViewById(R.id.constraintLayout);
         recyclerView = view.findViewById(R.id.recyclerView);
         searchBar = view.findViewById(R.id.searchBar);
         goBack = view.findViewById(R.id.goBack);
 
+        // Get ViewModels
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
         progressViewModel = ((MainActivity) requireActivity()).getProgressViewModel();
 
+        // Handle back button press
         goBack.setOnClickListener(v -> {
+
+            // Navigate to last fragment
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });

@@ -9,13 +9,15 @@ import androidx.lifecycle.MutableLiveData;
 
 public class ProgressViewModel extends AndroidViewModel {
 
+    // Progress live data
     private MutableLiveData<ProgressData> ProgressLiveData = new MutableLiveData<>();
 
-
+    // Constructor
     public ProgressViewModel(@NonNull Application application) {
         super(application);
     }
 
+    // Getter
     public LiveData<ProgressData> getProgressLiveData() {
         return ProgressLiveData;
     }

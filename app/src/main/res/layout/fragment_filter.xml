@@ -11,12 +11,10 @@
 
     <ImageView
         android:id="@+id/goBack"
-        android:layout_width="54dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="4dp"
-        android:src="@drawable/icon_back_foreground"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.011"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/goback"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,12 +22,12 @@
         android:id="@+id/filterTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="5dp"
         android:fontFamily="@font/oswald_semibold"
         android:gravity="center"
         android:text="Add Filters"
         android:textColor="@color/colorAccent"
-        android:textSize="25sp"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,15 +36,13 @@
         android:id="@+id/filterSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="5dp"
         android:fontFamily="@font/oswald_semibold"
         android:gravity="center"
         android:text="Save"
         android:textColor="@color/colorAccent"
-        android:textSize="25sp"
+        android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.982"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -428,6 +424,10 @@
             android:layout_height="39dp"
             android:background="@drawable/round_filter"
             android:fontFamily="@font/oswald_semibold"
+            android:shadowColor="#000000"
+            android:shadowDx="2"
+            android:shadowDy="4"
+            android:shadowRadius="4"
             android:text="Clear Filters"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"

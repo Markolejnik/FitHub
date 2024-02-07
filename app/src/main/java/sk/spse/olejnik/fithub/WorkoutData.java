@@ -8,12 +8,14 @@ public class WorkoutData {
     private String targetedMuscleGroups;
     private List<WorkoutExercises> exercises;
 
+    // Workout data constructor
     public WorkoutData(String title, String targetedMuscleGroups, List<WorkoutExercises> exercises) {
         this.title = title;
         this.targetedMuscleGroups = targetedMuscleGroups;
         this.exercises = exercises;
     }
 
+    // Getters and setters
     public String getTitle() {
         return title;
     }

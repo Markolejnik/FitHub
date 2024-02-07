@@ -122,12 +122,15 @@ public class WorkoutCreationFragment extends Fragment {
         title = view.findViewById(R.id.titleInput);
         targetedMG = view.findViewById(R.id.targetedMGInput);
 
+        // Get View Models
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
+        // Get shared preferences
         preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
         exerciseList = new ArrayList<>();
 
+        // Get saved values
         valueTitle = preferences.getString("Title", "");
         valueTargetedMG = preferences.getString("TitleMG", "");
         gson = new Gson();
@@ -176,11 +179,15 @@ public class WorkoutCreationFragment extends Fragment {
         title.setText(valueTitle);
         targetedMG.setText(valueTargetedMG);
 
+        // Handle back button press
         goBack.setOnClickListener(v -> {
             showExitDialog();
         });
 
+        // Handle save button press
         save.setOnClickListener(v -> {
+
+            // Validate user input
             if (title.getText().toString().equals("")) {
                 title.setError("Input a title before saving");
                 return;
@@ -194,6 +201,7 @@ public class WorkoutCreationFragment extends Fragment {
                 return;
             }
 
+            // Get user created workout
             valueTitle = title.getText().toString();
             valueTargetedMG = targetedMG.getText().toString();
             for (int i = 0; i < tableLayout.getChildCount(); i++) {
@@ -205,6 +213,7 @@ public class WorkoutCreationFragment extends Fragment {
                     EditText repsEditText = constraintLayout.findViewById(R.id.reps);
                     ToggleButton repsTosec = constraintLayout.findViewById(R.id.repstosec);
 
+                    // Validate and get user input for each exercise sets and reps (seconds)
                     try {
                         int sets = Integer.parseInt(setsEditText.getText().toString());
                         int reps = Integer.parseInt(repsEditText.getText().toString());
@@ -224,6 +233,7 @@ public class WorkoutCreationFragment extends Fragment {
                 }
             }
 
+            // Create and update workout data
             List<WorkoutExercises> workoutExercises = new ArrayList<>();
             for (int i = 0; i < exercises.size(); i++) {
                 workoutExercises.add(new WorkoutExercises(exercises.get(i).getName(), exercises.get(i).getType(), exercises.get(i).getLink(), exercises.get(i).getImage1(), exercises.get(i).getImage2(), exercises.get(i).getImageMini(), exercises.get(i).getMuscleGroup(), exerciseList.get(i).getSets(), exerciseList.get(i).getReps(), exerciseList.get(i).getRepstosec()));
@@ -243,15 +253,17 @@ public class WorkoutCreationFragment extends Fragment {
 
         });
 
+        // Handle add exercise button press
         addExercise.setOnClickListener(v -> {
             try {
                 exerciseList.removeAll(exerciseList);
             } catch (Exception e) {
-                Log.i("WCF", "258: no data to be deleted");
+                Log.i("WCF", "no data to be deleted");
             }
 
             preferences.edit().clear().apply();
 
+            // Save data inputted so far
             for (int i = 0; i < tableLayout.getChildCount(); i++) {
                 View tableRow = tableLayout.getChildAt(i);
                 if (tableRow instanceof TableRow) {
@@ -306,10 +318,12 @@ public class WorkoutCreationFragment extends Fragment {
             editor.putString("detailsJson", detailsJson);
             editor.apply();
 
+            // Navigate to exercise fragment
             Navigation.findNavController(v).navigate(R.id.action_WorkoutCreation_to_Exercise);
 
         });
 
+        // Get exercise data from exercise View Model
         exerciseViewModel.getCreationLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
             @Override
             public void onChanged(@Nullable ExerciseData exerciseData) {
@@ -337,6 +351,8 @@ public class WorkoutCreationFragment extends Fragment {
                         }
                         exerciseViewModel.updateCreationData(new ExerciseData(null, null, null, null, null, null, null));
                         Log.i("ExerciseViewModel", "data deleted");
+
+                        // Add new exercise to exercise list
                         if (tableLayout.getChildCount() != titles.size()) {
                             createExerciseList();
                         }
@@ -352,6 +368,7 @@ public class WorkoutCreationFragment extends Fragment {
             }
         }
 
+        // Load user inputted data
         for (int i = 0; i < tableLayout.getChildCount(); i++) {
             View tableRow = tableLayout.getChildAt(i);
             if (tableRow instanceof TableRow) {
@@ -382,7 +399,8 @@ public class WorkoutCreationFragment extends Fragment {
 
     }
 
-    void createExerciseList() {
+    // Create list of workout exercises
+    private void createExerciseList() {
         exercises = new ArrayList<>();
         displayList = new ArrayList<>();
         for (int i = 0; i < titles.size(); i++) {
@@ -393,6 +411,7 @@ public class WorkoutCreationFragment extends Fragment {
         setsList = new ArrayList<>();
         repstosecList = new ArrayList<>();
 
+        // Add exercises to table layout
         if (tableLayout.getChildCount() != exercises.size()) {
             tableLayout.removeAllViews();
             int index = 0;
@@ -407,6 +426,8 @@ public class WorkoutCreationFragment extends Fragment {
                 EditText reps = layoutExercise.findViewById(R.id.reps);
                 ToggleButton repstosec = layoutExercise.findViewById(R.id.repstosec);
                 remove.setElevation(10);
+
+                // Handle exercise click
                 layoutExercise.setOnClickListener(v -> {
 
                     exerciseList.removeAll(exerciseList);
@@ -471,14 +492,13 @@ public class WorkoutCreationFragment extends Fragment {
                     createExerciseDetail(item.getName(), item.getMuscleGroup(), item.getImage1(), item.getImage2(), item.getImageMini(), item.getLink(), item.getType());
                     Navigation.findNavController(root).navigate(R.id.action_WorkoutCreation_to_ExerciseDetail);
                 });
+
+                // Get sets and reps for each exercise
                 if (exerciseList != null) {
                     if (index >= exerciseList.size()) {
                         exerciseList.add(new WCExerciseData(null, null, false));
                     } else {
                         try {
-                            Log.i("hahaahah", exerciseList.get(index).getSets().toString());
-                            Log.i("hahaahah", exerciseList.get(index).getReps().toString());
-                            Log.i("hahaahah", exerciseList.get(index).getRepstosec().toString());
                             sets.setText(exerciseList.get(index).getSets().toString());
                             reps.setText(exerciseList.get(index).getReps().toString());
                         } catch (Exception e) {
@@ -494,6 +514,7 @@ public class WorkoutCreationFragment extends Fragment {
                 if (exerciseList.get(index).getRepstosec()) reps.setHint("Secs");
                  else reps.setHint("Reps");
 
+                // Handle exercise removing
                 remove.setOnClickListener(v -> {
                     int indexToRemove = tableLayout.indexOfChild(tableRow);
                     if (indexToRemove >= 0) {
@@ -533,6 +554,7 @@ public class WorkoutCreationFragment extends Fragment {
                     }
                 });
 
+                // Handle reps or seconds switch button press
                 repstosec.setOnClickListener(v -> {
                     int indexToUpdate = tableLayout.indexOfChild(tableRow);
                     if (repstosec.isChecked()) {
@@ -546,6 +568,7 @@ public class WorkoutCreationFragment extends Fragment {
                     }
                 });
 
+                // Add exercise to lists and set widget content
                 repstosecList.add(repstosec);
                 setsList.add(sets);
                 repsList.add(reps);
@@ -557,6 +580,7 @@ public class WorkoutCreationFragment extends Fragment {
         }
     }
 
+    // Update edit text field hints
     private void updateViews(int i) {
         WCExerciseData exercise = exerciseList.get(i);
         View tableRow = tableLayout.getChildAt(i);
@@ -568,6 +592,8 @@ public class WorkoutCreationFragment extends Fragment {
             reps.setHint("Reps");
         }
     }
+
+    // Open exercise detail
     private void createExerciseDetail (String name, List <String> muscleGroup, int image1, int image2, int imageMini, String link, String type){
 
         ExerciseData newData = new ExerciseData();
@@ -583,6 +609,7 @@ public class WorkoutCreationFragment extends Fragment {
 
     }
 
+    // Publish workout as private
     private void makePrivate(WorkoutData workoutData) {
 
         if (auth.getCurrentUser() == null) {
@@ -638,6 +665,7 @@ public class WorkoutCreationFragment extends Fragment {
         }
     }
 
+    // Publish workout as public
     private void publishWorkout(WorkoutData workoutData) {
 
         if (auth.getCurrentUser() == null) {
@@ -667,7 +695,6 @@ public class WorkoutCreationFragment extends Fragment {
 
             data = new HashMap<>();
             data.put("title", workoutData.getTitle());
-            data.put("lowercasetitle", workoutData.getTitle().toLowerCase(Locale.ROOT));
             data.put("targetMuscleGroups", workoutData.getTargetedMuscleGroups());
             data.put("exercises", exercises);
 
@@ -702,11 +729,14 @@ public class WorkoutCreationFragment extends Fragment {
         }
     }
 
+    // Saving / Publishing alert dialog
     private void showPublishDialog(WorkoutData workoutData) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Make Workout Public Or Private?");
         builder.setMessage("Private is only accessible by the creator and public is accessible for anyone");
+
+        // Make workout public
         builder.setPositiveButton("Public", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -715,6 +745,8 @@ public class WorkoutCreationFragment extends Fragment {
 
             }
         });
+
+        // Make workout private
         builder.setNegativeButton("Private", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -724,6 +756,7 @@ public class WorkoutCreationFragment extends Fragment {
             }
 
         });
+        // Cancel
         builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -734,11 +767,13 @@ public class WorkoutCreationFragment extends Fragment {
     }
 
 
+    // Edit alert dialog
     private void showExitDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Save or Delete Workout Draft");
         builder.setMessage("Do you want to save or delete this workout draft?");
+        // Save workout draft
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -809,6 +844,7 @@ public class WorkoutCreationFragment extends Fragment {
 
             }
         });
+        // Delete workout draft
         builder.setNegativeButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -837,6 +873,7 @@ public class WorkoutCreationFragment extends Fragment {
             }
 
         });
+        // Cancel
         builder.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

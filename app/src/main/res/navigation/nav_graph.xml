@@ -155,6 +155,9 @@
         <action
             android:id="@+id/action_Profile_to_WorkoutDetail"
             app:destination="@id/fragmentWorkoutDetail" />
+        <action
+            android:id="@+id/action_Profile_to_WorkoutCreation"
+            app:destination="@id/fragmentWorkoutCreation" />
 
         <action
             android:id="@+id/action_Profile_to_Settings"

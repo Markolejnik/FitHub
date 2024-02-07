@@ -18,7 +18,7 @@
             android:id="@+id/goBack"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/icon_back_foreground"
+            android:src="@drawable/goback"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -66,7 +66,7 @@
             android:fontFamily="@font/oswald_semibold"
             android:gravity="center"
             android:text="No muscle groups used."
-            android:textColor="@color/barbackground"
+            android:textColor="@color/linecolor"
             android:textSize="18sp" />
     </LinearLayout>
 
@@ -182,6 +182,10 @@
             android:paddingTop="10dp"
             android:paddingRight="40dp"
             android:paddingBottom="10dp"
+            android:shadowColor="#000000"
+            android:shadowDx="2"
+            android:shadowDy="5"
+            android:shadowRadius="5"
             android:text="Add Set"
             android:textColor="@color/foreground"
             android:textSize="30sp"

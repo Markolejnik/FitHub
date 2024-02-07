@@ -11,6 +11,7 @@ public class ExerciseData {
 
     public ExerciseData() {}
 
+    // Exercise data constructor
     public ExerciseData(String newTitle, String newLink, String newType, List<String> newMuscleGroups, Integer newImage1, Integer newImage2, Integer newImageMini) {
         this.newTitle = newTitle;
         this.newLink = newLink;
@@ -22,6 +23,7 @@ public class ExerciseData {
     }
 
 
+    // Getters and setters
     public String getNewTitle() {
         return newTitle;
     }

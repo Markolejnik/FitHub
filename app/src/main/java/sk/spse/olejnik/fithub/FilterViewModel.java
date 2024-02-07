@@ -15,8 +15,7 @@ public class FilterViewModel extends AndroidViewModel {
         super(application);
     }
 
-    // Constructor, getters, and setters
-
+    // Get filter data
     public LiveData<FilterData> getFilterLiveData() {
         return filterLiveData;
     }

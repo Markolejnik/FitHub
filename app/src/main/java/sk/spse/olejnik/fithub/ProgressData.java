@@ -12,6 +12,7 @@ public class ProgressData {
     String note;
     Boolean repstosec; // seconds is true
 
+    // Progress data constructor
     public ProgressData(Exercises exercise, Integer reps, Integer weight, Calendar date, Boolean repstosec, Boolean bodyweight, Boolean lbtokg, String note) {
         this.exercise = exercise;
         this.reps = reps;
@@ -23,6 +24,7 @@ public class ProgressData {
         this.note = note;
     }
 
+    // Getters and setters
     public Exercises getExercise() {
         return exercise;
     }

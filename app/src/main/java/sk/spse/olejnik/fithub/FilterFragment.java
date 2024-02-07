@@ -96,14 +96,17 @@ public class FilterFragment extends Fragment {
         groupFilterViews.add(filterGroup15);
         groupFilterViews.add(filterGroup16);
 
+        // Handle back button press
         backButton.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_Filter_to_Exercise);
         });
 
         FilterData filterData = new FilterData();
 
+        // Get ViewModel
         filterViewModel = ((MainActivity) requireActivity()).getFilterViewModel();
 
+        // Get filter data from Filter View Model
         filterViewModel.getFilterLiveData().observe(getViewLifecycleOwner(), new Observer<FilterData>() {
             @Override
             public void onChanged(FilterData filterData) {
@@ -135,22 +138,28 @@ public class FilterFragment extends Fragment {
             }
         });
 
+        // Handle filter cleaning
         clearFilters.setOnClickListener(v -> {
+
+            // Clear View Model data
             filterData.setFilterType(null);
             filterData.setFilterMuscleGroups(null);
+
+            // Update view colors
             performViewColorChange();
             filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             filterType1.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
             filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
 
-
         });
 
+        // Handle saving filters
         saveFilters.setOnClickListener(v -> {
 
             filterData.setFilterType(null);
             filterData.setFilterMuscleGroups(null);
 
+            // Get type filters
             if (filterTypeAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterData.setFilterType("Any");
             } else if (filterType1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)){
@@ -159,6 +168,7 @@ public class FilterFragment extends Fragment {
                 filterData.setFilterType("Bodyweight");
             }
 
+            // Get muscle group filters
             filterOutput = new ArrayList<>();
             if (filterGroupAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
                 filterOutput.add("Any");
@@ -196,13 +206,16 @@ public class FilterFragment extends Fragment {
                 filterOutput.add("Triceps");
             }
 
+            // Update View Model data
             filterData.setFilterMuscleGroups(filterOutput);
             filterViewModel.updateExerciseData(filterData);
 
+            // Navigate to exercise fragment
             Navigation.findNavController(view).navigate(R.id.action_Filter_to_Exercise);
 
         });
 
+        // Handle type filter button presses
         filterTypeAny.setOnClickListener(v1 -> {
             filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             if (filterType1.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent) || filterType2.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {
@@ -227,6 +240,7 @@ public class FilterFragment extends Fragment {
             }
         });
 
+        // Handle muscle group filter button presses
         filterGroupAny.setOnClickListener(v2 -> {
             if (filterGroupAny.getCurrentTextColor() == ContextCompat.getColor(getContext(), R.color.colorAccent)) {}
             else {
@@ -460,6 +474,7 @@ public class FilterFragment extends Fragment {
 
     }
 
+    // Check view colors
     private boolean performViewColorCheck() {
         boolean result = false;
         for (TextView filter : groupFilterViews) {
@@ -467,6 +482,8 @@ public class FilterFragment extends Fragment {
         }
         return result;
     }
+
+    // Change view colors
     private void performViewColorChange() {
         filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         for (TextView filter: groupFilterViews) {

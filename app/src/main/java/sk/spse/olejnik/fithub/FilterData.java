@@ -7,9 +7,9 @@ public class FilterData {
     private String filterType;
     private List<String> filterMuscleGroups;
 
-
     public FilterData() {}
 
+    // Getters and setters
     public String getFilterType() {
         return filterType;
     }

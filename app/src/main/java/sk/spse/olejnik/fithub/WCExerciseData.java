@@ -5,6 +5,15 @@ public class WCExerciseData {
     private Integer sets, reps;
     private Boolean repstosec;
 
+
+    // Workout Creation Exercise Data Constructor
+    public WCExerciseData(Integer sets, Integer reps, Boolean repstosec) {
+        this.sets = sets;
+        this.reps = reps;
+        this.repstosec = repstosec;
+    }
+
+    // Getters and setters
     public Integer getSets() {
         return sets;
     }
@@ -26,12 +35,6 @@ public class WCExerciseData {
     }
 
     public void setRepstosec(Boolean repstosec) {
-        this.repstosec = repstosec;
-    }
-
-    public WCExerciseData(Integer sets, Integer reps, Boolean repstosec) {
-        this.sets = sets;
-        this.reps = reps;
         this.repstosec = repstosec;
     }
 

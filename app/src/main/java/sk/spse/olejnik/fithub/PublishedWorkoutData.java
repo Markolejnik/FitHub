@@ -9,6 +9,7 @@ public class PublishedWorkoutData {
     private HashMap<String, Boolean> ratings;
     private WorkoutData workout;
 
+    // Published workout data constructor
     public PublishedWorkoutData(String time, String author, String id,HashMap<String, Boolean> ratings, WorkoutData workout) {
         this.time = time;
         this.author = author;
@@ -17,6 +18,7 @@ public class PublishedWorkoutData {
         this.workout = workout;
     }
 
+    // Getters and setters
     public String getTime() {
         return time;
     }

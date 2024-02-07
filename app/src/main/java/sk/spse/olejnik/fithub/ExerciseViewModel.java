@@ -7,17 +7,20 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import java.util.List;
-
 public class ExerciseViewModel extends AndroidViewModel {
 
+    // Live data for exercise detail
     private MutableLiveData<ExerciseData> exerciseLiveData = new MutableLiveData<>();
+
+    // Live data for workout creation
     private MutableLiveData<ExerciseData> creationLiveData = new MutableLiveData<>();
 
+    // View Model constructor
     public ExerciseViewModel(@NonNull Application application) {
         super(application);
     }
 
+    // Getters
     public LiveData<ExerciseData> getExerciseLiveData() {
         return exerciseLiveData;
     }

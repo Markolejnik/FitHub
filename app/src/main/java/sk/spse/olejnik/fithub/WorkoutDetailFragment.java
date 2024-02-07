@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
@@ -30,12 +31,12 @@ public class WorkoutDetailFragment extends Fragment {
     private ExerciseViewModel exerciseViewModel;
     private WorkoutViewModel workoutViewModel;
 
-    LinearLayout root;
+    ConstraintLayout root;
     ImageView goBack;
     TextView titleText, targetedMGText;
     Button startWorkout;
-    TableLayout tableLayout;
 
+    LinearLayout tableLayout;
     List<WorkoutExercises> exercises;
     String titleValue, targetedMGValue;
 
@@ -61,16 +62,19 @@ public class WorkoutDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        root = view.findViewById(R.id.linearLayout);
+        root = view.findViewById(R.id.constraintLayout);
         goBack = view.findViewById(R.id.goBack);
         titleText = view.findViewById(R.id.wDetailTitle);
         targetedMGText = view.findViewById(R.id.wDetailGroups);
         tableLayout = view.findViewById(R.id.wDetailTable);
         startWorkout = view.findViewById(R.id.startWorkout);
 
+
+        // Get View Models
         exerciseViewModel = ((MainActivity) requireActivity()).getExerciseViewModel();
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
+        // Get workout data from Workout View Model
         workoutViewModel.getWorkoutLiveData().observe(getViewLifecycleOwner(), new Observer<WorkoutData>() {
             @Override
             public void onChanged(@Nullable WorkoutData workoutData) {
@@ -86,20 +90,22 @@ public class WorkoutDetailFragment extends Fragment {
             }
         });
 
+        // Start workout viewing
         startWorkout.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_WorkoutDetail_to_WorkoutViewer);
         });
 
+        // Handle back button press
         goBack.setOnClickListener(v -> {
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });
     }
 
+    // Create workout exercise list
     @SuppressLint("SetTextI18n")
     private void createExerciseList(List<WorkoutExercises> exercises) {
         for (WorkoutExercises exercise: exercises) {
-            TableRow tableRow = new TableRow(getContext());
             LayoutInflater inflater = LayoutInflater.from(getContext());
             View layoutExercise = inflater.inflate(R.layout.layout_workout_exercise, null);
             TextView etitle = layoutExercise.findViewById(R.id.exercise);
@@ -107,26 +113,34 @@ public class WorkoutDetailFragment extends Fragment {
             TextView sets = layoutExercise.findViewById(R.id.sets);
             TextView reps = layoutExercise.findViewById(R.id.reps);
             TextView repsOrSec = layoutExercise.findViewById(R.id.repsOrSec);
+
+            // Handle exercise clicks
             layoutExercise.setOnClickListener(v -> {
-                createExerciseDetail(exercise.getTitle(), exercise.getMuscleGroupsUsed(), exercise.getImage1(),exercise.getImage2(), exercise.getLink(), exercise.getType());
+                createExerciseDetail(exercise.getTitle(), exercise.getMuscleGroupsUsed(), exercise.getImage1(),exercise.getImage2(), exercise.getImageMini(), exercise.getLink(), exercise.getType());
                 Navigation.findNavController(root).navigate(R.id.action_WorkoutDetail_to_ExerciseDetail);
             });
+
+            // Set widget content
             etitle.setText(exercise.getTitle());
             sets.setText(exercise.getSets().toString());
             reps.setText(exercise.getReps().toString());
             if (exercise.isTimeFormat()) repsOrSec.setText("Sec");
             thumbnail.setImageResource(exercise.getImageMini());
-            tableRow.addView(layoutExercise);
-            tableLayout.addView(tableRow);
+
+            // Add exercise to layout
+            tableLayout.addView(layoutExercise);
         }
     }
-    private void createExerciseDetail (String name, List < String > muscleGroup, int image1, int image2, String link, String type){
+
+    // Create exercise detail
+    private void createExerciseDetail (String name, List < String > muscleGroup, int image1, int image2, int imageMini, String link, String type){
 
         ExerciseData newData = new ExerciseData();
         newData.setNewTitle(name);
         newData.setNewMuscleGroups(muscleGroup);
         newData.setNewImage1(image1);
         newData.setNewImage2(image2);
+        newData.setNewImageMini(imageMini);
         newData.setNewLink(link);
         newData.setNewType(type);
 

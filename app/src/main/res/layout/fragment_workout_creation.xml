@@ -9,47 +9,51 @@
     android:background="@color/background"
     tools:context=".WorkoutCreationFragment">
 
-    <ImageView
-        android:id="@+id/goBack"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="6dp"
-        android:src="@drawable/icon_back_foreground"
-        app:layout_constraintBottom_toBottomOf="@+id/workoutTitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/workoutTitle"
-        app:layout_constraintVertical_bias="0.23" />
-
-    <TextView
-        android:id="@+id/workoutTitle"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:fontFamily="@font/oswald_semibold"
-        android:gravity="center"
-        android:text="New Workout"
-        android:textColor="@color/colorAccent"
-        android:textSize="30sp"
+        android:layout_height="60dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/workoutSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="3dp"
-        android:fontFamily="@font/oswald_semibold"
-        android:gravity="center"
-        android:text="Save"
-        android:textColor="@color/colorAccent"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/workoutTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/workoutTitle" />
+        <ImageView
+            android:id="@+id/goBack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/goback"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/workoutTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/oswald_semibold"
+            android:gravity="center"
+            android:text="New Workout"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/workoutSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:fontFamily="@font/oswald_semibold"
+            android:gravity="center"
+            android:text="Save"
+            android:textColor="@color/colorAccent"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout3"
@@ -57,7 +61,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/workoutTitle">
+        app:layout_constraintTop_toBottomOf="@+id/header">
 
         <EditText
             android:id="@+id/titleInput"
@@ -68,6 +72,7 @@
             android:fontFamily="@font/oswald_semibold"
             android:hint="Workout Title"
             android:inputType="textPersonName"
+            android:maxLength="40"
             android:text=""
             android:textColor="@color/foreground"
             android:textSize="20sp"
@@ -84,6 +89,7 @@
             android:fontFamily="@font/oswald_semibold"
             android:hint="Targeted Muscle Groups"
             android:inputType="textPersonName"
+            android:maxLength="25"
             android:text=""
             android:textColor="@color/foreground"
             android:textSize="20sp"
@@ -119,6 +125,10 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/round_filter"
         android:fontFamily="@font/oswald_semibold"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="4"
+        android:shadowRadius="4"
         android:text="Add Exercise"
         android:textColor="@color/foreground"
         android:textSize="24sp"

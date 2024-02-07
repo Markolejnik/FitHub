@@ -34,11 +34,13 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.StructuredQuery;
 import com.google.gson.Gson;
 
 import java.lang.reflect.Type;
@@ -47,6 +49,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -81,8 +85,6 @@ public class WorkoutsFragment extends Fragment {
 
     private WorkoutViewModel workoutViewModel;
 
-
-
     public WorkoutsFragment() {}
 
     @Override
@@ -105,6 +107,7 @@ public class WorkoutsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         root = view.findViewById(R.id.workoutsLayout);
+        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
         search = view.findViewById(R.id.search);
         startSearch = view.findViewById(R.id.startSearch);
         logo = view.findViewById(R.id.logo);
@@ -124,9 +127,10 @@ public class WorkoutsFragment extends Fragment {
             times = new ArrayList<>();
         }
 
+        // Get View Model
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
-        bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
+        // Handle bottom navigation menu
         bottomNavigationView.setVisibility(View.VISIBLE);
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -152,12 +156,14 @@ public class WorkoutsFragment extends Fragment {
             }
         });
 
+        // Initiate searching
         startSearch.setOnClickListener(v -> {
             startSearch.setVisibility(View.GONE);
             logo.setVisibility(View.GONE);
             search.setVisibility(View.VISIBLE);
         });
 
+        // Get search query
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -203,23 +209,23 @@ public class WorkoutsFragment extends Fragment {
             }
         });
 
+        // Handle "X" button press on the search bar
         int searchCloseButtonId = search.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
         ImageView closeButton = (ImageView) this.search.findViewById(searchCloseButtonId);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 search.setQuery("", false);
-                if (pWorkouts.size() > 0) pWorkouts.clear();
-                else pWorkouts = new ArrayList<>();
-                lastVisibleDocument = null;
-                getWorkoutData();
+                search.clearFocus();
             }
         });
 
+        // Handle creating a new workout
         fab.setOnClickListener(v -> {
             Navigation.findNavController(view).navigate(R.id.action_Workouts_to_WorkoutCreation);
         });
 
+        // Refresh workout list
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -232,10 +238,12 @@ public class WorkoutsFragment extends Fragment {
             }
         });
 
+        // Set layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
+        // Handle lazy loading on scroll
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -251,6 +259,7 @@ public class WorkoutsFragment extends Fragment {
         });
     }
 
+    // Retrieve workout data
     private void getWorkoutData() {
 
         if (NetworkUtils.isNetworkAvailable(getContext())) {
@@ -273,6 +282,7 @@ public class WorkoutsFragment extends Fragment {
 
     }
 
+    // Load more workouts
     private void loadMoreData() {
         if (NetworkUtils.isNetworkAvailable(getContext())) {
             isLoading = true;
@@ -290,6 +300,7 @@ public class WorkoutsFragment extends Fragment {
         } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
     }
 
+    // Update workout list after searching
     private void updateWorkoutList(String searchPhrase) {
         if (pWorkouts.size() > 0) pWorkouts.clear();
         else pWorkouts = new ArrayList<>();
@@ -299,13 +310,13 @@ public class WorkoutsFragment extends Fragment {
 
             if (lastVisibleDocument == null) {
                 query = db.collection("workouts")
-                        .whereGreaterThanOrEqualTo("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT))
-                        .whereLessThanOrEqualTo("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
+                        .whereGreaterThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT))
+                        .whereLessThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
                         .limit(5);
             } else {
                 query = db.collection("workouts")
-                        .whereGreaterThanOrEqualTo("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT))
-                        .whereLessThanOrEqualTo("workout.lowercasetitle", searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
+                        .whereGreaterThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT))
+                        .whereLessThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
                         .startAfter(lastVisibleDocument)
                         .limit(5);
             }
@@ -314,63 +325,71 @@ public class WorkoutsFragment extends Fragment {
 
     }
 
+    // Retrieve workout data
     private void retrieveData(Query query) {
+        if (NetworkUtils.isNetworkAvailable(getContext())) {
+            query.get().addOnCompleteListener(task -> {
+                if (task.isComplete()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        int size = document.getData().size();
+                        Map<String, Object> data = document.getData();
+                        for (int i = 0; i < size / 3; i++) {
+                            String formattedDate = "";
+                            WorkoutData w = null;
+                            String author = (String) data.get("author");
+                            HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
+                            Timestamp time = (Timestamp) data.get("published");
+                            HashMap<String, Boolean> rating = (HashMap<String, Boolean>) data.get("rating");
 
-        query.get().addOnCompleteListener(task -> {
-            if (task.isComplete()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    int size = document.getData().size();
-                    Map<String, Object> data = document.getData();
-                    for (int i = 0; i < size / 3; i++) {
-                        String formattedDate = "";
-                        WorkoutData w = null;
-                        String author = (String) data.get("author");
-                        HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
-                        Timestamp time = (Timestamp) data.get("published");
-                        HashMap<String, Boolean> rating = (HashMap<String, Boolean>) data.get("rating");
-
-                        if (workout != null) {
-                            ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
-                            ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
-                            for (HashMap<String, Object> exercise : exercises) {
-                                WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("imageMini"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
-                                workoutExercises.add(workoutExercise);
+                            // Get workout data
+                            if (workout != null) {
+                                ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                                ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                                for (HashMap<String, Object> exercise : exercises) {
+                                    WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("imageMini"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
+                                    workoutExercises.add(workoutExercise);
+                                }
+                                String title = (String) workout.get("title");
+                                String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                                w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
                             }
-                            String title = (String) workout.get("title");
-                            String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
-                            w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
-                        }
-                        if (time != null) {
-                            Instant instant = time.toDate().toInstant();
-                            LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
-                            formattedDate = formatter.format(localDateTime);
-                            Log.i("time", formattedDate);
 
+                            // Get time data
+                            if (time != null) {
+                                Instant instant = time.toDate().toInstant();
+                                LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
+                                formattedDate = formatter.format(localDateTime);
+                                Log.i("time", formattedDate);
+
+                            }
+                            // Add workout to list
+                            pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
+                            workoutsAdapter.notifyItemInserted(i);
                         }
-                        pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
-                        workoutsAdapter.notifyItemInserted(i);
-                    }
-                    if (task.getResult().size() > 0) {
-                        lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                        if (task.getResult().size() > 0) {
+                            lastVisibleDocument = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
+    // Open workout detail
     private void createWorkoutDetail(String title, String targetedMG, List<WorkoutExercises> exercises) {
         WorkoutData data = new WorkoutData(title, targetedMG, exercises);
         workoutViewModel.updateWorkoutData(data);
         Navigation.findNavController(root).navigate(R.id.action_Workouts_to_WorkoutDetail);
     }
 
+    // Check if user is signed in
     private void checkSignedIn() {
-        if (NetworkUtils.isNetworkAvailable(getContext())) {
 
-            if (auth.getCurrentUser() == null) {
-                Log.i("workouts local", auth.getCurrentUser().getEmail());
-            } else {
+        if (auth.getCurrentUser() == null) {
+            Log.i("workouts local", auth.getCurrentUser().getEmail());
+        } else {
+            if (NetworkUtils.isNetworkAvailable(getContext())) {
                 user = FirebaseAuth.getInstance().getCurrentUser();
                 final String current = user.getEmail();
                 db.collection("users")
@@ -382,7 +401,7 @@ public class WorkoutsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (DocumentSnapshot document : task.getResult()) {
                                 currentNickname = document.getString("nickname");
-                                workoutsAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, getContext());
+                                workoutsAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, false, getContext());
                                 workoutsAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
                                     @Override
                                     public void onEntryClick(View view, int position) {

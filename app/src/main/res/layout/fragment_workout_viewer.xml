@@ -26,14 +26,11 @@
         <TextView
             android:id="@+id/wViewerTitle"
             android:layout_width="0dp"
-            android:layout_height="65dp"
-            android:layout_marginEnd="50dp"
-            android:ellipsize="end"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-2dp"
+            android:layout_marginEnd="48dp"
             android:fontFamily="@font/oswald_semibold"
             android:gravity="center"
-            android:maxLines="1"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
             android:text="Workout Title"
             android:textColor="@color/colorAccent"
             android:textSize="30sp"
@@ -83,6 +80,8 @@
         android:text="Exercise Title"
         android:textColor="@color/foreground"
         android:textSize="30sp"
+        android:maxLines="1"
+        android:ellipsize="end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/goBack"
@@ -91,7 +90,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/imageLayout"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="270dp"
         android:layout_weight="0">
 
         <ImageView
@@ -132,42 +131,48 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/setCounterTitle"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/setContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/oswald_semibold"
-            android:foregroundGravity="center"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="Sets Done"
-            android:textColor="@color/foreground"
-            android:textSize="40sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/setCounter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="33dp"
-            android:fontFamily="@font/oswald_semibold"
-            android:foregroundGravity="center"
-            android:gravity="center"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="0"
-            android:textColor="@color/foreground"
-            android:textSize="50sp"
             app:layout_constraintBottom_toTopOf="@+id/setCounterButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/setCounterTitle" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/setCounterTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/oswald_semibold"
+                android:foregroundGravity="center"
+                android:gravity="center"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="Sets Done"
+                android:textColor="@color/foreground"
+                android:textSize="38sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/setCounter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/oswald_semibold"
+                android:foregroundGravity="center"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/foreground"
+                android:textSize="50sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/setCounterTitle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
             android:id="@+id/setCounterButton"

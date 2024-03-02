@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -25,7 +27,7 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
     public class ProgressViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     ImageView thumbnail, removeEntry;
-    TextView title, reps, weight, date, lbkg, note, x;
+    TextView title, reps, repsOrSec, weight, date, lbkg, note, x;
 
     ProgressViewHolder(View itemView) {
         super(itemView);
@@ -34,6 +36,7 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
         title = (TextView) itemView.findViewById(R.id.title);
         date = (TextView) itemView.findViewById(R.id.date);
         reps = (TextView) itemView.findViewById(R.id.reps);
+        repsOrSec = (TextView) itemView.findViewById(R.id.repsOrSec);
         weight = (TextView) itemView.findViewById(R.id.weight);
         lbkg = (TextView) itemView.findViewById(R.id.lbkg);
         note = (TextView) itemView.findViewById(R.id.note);
@@ -91,10 +94,14 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
             holder.lbkg.setVisibility(View.GONE);
             holder.weight.setVisibility(View.GONE);
             holder.x.setVisibility(View.GONE);
+            if (progress.get(position).getRepstosec()) holder.repsOrSec.setText("Seconds");
+            else holder.repsOrSec.setText("Reps");
         } else {
             holder.weight.setText(progress.get(position).getWeight().toString());
             if (progress.get(position).getLbtokg()) holder.lbkg.setText("lbs");
             else holder.lbkg.setText("kg");
+            if (progress.get(position).getRepstosec()) holder.repsOrSec.setText("Seconds");
+            else holder.repsOrSec.setText("Reps");
         }
 
         // Handle progress entry removing

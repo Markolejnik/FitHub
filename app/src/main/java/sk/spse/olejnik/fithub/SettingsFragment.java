@@ -38,7 +38,7 @@ import java.util.Objects;
 
 public class SettingsFragment extends Fragment {
 
-    Button signOut, delete, upload;
+    Button signOut, delete, upload, verify;
     ImageView goBack, imageView;
     LinearLayout root;
 
@@ -81,6 +81,7 @@ public class SettingsFragment extends Fragment {
         signOut = view.findViewById(R.id.signOut);
         delete = view.findViewById(R.id.deleteUser);
         upload = view.findViewById(R.id.upload);
+        verify = view.findViewById(R.id.verify);
         imageView = view.findViewById(R.id.imageView2);
 
         preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
@@ -101,6 +102,19 @@ public class SettingsFragment extends Fragment {
         upload.setOnClickListener(v -> {
             if (auth.getCurrentUser() != null) openGallery();
             else Toast.makeText(getContext(), "Sign in to upload a profile picture", Toast.LENGTH_SHORT).show();
+        });
+
+        // Handle email verification
+        verify.setOnClickListener(v -> {
+            if (auth.getCurrentUser() != null) {
+                if (!auth.getCurrentUser().isEmailVerified()) {
+                    auth.getCurrentUser().sendEmailVerification();
+                    Toast.makeText(getContext(), "Verification email sent, check your email.", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(), "You're already verified! Yay!", Toast.LENGTH_SHORT).show();
+                }
+            }
         });
         checkSignedIn();
 

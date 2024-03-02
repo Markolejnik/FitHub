@@ -220,7 +220,8 @@ public class ProgressEntryFragment extends Fragment {
             entry = new HashMap<>();
             entry.put("exercise", entryExercise);
             entry.put("reps", data.getReps());
-            entry.put("weight", data.getWeight());
+            if (data.getWeight() != null) entry.put("weight", data.getWeight());
+            else entry.put("weight", 0);
             entry.put("date", data.getDate().getTime());
             entry.put("repstosec", data.getRepstosec());
             entry.put("bodyweight", data.getBodyweight());

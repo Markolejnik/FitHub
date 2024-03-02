@@ -212,6 +212,7 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
         vDay = null;
         vMonth = null;
         vYear = null;
+        progressAdapter.notifyDataSetChanged();
     }
 
     public List<ProgressData> getProgressData() {
@@ -241,14 +242,14 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
                                             dateData.setTime(date);
                                             HashMap<String, Object> exerciseData = (HashMap<String, Object>) entry.get("exercise");
 
-                                            Exercises exercise = new Exercises((String) exerciseData.get("name"), (String) exerciseData.get("type"), (String) exerciseData.get("link"), (List<String>) exerciseData.get("muscleGroup"), Long.valueOf((String) String.valueOf(exerciseData.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("imageMini"))).intValue());
-                                            ProgressData entryData = new ProgressData(exercise, Long.valueOf((String) String.valueOf(entry.get("reps"))).intValue(), Long.valueOf((String) String.valueOf(entry.get("weight"))).intValue(), dateData, (Boolean) entry.get("repstosec"), (Boolean) entry.get("bodyweight"), (Boolean) entry.get("lbtokg"), (String) entry.get("note"));
+                                            Exercises exercise = new Exercises((String) exerciseData.get("name"), (String) exerciseData.get("type"), (String) exerciseData.get("link"), (List<String>) exerciseData.get("muscleGroup"), Long.valueOf(String.valueOf(exerciseData.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("image2"))).intValue(), Long.valueOf(String.valueOf(exerciseData.get("imageMini"))).intValue());
+                                            ProgressData entryData = new ProgressData(exercise, Integer.parseInt(String.valueOf(entry.get("reps"))), Integer.parseInt(String.valueOf(entry.get("weight"))), dateData, (Boolean) entry.get("repstosec"), (Boolean) entry.get("bodyweight"), (Boolean) entry.get("lbtokg"), (String) entry.get("note"));
                                             progressList.add(entryData);
                                             progressAdapter.notifyDataSetChanged();
                                         }
                                     }
                                 } catch (Exception e) {
-
+                                    Toast.makeText(getContext(), "Error retrieving progress data", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }

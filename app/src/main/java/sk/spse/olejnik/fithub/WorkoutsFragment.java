@@ -308,19 +308,37 @@ public class WorkoutsFragment extends Fragment {
             lastVisibleDocument = null;
 
 
-            if (lastVisibleDocument == null) {
-                query = db.collection("workouts")
-                        .whereGreaterThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT))
-                        .whereLessThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
-                        .limit(5);
-            } else {
-                query = db.collection("workouts")
-                        .whereGreaterThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT))
-                        .whereLessThanOrEqualTo("workout.title".toLowerCase(Locale.ROOT), searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
-                        .startAfter(lastVisibleDocument)
-                        .limit(5);
-            }
-            retrieveData(query);
+//            if (lastVisibleDocument == null) {
+            db.collection("workouts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    List<QueryDocumentSnapshot> matchingDocuments = new ArrayList<>();
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String title = ((String) document.get("workout.title")).toLowerCase(Locale.ROOT);
+                            if (title.contains(searchPhrase.toLowerCase(Locale.ROOT))) {
+                                matchingDocuments.add(document);
+                            }
+                        }
+                    }
+                    if (matchingDocuments.size() > 0) displayDocuments(matchingDocuments);
+                    else Toast.makeText(getContext(), "No workouts matching your search", Toast.LENGTH_SHORT).show();
+                }
+            });
+//                query = db.collection("workouts")
+//                        .whereGreaterThanOrEqualTo("workout.title", searchPhrase.toLowerCase(Locale.ROOT))
+//                        .whereLessThan("workout.title", searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
+////                        .orderBy(("workout.title".toLowerCase(Locale.ROOT)))
+//                        .limit(5);
+//            } else {
+//                query = db.collection("workouts")
+//                        .whereGreaterThanOrEqualTo("workout.title", searchPhrase.toLowerCase(Locale.ROOT))
+//                        .whereLessThan("workout.title", searchPhrase.toLowerCase(Locale.ROOT) + "\uf8ff")
+//                        .startAfter(lastVisibleDocument)
+////                        .orderBy(("workout.title".toLowerCase(Locale.ROOT)))
+//                        .limit(5);
+//            }
+//            retrieveData(query);
         } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
 
     }
@@ -363,6 +381,7 @@ public class WorkoutsFragment extends Fragment {
                                 Log.i("time", formattedDate);
 
                             }
+
                             // Add workout to list
                             pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
                             workoutsAdapter.notifyItemInserted(i);
@@ -373,6 +392,52 @@ public class WorkoutsFragment extends Fragment {
                     }
                 }
             });
+        }
+    }
+
+    // Display searched workouts
+    private void displayDocuments(List<QueryDocumentSnapshot> matchingList) {
+        for (QueryDocumentSnapshot document : matchingList) {
+            int size = document.getData().size();
+            Map<String, Object> data = document.getData();
+            for (int i = 0; i < size / 3; i++) {
+                String formattedDate = "";
+                WorkoutData w = null;
+                String author = (String) data.get("author");
+                HashMap<String, Object> workout = (HashMap<String, Object>) data.get("workout");
+                Timestamp time = (Timestamp) data.get("published");
+                HashMap<String, Boolean> rating = (HashMap<String, Boolean>) data.get("rating");
+
+                // Get workout data
+                if (workout != null) {
+                    ArrayList<HashMap<String, Object>> exercises = (ArrayList<HashMap<String, Object>>) workout.get("exercises");
+                    ArrayList<WorkoutExercises> workoutExercises = new ArrayList<>();
+                    for (HashMap<String, Object> exercise : exercises) {
+                        WorkoutExercises workoutExercise = new WorkoutExercises((String) exercise.get("name"), (String) exercise.get("type"), (String) exercise.get("link"), Long.valueOf((String) String.valueOf(exercise.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("image2"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("imageMini"))).intValue(), (List<String>) exercise.get("muscleGroup"), Long.valueOf((String) String.valueOf(exercise.get("sets"))).intValue(), Long.valueOf((String) String.valueOf(exercise.get("reps"))).intValue(), (Boolean) exercise.get("repstosec"));
+                        workoutExercises.add(workoutExercise);
+                    }
+                    String title = (String) workout.get("title");
+                    String targetedMuscleGroups = (String) workout.get("targetMuscleGroups");
+                    w = new WorkoutData(title, targetedMuscleGroups, workoutExercises);
+                }
+
+                // Get time data
+                if (time != null) {
+                    Instant instant = time.toDate().toInstant();
+                    LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault());
+                    formattedDate = formatter.format(localDateTime);
+                    Log.i("time", formattedDate);
+
+                }
+
+                // Add workout to list
+                pWorkouts.add(new PublishedWorkoutData(formattedDate, author, document.getId(), rating, w));
+                workoutsAdapter.notifyItemInserted(i);
+            }
+            if (matchingList.size() > 0) {
+                lastVisibleDocument = matchingList.get(matchingList.size() - 1);
+            }
         }
     }
 

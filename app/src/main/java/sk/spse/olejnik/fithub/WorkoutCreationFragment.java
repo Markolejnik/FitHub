@@ -430,8 +430,12 @@ public class WorkoutCreationFragment extends Fragment {
                 // Handle exercise click
                 layoutExercise.setOnClickListener(v -> {
 
-                    exerciseList.removeAll(exerciseList);
-                    exerciseList = new ArrayList<>();
+                    try {
+                        exerciseList.removeAll(exerciseList);
+                    } catch (Exception e) {
+                        Log.i("WCF", "no data to be deleted");
+                    }
+
                     preferences.edit().clear().apply();
 
                     for (int i = 0; i < tableLayout.getChildCount(); i++) {
@@ -463,6 +467,7 @@ public class WorkoutCreationFragment extends Fragment {
                         }
 
                     }
+
                     valueTitle = title.getText().toString();
                     valueTargetedMG = targetedMG.getText().toString();
                     SharedPreferences.Editor editor = preferences.edit();

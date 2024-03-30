@@ -24,10 +24,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,7 +40,7 @@ import java.util.Objects;
 
 public class SettingsFragment extends Fragment {
 
-    Button signOut, delete, upload, verify;
+    Button signOut, delete, upload, verify, resetPass;
     ImageView goBack, imageView;
     LinearLayout root;
 
@@ -78,8 +80,9 @@ public class SettingsFragment extends Fragment {
 
         root = view.findViewById(R.id.constraintLayout);
         goBack = view.findViewById(R.id.goBack);
-        signOut = view.findViewById(R.id.signOut);
         delete = view.findViewById(R.id.deleteUser);
+        signOut = view.findViewById(R.id.signOut);
+        resetPass = view.findViewById(R.id.updatePassword);
         upload = view.findViewById(R.id.upload);
         verify = view.findViewById(R.id.verify);
         imageView = view.findViewById(R.id.imageView2);
@@ -92,11 +95,32 @@ public class SettingsFragment extends Fragment {
             NavController navController = NavHostFragment.findNavController(this);
             navController.popBackStack();
         });
+        try {
+            // Load users info
+            db.collection("users")
+                    .whereEqualTo("email", auth.getCurrentUser().getEmail())
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    try {
+                                        String url = document.get("pfpUrl").toString();
+                                        Glide.with(getContext())
+                                                .load(url)
+                                                .into(imageView);
+                                        imageView.setClipToOutline(true);
+                                    } catch (Exception e) {
+                                        Log.d("Profile Picture Exception", "No Profile Picture Found");
+                                    }
+                                }
+                            }
+                        }
+                    });
+        } catch (Exception e) {
 
-        // Handle delete user button press
-        delete.setOnClickListener(v -> {
-            deleteUser();
-        });
+        }
 
         // Handle pfp uploading button
         upload.setOnClickListener(v -> {
@@ -104,12 +128,29 @@ public class SettingsFragment extends Fragment {
             else Toast.makeText(getContext(), "Sign in to upload a profile picture", Toast.LENGTH_SHORT).show();
         });
 
+        // Handle delete user button press
+        delete.setOnClickListener(v -> {
+            deleteUser();
+        });
+
+        // Handle password resetting
+        resetPass.setOnClickListener(v -> {
+            String email = auth.getCurrentUser().getEmail();
+            auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Toast.makeText(getContext(), "Password Reset Email Sent.", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        });
+
         // Handle email verification
         verify.setOnClickListener(v -> {
             if (auth.getCurrentUser() != null) {
                 if (!auth.getCurrentUser().isEmailVerified()) {
                     auth.getCurrentUser().sendEmailVerification();
-                    Toast.makeText(getContext(), "Verification email sent, check your email.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Verification sent, check your e-mail inbox.", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Toast.makeText(getContext(), "You're already verified! Yay!", Toast.LENGTH_SHORT).show();

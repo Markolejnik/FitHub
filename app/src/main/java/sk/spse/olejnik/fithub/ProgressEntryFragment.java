@@ -10,7 +10,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -126,7 +125,6 @@ public class ProgressEntryFragment extends Fragment {
                     exercise = progressData.getExercise();
                     dateValue = progressData.getDate();
                     SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd");
-                    Log.i("the date", dateValue.toString());
 
                     // Format the Date to a String
                     String formattedDate = dateFormat.format(dateValue.getTime());

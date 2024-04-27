@@ -96,29 +96,26 @@ public class ExerciseDetailFragment extends Fragment {
         });
 
         // Get exercise data from Exercise View Model
-        exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), new Observer<ExerciseData>() {
-            @Override
-            public void onChanged(@Nullable ExerciseData exerciseData) {
-                if (exerciseData != null) {
-                    if (exerciseData.getNewTitle() != null) {
-                        titleText.setText(exerciseData.getNewTitle());
-                        muscleGroups = exerciseData.getNewMuscleGroups();
-                        muscleGroupContent = new StringBuilder();
-                        for (String muscle : muscleGroups) {
-                            muscleGroupContent.append(muscle + "\n");
-                        }
-                        muscleGroupsText.setText(muscleGroupContent);
-                        typeText.setText(exerciseData.getNewType());
-                        linkText.setText(exerciseData.getNewLink());
-                        image1 = exerciseData.getNewImage1();
-                        imageView1.setImageResource(image1);
-                        image2 = exerciseData.getNewImage2();
-                        imageMini = exerciseData.getNewImageMini();
-                        if (image2 == 0) {
-                            imageView2.setVisibility(View.GONE);
-                        }
-                        imageView2.setImageResource(image2);
+        exerciseViewModel.getExerciseLiveData().observe(getViewLifecycleOwner(), exerciseData -> {
+            if (exerciseData != null) {
+                if (exerciseData.getNewTitle() != null) {
+                    titleText.setText(exerciseData.getNewTitle());
+                    muscleGroups = exerciseData.getNewMuscleGroups();
+                    muscleGroupContent = new StringBuilder();
+                    for (String muscle : muscleGroups) {
+                        muscleGroupContent.append(muscle + "\n");
                     }
+                    muscleGroupsText.setText(muscleGroupContent);
+                    typeText.setText(exerciseData.getNewType());
+                    linkText.setText(exerciseData.getNewLink());
+                    image1 = exerciseData.getNewImage1();
+                    imageView1.setImageResource(image1);
+                    image2 = exerciseData.getNewImage2();
+                    imageMini = exerciseData.getNewImageMini();
+                    if (image2 == 0) {
+                        imageView2.setVisibility(View.GONE);
+                    }
+                    imageView2.setImageResource(image2);
                 }
             }
         });

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity  {
             startActivity(new Intent(this, RegisterActivity.class));
             finish();
         } else {
-            Log.i("here is the user", auth.getCurrentUser().getEmail());
+            Log.i("user", auth.getCurrentUser().getEmail());
         }
     }
 

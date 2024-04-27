@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class WorkoutsFragment extends Fragment {
 
@@ -132,28 +133,25 @@ public class WorkoutsFragment extends Fragment {
 
         // Handle bottom navigation menu
         bottomNavigationView.setVisibility(View.VISIBLE);
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        bottomNavigationView.setOnItemSelectedListener(item -> {
 
-                int id = item.getItemId();
-                if (id == R.id.workouts) {
-                    return true;
-                }
-                else if (id == R.id.exercises) {
-                    Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Exercise);
-                    return true;
-                }
-                else if (id == R.id.profile) {
-                    Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Profile);
-                    return true;
-                }
-                else if (id == R.id.calendar) {
-                    Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Calendar);
-                    return true;
-                }
-                else{return false;}
+            int id = item.getItemId();
+            if (id == R.id.workouts) {
+                return true;
             }
+            else if (id == R.id.exercises) {
+                Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Exercise);
+                return true;
+            }
+            else if (id == R.id.profile) {
+                Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Profile);
+                return true;
+            }
+            else if (id == R.id.calendar) {
+                Navigation.findNavController(view).navigate(R.id.action_Workouts_to_Calendar);
+                return true;
+            }
+            else{return false;}
         });
 
         // Initiate searching
@@ -180,62 +178,54 @@ public class WorkoutsFragment extends Fragment {
 
         });
 
-        search.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    pWorkouts.clear();
-                    lastVisibleDocument = null;
-                    getWorkoutData();
-                    search.setVisibility(View.GONE);
-                    logo.setVisibility(View.VISIBLE);
-                    startSearch.setVisibility(View.VISIBLE);
-                    workoutsAdapter.notifyDataSetChanged();
-                }
-            }
-        });
-
-        search.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                if (pWorkouts.size() > 0) pWorkouts.clear();
-                else pWorkouts = new ArrayList<>();
+        search.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                pWorkouts.clear();
                 lastVisibleDocument = null;
                 getWorkoutData();
                 search.setVisibility(View.GONE);
                 logo.setVisibility(View.VISIBLE);
                 startSearch.setVisibility(View.VISIBLE);
-                return false;
+                workoutsAdapter.notifyDataSetChanged();
             }
+        });
+
+        search.setOnCloseListener(() -> {
+            if (pWorkouts.size() > 0) pWorkouts.clear();
+            else pWorkouts = new ArrayList<>();
+            lastVisibleDocument = null;
+            getWorkoutData();
+            search.setVisibility(View.GONE);
+            logo.setVisibility(View.VISIBLE);
+            startSearch.setVisibility(View.VISIBLE);
+            return false;
         });
 
         // Handle "X" button press on the search bar
         int searchCloseButtonId = search.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
         ImageView closeButton = (ImageView) this.search.findViewById(searchCloseButtonId);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                search.setQuery("", false);
-                search.clearFocus();
-            }
+        closeButton.setOnClickListener(v -> {
+            search.setQuery("", false);
+            search.clearFocus();
         });
 
         // Handle creating a new workout
         fab.setOnClickListener(v -> {
-            Navigation.findNavController(view).navigate(R.id.action_Workouts_to_WorkoutCreation);
+            if (Objects.requireNonNull(auth.getCurrentUser()).isEmailVerified()) {
+                Navigation.findNavController(view).navigate(R.id.action_Workouts_to_WorkoutCreation);
+            } else {
+                Toast.makeText(getContext(), "Verify your email before publishing a workout", Toast.LENGTH_LONG).show();
+            }
         });
 
         // Refresh workout list
-        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (pWorkouts.size() > 0) pWorkouts.clear();
-                else pWorkouts = new ArrayList<>();
-                lastVisibleDocument = null;
-                getWorkoutData();
-                workoutsAdapter.notifyDataSetChanged();
-                swipe.setRefreshing(false);
-            }
+        swipe.setOnRefreshListener(() -> {
+            if (pWorkouts.size() > 0) pWorkouts.clear();
+            else pWorkouts = new ArrayList<>();
+            lastVisibleDocument = null;
+            getWorkoutData();
+            workoutsAdapter.notifyDataSetChanged();
+            swipe.setRefreshing(false);
         });
 
         // Set layout manager
@@ -288,13 +278,10 @@ public class WorkoutsFragment extends Fragment {
             isLoading = true;
             loadingSpinner.setVisibility(View.VISIBLE);
 
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    getWorkoutData();
-                    isLoading = false;
-                    loadingSpinner.setVisibility(View.GONE);
-                }
+            new Handler().postDelayed(() -> {
+                getWorkoutData();
+                isLoading = false;
+                loadingSpinner.setVisibility(View.GONE);
             },500);
             workoutsAdapter.notifyDataSetChanged();
         } else Toast.makeText(getContext(), "No/Limited Network Connectivity, try again later please", Toast.LENGTH_LONG).show();
@@ -309,21 +296,18 @@ public class WorkoutsFragment extends Fragment {
 
 
 //            if (lastVisibleDocument == null) {
-            db.collection("workouts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    List<QueryDocumentSnapshot> matchingDocuments = new ArrayList<>();
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String title = ((String) document.get("workout.title")).toLowerCase(Locale.ROOT);
-                            if (title.contains(searchPhrase.toLowerCase(Locale.ROOT))) {
-                                matchingDocuments.add(document);
-                            }
+            db.collection("workouts").get().addOnCompleteListener(task -> {
+                List<QueryDocumentSnapshot> matchingDocuments = new ArrayList<>();
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String title = ((String) document.get("workout.title")).toLowerCase(Locale.ROOT);
+                        if (title.contains(searchPhrase.toLowerCase(Locale.ROOT))) {
+                            matchingDocuments.add(document);
                         }
                     }
-                    if (matchingDocuments.size() > 0) displayDocuments(matchingDocuments);
-                    else Toast.makeText(getContext(), "No workouts matching your search", Toast.LENGTH_SHORT).show();
                 }
+                if (matchingDocuments.size() > 0) displayDocuments(matchingDocuments);
+                else Toast.makeText(getContext(), "No workouts matching your search", Toast.LENGTH_SHORT).show();
             });
 //                query = db.collection("workouts")
 //                        .whereGreaterThanOrEqualTo("workout.title", searchPhrase.toLowerCase(Locale.ROOT))
@@ -460,23 +444,15 @@ public class WorkoutsFragment extends Fragment {
                 db.collection("users")
                 .whereEqualTo("email", current)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                currentNickname = document.getString("nickname");
-                                workoutsAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, false, getContext());
-                                workoutsAdapter.setOnEntryClickListener(new WorkoutsAdapter.OnEntryClickListener() {
-                                    @Override
-                                    public void onEntryClick(View view, int position) {
-                                        createWorkoutDetail(pWorkouts.get(position).getWorkout().getTitle(), pWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pWorkouts.get(position).getWorkout().getExercises());
-                                    }
-                                });
-                                recyclerView.setAdapter(workoutsAdapter);
-                                workoutsAdapter.notifyDataSetChanged();
-                                getWorkoutData();
-                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            currentNickname = document.getString("nickname");
+                            workoutsAdapter = new WorkoutsAdapter(pWorkouts, currentNickname, false, getContext());
+                            workoutsAdapter.setOnEntryClickListener((view, position) -> createWorkoutDetail(pWorkouts.get(position).getWorkout().getTitle(), pWorkouts.get(position).getWorkout().getTargetedMuscleGroups(), pWorkouts.get(position).getWorkout().getExercises()));
+                            recyclerView.setAdapter(workoutsAdapter);
+                            workoutsAdapter.notifyDataSetChanged();
+                            getWorkoutData();
                         }
                     }
                 });

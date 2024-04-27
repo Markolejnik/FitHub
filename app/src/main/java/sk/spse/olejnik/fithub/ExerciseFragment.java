@@ -78,64 +78,51 @@ public class ExerciseFragment extends Fragment {
 
 
         // Handle bottom navigation clicks
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        bottomNavigationView.setOnItemSelectedListener(item -> {
 
-                int id = item.getItemId();
-                if (id == R.id.workouts) {
-                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Workouts);
-                    return true;
-                }
-                else if (id == R.id.exercises) {
+            int id = item.getItemId();
+            if (id == R.id.workouts) {
+                Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Workouts);
+                return true;
+            }
+            else if (id == R.id.exercises) {
 
-                    return true;
-                }
-                else if (id == R.id.profile) {
-                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Profile);
-                    return true;
-                }
-                else if (id == R.id.calendar) {
-                    Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Calendar);
-                    return true;
-                }
-                else{return false;}
-            }});
+                return true;
+            }
+            else if (id == R.id.profile) {
+                Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Profile);
+                return true;
+            }
+            else if (id == R.id.calendar) {
+                Navigation.findNavController(view).navigate(R.id.action_Exercise_to_Calendar);
+                return true;
+            }
+            else{return false;}
+        });
 
-        layoutExercise.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                layoutExercise.getWindowVisibleDisplayFrame(r);
+        layoutExercise.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            layoutExercise.getWindowVisibleDisplayFrame(r);
 
-                int screenHeight = layoutExercise.getHeight();
-                int keypadHeight = screenHeight - r.bottom;
+            int screenHeight = layoutExercise.getHeight();
+            int keypadHeight = screenHeight - r.bottom;
 
-                if (keypadHeight > screenHeight * 0.15) {
-                    filterButton.setVisibility(View.GONE);
-                } else {
-                    filterButton.setVisibility(View.VISIBLE);
-                }
+            if (keypadHeight > screenHeight * 0.15) {
+                filterButton.setVisibility(View.GONE);
+            } else {
+                filterButton.setVisibility(View.VISIBLE);
             }
         });
 
-        tableLayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    searchBar.setIconified(true);
-                    searchBar.setQueryHint("Search Exercises");
-                }
+        tableLayout.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                searchBar.setIconified(true);
+                searchBar.setQueryHint("Search Exercises");
             }
         });
 
         // Handle clicks on search bar
-        searchBar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchBar.setIconified(false);
-            }
-        });
+        searchBar.setOnClickListener(v -> searchBar.setIconified(false));
 
         // Handle search bar text queries
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -162,14 +149,11 @@ public class ExerciseFragment extends Fragment {
         // Handle "X" button press on the search bar
         int searchCloseButtonId = searchBar.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
         ImageView closeButton = (ImageView) this.searchBar.findViewById(searchCloseButtonId);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchBar.setQuery("", false);
-                searchBar.clearFocus();
-                updateExerciseList("");
+        closeButton.setOnClickListener(v -> {
+            searchBar.setQuery("", false);
+            searchBar.clearFocus();
+            updateExerciseList("");
 
-            }
         });
 
         // Handle filter button press

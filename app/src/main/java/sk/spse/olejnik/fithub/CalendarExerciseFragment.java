@@ -96,37 +96,26 @@ public class CalendarExerciseFragment extends Fragment {
             }
         });
 
-        searchBar.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
-                    searchBar.setQueryHint("Search Exercises");
-                    exerciseAdapter.notifyDataSetChanged();
-                } else {
-                    searchBar.setQueryHint("Search Exercises");
-                    filteredExercises = exercises;
-                    exerciseAdapter.notifyDataSetChanged();
+        searchBar.setOnFocusChangeListener((view1, hasFocus) -> {
+            if (hasFocus) {
+                searchBar.setQueryHint("Search Exercises");
+                exerciseAdapter.notifyDataSetChanged();
+            } else {
+                searchBar.setQueryHint("Search Exercises");
+                filteredExercises = exercises;
+                exerciseAdapter.notifyDataSetChanged();
 
-                }
             }
         });
         filteredExercises = exercises;
         exerciseAdapter = new ExerciseAdapter(filteredExercises, getContext());
 //        exerciseAdapter.filter("");
-        exerciseAdapter.setOnEntryClickListener(new ExerciseAdapter.OnEntryClickListener() {
-            @Override
-            public void onEntryClick(View view, int position) {
-                createProgressEntry(filteredExercises.get(position));
-            }
-        });
+        exerciseAdapter.setOnEntryClickListener((view12, position) -> createProgressEntry(filteredExercises.get(position)));
 
-        progressViewModel.getProgressLiveData().observe(getViewLifecycleOwner(), new Observer<ProgressData>() {
-            @Override
-            public void onChanged(ProgressData progressData) {
-                if (progressData != null) {
-                    date = progressData.getDate();
-                    Log.i("date got", date.getTime().toString());
-                }
+        progressViewModel.getProgressLiveData().observe(getViewLifecycleOwner(), progressData -> {
+            if (progressData != null) {
+                date = progressData.getDate();
+                Log.i("date got", date.getTime().toString());
             }
         });
 

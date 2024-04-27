@@ -2,7 +2,6 @@ package sk.spse.olejnik.fithub;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -92,7 +90,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull WorkoutViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        Log.i("sizes", pWorkouts.size() + "");
 
         // Set widget content
         holder.username.setText(pWorkouts.get(position).getAuthor());
@@ -111,65 +108,55 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
             AlertDialog.Builder deleteBuilder = new AlertDialog.Builder(context);
             deleteBuilder.setTitle("Delete Workout?");
             deleteBuilder.setMessage("Are you sure you want to delete this workout?");
-            deleteBuilder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        if (pWorkouts.get(position).getRatings() != null) {
-                            db.collection("workouts").document(pWorkouts.get(position).getId()).delete();
-                            holder.itemView.setVisibility(View.GONE);
-                        }
-                        else {
-                            db.collection("users").whereEqualTo("nickname", pWorkouts.get(position).getAuthor()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        String id = document.getId();
-                                        Log.i("pos", " " + position);
-                                        HashMap<String, Object> workout = new HashMap<>();
-                                        ArrayList<HashMap<String, Object>> exeList = new ArrayList<>();
-                                        List<WorkoutExercises> e = pWorkouts.get(position).getWorkout().getExercises();
-                                        for (WorkoutExercises exercise: e) {
-                                            HashMap<String, Object> exercises = new HashMap<>();
-                                            exercises.put("image1", exercise.getImage1());
-                                            exercises.put("image2", exercise.getImage2());
-                                            exercises.put("imageMini", exercise.getImageMini());
-                                            exercises.put("link", exercise.getLink());
-                                            exercises.put("muscleGroup", exercise.getMuscleGroupsUsed());
-                                            exercises.put("name", exercise.getTitle());
-                                            exercises.put("reps", exercise.getReps());
-                                            exercises.put("repstosec", exercise.isTimeFormat());
-                                            exercises.put("sets", exercise.getSets());
-                                            exercises.put("type", exercise.getType());
-                                            exeList.add(exercises);
-                                        }
-                                        workout.put("author", pWorkouts.get(position).getAuthor());
-                                        workout.put("exercises", exeList);
-                                        workout.put("rating", new HashMap<>());
-                                        workout.put("targetMuscleGroups", pWorkouts.get(position).getWorkout().getTargetedMuscleGroups());
-                                        workout.put("title", pWorkouts.get(position).getWorkout().getTitle());
-                                        db.collection("users").document(id).update("workouts", FieldValue.arrayRemove(workout));
-                                        holder.itemView.setVisibility(View.GONE);
-                                    }
-
-                                }
-                            });
-                        }
-                        notifyDataSetChanged();
-
-                    } catch (Exception e) {
-                        Toast.makeText(context, "Workout Deletion Failed", Toast.LENGTH_SHORT).show();
-                        Log.i("WA", "157 - workout deletion failed");
+            deleteBuilder.setPositiveButton("Delete", (dialog, which) -> {
+                try {
+                    if (pWorkouts.get(position).getRatings() != null) {
+                        db.collection("workouts").document(pWorkouts.get(position).getId()).delete();
+                        holder.itemView.setVisibility(View.GONE);
                     }
-                    dialog.dismiss();
+                    else {
+                        db.collection("users").whereEqualTo("nickname", pWorkouts.get(position).getAuthor()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String id = document.getId();
+                                    HashMap<String, Object> workout = new HashMap<>();
+                                    ArrayList<HashMap<String, Object>> exeList = new ArrayList<>();
+                                    List<WorkoutExercises> e = pWorkouts.get(position).getWorkout().getExercises();
+                                    for (WorkoutExercises exercise: e) {
+                                        HashMap<String, Object> exercises = new HashMap<>();
+                                        exercises.put("image1", exercise.getImage1());
+                                        exercises.put("image2", exercise.getImage2());
+                                        exercises.put("imageMini", exercise.getImageMini());
+                                        exercises.put("link", exercise.getLink());
+                                        exercises.put("muscleGroup", exercise.getMuscleGroupsUsed());
+                                        exercises.put("name", exercise.getTitle());
+                                        exercises.put("reps", exercise.getReps());
+                                        exercises.put("repstosec", exercise.isTimeFormat());
+                                        exercises.put("sets", exercise.getSets());
+                                        exercises.put("type", exercise.getType());
+                                        exeList.add(exercises);
+                                    }
+                                    workout.put("author", pWorkouts.get(position).getAuthor());
+                                    workout.put("exercises", exeList);
+                                    workout.put("rating", new HashMap<>());
+                                    workout.put("targetMuscleGroups", pWorkouts.get(position).getWorkout().getTargetedMuscleGroups());
+                                    workout.put("title", pWorkouts.get(position).getWorkout().getTitle());
+                                    db.collection("users").document(id).update("workouts", FieldValue.arrayRemove(workout));
+                                    holder.itemView.setVisibility(View.GONE);
+                                }
+
+                            }
+                        });
+                    }
+                    notifyDataSetChanged();
+
+                } catch (Exception e) {
+                    Toast.makeText(context, "Workout Deletion Failed", Toast.LENGTH_SHORT).show();
                 }
+                dialog.dismiss();
             });
-            deleteBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+            deleteBuilder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
             deleteBuilder.show();
         });
 
@@ -177,35 +164,27 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         holder.upvote.setOnClickListener(v -> {
             try {
                 DocumentReference ref = db.collection("workouts").document(pWorkouts.get(position).getId());
-                db.collection("workouts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            if (document.getId().equals(pWorkouts.get(position).getId())) {
+                db.collection("workouts").get().addOnCompleteListener(task -> {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.getId().equals(pWorkouts.get(position).getId())) {
 
-                                pWorkouts.get(position).setRatings((HashMap<String, Boolean>) document.get("rating"));
-                                if (pWorkouts.get(position).getRatings() == null) pWorkouts.get(position).setRatings(new HashMap<>());
-                                notifyDataSetChanged();
-                                if (hasVoted(position, user)) {
-                                    try {
-                                        if (getVote(position, user)) pWorkouts.get(position).getRatings().remove(user);
-                                        else pWorkouts.get(position).getRatings().put(user, true);
-                                    } catch (Exception e) {
-                                        pWorkouts.get(position).getRatings().put(user, true);
-                                    }
-                                } else pWorkouts.get(position).getRatings().put(user, true);
-                                Map<String, Object> updateMap = new HashMap<>();
-                                updateMap.put("rating", pWorkouts.get(position).getRatings());
+                            pWorkouts.get(position).setRatings((HashMap<String, Boolean>) document.get("rating"));
+                            if (pWorkouts.get(position).getRatings() == null) pWorkouts.get(position).setRatings(new HashMap<>());
+                            notifyDataSetChanged();
+                            if (hasVoted(position, user)) {
+                                try {
+                                    if (getVote(position, user)) pWorkouts.get(position).getRatings().remove(user);
+                                    else pWorkouts.get(position).getRatings().put(user, true);
+                                } catch (Exception e) {
+                                    pWorkouts.get(position).getRatings().put(user, true);
+                                }
+                            } else pWorkouts.get(position).getRatings().put(user, true);
+                            Map<String, Object> updateMap = new HashMap<>();
+                            updateMap.put("rating", pWorkouts.get(position).getRatings());
 
-                                for (Map.Entry<String, Object> entry : updateMap.entrySet()) Log.i("map", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                            for (Map.Entry<String, Object> entry : updateMap.entrySet()) Log.i("map", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
 
-                                ref.update(updateMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        Log.i("upvote", pWorkouts.get(position).getId());
-                                    }
-                                });
-                            }
+                            ref.update(updateMap).addOnSuccessListener(unused -> Log.i("upvote", pWorkouts.get(position).getId()));
                         }
                     }
                 });
@@ -220,40 +199,32 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
         holder.downvote.setOnClickListener(v -> {
             try {
                 DocumentReference ref = db.collection("workouts").document(pWorkouts.get(position).getId());
-                db.collection("workouts").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                db.collection("workouts").get().addOnCompleteListener(task -> {
 
-                        for (QueryDocumentSnapshot document : task.getResult()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
 
-                            if (document.getId().equals(pWorkouts.get(position).getId())) {
-                                pWorkouts.get(position).setRatings((HashMap<String, Boolean>) document.get("rating"));
+                        if (document.getId().equals(pWorkouts.get(position).getId())) {
+                            pWorkouts.get(position).setRatings((HashMap<String, Boolean>) document.get("rating"));
 
-                                if (pWorkouts.get(position).getRatings() == null) pWorkouts.get(position).setRatings(new HashMap<>());
+                            if (pWorkouts.get(position).getRatings() == null) pWorkouts.get(position).setRatings(new HashMap<>());
 
-                                notifyDataSetChanged();
+                            notifyDataSetChanged();
 
-                                if (hasVoted(position, user)) {
-                                    try {
-                                        if (!getVote(position, user)) pWorkouts.get(position).getRatings().remove(user);
-                                        else pWorkouts.get(position).getRatings().put(user, false);
-                                    } catch (Exception e) {
-                                        pWorkouts.get(position).getRatings().put(user, false);
-                                    }
-                                } else pWorkouts.get(position).getRatings().put(user, false);
+                            if (hasVoted(position, user)) {
+                                try {
+                                    if (!getVote(position, user)) pWorkouts.get(position).getRatings().remove(user);
+                                    else pWorkouts.get(position).getRatings().put(user, false);
+                                } catch (Exception e) {
+                                    pWorkouts.get(position).getRatings().put(user, false);
+                                }
+                            } else pWorkouts.get(position).getRatings().put(user, false);
 
-                                Map<String, Object> updateMap = new HashMap<>();
-                                updateMap.put("rating", pWorkouts.get(position).getRatings());
+                            Map<String, Object> updateMap = new HashMap<>();
+                            updateMap.put("rating", pWorkouts.get(position).getRatings());
 
-                                for (Map.Entry<String, Object> entry : updateMap.entrySet()) Log.i("map", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                            for (Map.Entry<String, Object> entry : updateMap.entrySet()) Log.i("map", "Key: " + entry.getKey() + ", Value: " + entry.getValue());
 
-                                ref.update(updateMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        Log.i("downvote", pWorkouts.get(position).getId());
-                                    }
-                                });
-                            }
+                            ref.update(updateMap).addOnSuccessListener(unused -> Log.i("downvote", pWorkouts.get(position).getId()));
                         }
                     }
                 });
@@ -297,8 +268,7 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
                     }
                 }
             });
-        } catch (Exception e) {
-            Log.i("WA", "error setting pfp on workout: " + position);
+        } catch (Exception ignored) {
         }
 
     }
@@ -334,7 +304,6 @@ public class WorkoutsAdapter extends RecyclerView.Adapter<WorkoutsAdapter.Workou
 
     @Override
     public int getItemCount() {
-        Log.i("workouts size", pWorkouts.size() + "");
         return pWorkouts.size();
     }
 

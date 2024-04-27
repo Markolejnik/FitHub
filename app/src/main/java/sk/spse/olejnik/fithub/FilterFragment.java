@@ -107,31 +107,28 @@ public class FilterFragment extends Fragment {
         filterViewModel = ((MainActivity) requireActivity()).getFilterViewModel();
 
         // Get filter data from Filter View Model
-        filterViewModel.getFilterLiveData().observe(getViewLifecycleOwner(), new Observer<FilterData>() {
-            @Override
-            public void onChanged(FilterData filterData) {
-                if (filterData != null) {
-                    if (filterData.getFilterType() != null ) {
-                        typeFilter = filterData.getFilterType();
-                        if (typeFilter.equals("Any")) {
-                            filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                        } else if (typeFilter.equals("Bodybuilding")) {
-                            filterType1.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                            filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
-                        } else {
-                            filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                            filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
-                        }
+        filterViewModel.getFilterLiveData().observe(getViewLifecycleOwner(), filterData1 -> {
+            if (filterData1 != null) {
+                if (filterData1.getFilterType() != null ) {
+                    typeFilter = filterData1.getFilterType();
+                    if (typeFilter.equals("Any")) {
+                        filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                    } else if (typeFilter.equals("Bodybuilding")) {
+                        filterType1.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                        filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                    } else {
+                        filterType2.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                        filterTypeAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
                     }
-                    if (filterData.getFilterMuscleGroups() != null) {
-                        groupFilter = filterData.getFilterMuscleGroups();
-                        for (TextView view : groupFilterViews) {
-                            if (groupFilter.contains(view.getText().toString())) {
-                                view.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-                                filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
-                            } else {
-                                view.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
-                            }
+                }
+                if (filterData1.getFilterMuscleGroups() != null) {
+                    groupFilter = filterData1.getFilterMuscleGroups();
+                    for (TextView view1 : groupFilterViews) {
+                        if (groupFilter.contains(view1.getText().toString())) {
+                            view1.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            filterGroupAny.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
+                        } else {
+                            view1.setTextColor(ContextCompat.getColor(getContext(), R.color.foreground));
                         }
                     }
                 }

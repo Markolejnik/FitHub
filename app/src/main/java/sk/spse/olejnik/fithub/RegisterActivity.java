@@ -119,12 +119,7 @@ public class RegisterActivity extends AppCompatActivity {
                 // Create user in firestore
                 db.collection("users")
                 .add(newuser)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("newUser", documentReference.getId());
-                    }
-                })
+                .addOnSuccessListener(documentReference -> Log.d("newUser", documentReference.getId()))
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {

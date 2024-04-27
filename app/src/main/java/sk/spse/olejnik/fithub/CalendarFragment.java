@@ -97,31 +97,28 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
 
 
         // Handle bottom navigation clicks
-        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        bottomNavigationView.setOnItemSelectedListener(item -> {
 
-                // Get clicked item
-                int id = item.getItemId();
+            // Get clicked item
+            int id = item.getItemId();
 
-                if (id == R.id.workouts) {
-                    Navigation.findNavController(view).navigate(R.id.action_Calendar_to_Workouts);
-                    return true;
-                }
-                else if (id == R.id.exercises) {
-                    Navigation.findNavController(view).navigate(R.id.action_Calendar_to_Exercise);
-                    return true;
-                }
-                else if (id == R.id.profile) {
-                    Navigation.findNavController(view).navigate(R.id.action_Calendar_to_Profile);
-                    return true;
-                }
-                else if (id == R.id.calendar) {
-
-                    return true;
-                }
-                else{return false;}
+            if (id == R.id.workouts) {
+                Navigation.findNavController(view).navigate(R.id.action_Calendar_to_Workouts);
+                return true;
             }
+            else if (id == R.id.exercises) {
+                Navigation.findNavController(view).navigate(R.id.action_Calendar_to_Exercise);
+                return true;
+            }
+            else if (id == R.id.profile) {
+                Navigation.findNavController(view).navigate(R.id.action_Calendar_to_Profile);
+                return true;
+            }
+            else if (id == R.id.calendar) {
+
+                return true;
+            }
+            else{return false;}
         });
         fab.setOnClickListener(v -> {
             if (vDay == null || vMonth == null || vYear == null) {
@@ -180,13 +177,10 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
             Navigation.findNavController(root).navigate(R.id.action_Calendar_to_CalendarExercise);
         });
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                vYear = year;
-                vMonth = month + 1;
-                vDay = dayOfMonth;
-            }
+        calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
+            vYear = year;
+            vMonth = month + 1;
+            vDay = dayOfMonth;
         });
 
         progressAdapter = new ProgressAdapter(getProgressData(), getContext());
@@ -224,33 +218,31 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
         } else {
                 user = FirebaseAuth.getInstance().getCurrentUser();
                 final String current = user.getEmail();
-                db.collection("users").whereEqualTo("email", current).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot data = task.getResult();
+                db.collection("users").whereEqualTo("email", current).get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot data = task.getResult();
 
-                            for (QueryDocumentSnapshot document : data) {
-                                List<Map<String, Object>> docdata = (List<Map<String, Object>>) document.get("progress");
-                                try {
-                                    if (docdata.size() == 0) Log.i("ProgressData", "No progress data saved");
-                                    else {
-                                        for (Map<String, Object> entry : docdata) {
-                                            Timestamp getDate = (Timestamp) entry.get("date");
-                                            Date date = getDate.toDate();
-                                            Calendar dateData = Calendar.getInstance();
-                                            dateData.setTime(date);
-                                            HashMap<String, Object> exerciseData = (HashMap<String, Object>) entry.get("exercise");
+                        for (QueryDocumentSnapshot document : data) {
+                            List<Map<String, Object>> docdata = (List<Map<String, Object>>) document.get("progress");
+                            try {
+                                if (docdata.size() == 0)
+                                    Log.i("ProgressData", "No progress data saved");
+                                else {
+                                    for (Map<String, Object> entry : docdata) {
+                                        Timestamp getDate = (Timestamp) entry.get("date");
+                                        Date date = getDate.toDate();
+                                        Calendar dateData = Calendar.getInstance();
+                                        dateData.setTime(date);
+                                        HashMap<String, Object> exerciseData = (HashMap<String, Object>) entry.get("exercise");
 
-                                            Exercises exercise = new Exercises((String) exerciseData.get("name"), (String) exerciseData.get("type"), (String) exerciseData.get("link"), (List<String>) exerciseData.get("muscleGroup"), Long.valueOf(String.valueOf(exerciseData.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("image2"))).intValue(), Long.valueOf(String.valueOf(exerciseData.get("imageMini"))).intValue());
-                                            ProgressData entryData = new ProgressData(exercise, Integer.parseInt(String.valueOf(entry.get("reps"))), Integer.parseInt(String.valueOf(entry.get("weight"))), dateData, (Boolean) entry.get("repstosec"), (Boolean) entry.get("bodyweight"), (Boolean) entry.get("lbtokg"), (String) entry.get("note"));
-                                            progressList.add(entryData);
-                                            progressAdapter.notifyDataSetChanged();
-                                        }
+                                        Exercises exercise = new Exercises((String) exerciseData.get("name"), (String) exerciseData.get("type"), (String) exerciseData.get("link"), (List<String>) exerciseData.get("muscleGroup"), Long.valueOf(String.valueOf(exerciseData.get("image1"))).intValue(), Long.valueOf((String) String.valueOf(exerciseData.get("image2"))).intValue(), Long.valueOf(String.valueOf(exerciseData.get("imageMini"))).intValue());
+                                        ProgressData entryData = new ProgressData(exercise, Integer.parseInt(String.valueOf(entry.get("reps"))), Integer.parseInt(String.valueOf(entry.get("weight"))), dateData, (Boolean) entry.get("repstosec"), (Boolean) entry.get("bodyweight"), (Boolean) entry.get("lbtokg"), (String) entry.get("note"));
+                                        progressList.add(entryData);
+                                        progressAdapter.notifyDataSetChanged();
                                     }
-                                } catch (Exception e) {
-                                    Toast.makeText(getContext(), "Error retrieving progress data", Toast.LENGTH_SHORT).show();
                                 }
+                            } catch (Exception e) {
+                                Toast.makeText(getContext(), "Error retrieving progress data", Toast.LENGTH_SHORT).show();
                             }
                         }
                     }
@@ -264,56 +256,42 @@ public class CalendarFragment extends Fragment implements ProgressAdapter.AlertD
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Delete Progress Entry?")
         .setMessage("Deleting will remove this entry forever!")
-        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                final String current = user.getEmail();
+        .setPositiveButton("OK", (dialog, i) -> {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            final String current = user.getEmail();
 
-                Map<String, Object> entryExercise = new HashMap<>();
-                entryExercise.put("name", progressList.get(position).getExercise().getName());
-                entryExercise.put("type", progressList.get(position).getExercise().getType());
-                entryExercise.put("link", progressList.get(position).getExercise().getLink());
-                entryExercise.put("muscleGroup", progressList.get(position).getExercise().getMuscleGroup());
-                entryExercise.put("image1", progressList.get(position).getExercise().getImage1());
-                entryExercise.put("image2", progressList.get(position).getExercise().getImage2());
-                entryExercise.put("imageMini", progressList.get(position).getExercise().getImageMini());
+            Map<String, Object> entryExercise = new HashMap<>();
+            entryExercise.put("name", progressList.get(position).getExercise().getName());
+            entryExercise.put("type", progressList.get(position).getExercise().getType());
+            entryExercise.put("link", progressList.get(position).getExercise().getLink());
+            entryExercise.put("muscleGroup", progressList.get(position).getExercise().getMuscleGroup());
+            entryExercise.put("image1", progressList.get(position).getExercise().getImage1());
+            entryExercise.put("image2", progressList.get(position).getExercise().getImage2());
+            entryExercise.put("imageMini", progressList.get(position).getExercise().getImageMini());
 
-                Map<String, Object> entry = new HashMap<>();
-                entry.put("exercise", entryExercise);
-                entry.put("reps", progressList.get(position).getReps());
-                entry.put("weight", progressList.get(position).getWeight());
-                entry.put("date", progressList.get(position).getDate().getTime());
-                entry.put("repstosec", progressList.get(position).getRepstosec());
-                entry.put("bodyweight", progressList.get(position).getBodyweight());
-                entry.put("lbtokg", progressList.get(position).getLbtokg());
-                entry.put("note", progressList.get(position).getNote());
+            Map<String, Object> entry = new HashMap<>();
+            entry.put("exercise", entryExercise);
+            entry.put("reps", progressList.get(position).getReps());
+            entry.put("weight", progressList.get(position).getWeight());
+            entry.put("date", progressList.get(position).getDate().getTime());
+            entry.put("repstosec", progressList.get(position).getRepstosec());
+            entry.put("bodyweight", progressList.get(position).getBodyweight());
+            entry.put("lbtokg", progressList.get(position).getLbtokg());
+            entry.put("note", progressList.get(position).getNote());
 
-                db.collection("users").whereEqualTo("email", current).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                db.collection("users").document(documentId).update("progress", FieldValue.arrayRemove(entry)).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        progressList.remove(progressList.get(position));
-                                        progressAdapter.notifyItemRemoved(position);
-                                    }
-                                });
-                            }
-                        }
+            db.collection("users").whereEqualTo("email", current).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        String documentId = document.getId();
+                        db.collection("users").document(documentId).update("progress", FieldValue.arrayRemove(entry)).addOnCompleteListener(task1 -> {
+                            progressList.remove(progressList.get(position));
+                            progressAdapter.notifyItemRemoved(position);
+                        });
                     }
-                });
-            }
+                }
+            });
         })
-        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int i) {
-                dialog.dismiss();
-            }
-        }).show();
+        .setNegativeButton("Cancel", (dialog, i) -> dialog.dismiss()).show();
     }
 }

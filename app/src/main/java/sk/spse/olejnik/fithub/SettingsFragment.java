@@ -15,7 +15,6 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -85,7 +83,7 @@ public class SettingsFragment extends Fragment {
         resetPass = view.findViewById(R.id.updatePassword);
         upload = view.findViewById(R.id.upload);
         verify = view.findViewById(R.id.verify);
-        imageView = view.findViewById(R.id.imageView2);
+        imageView = view.findViewById(R.id.imageView3);
 
         preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
         preferences2 = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
@@ -96,28 +94,7 @@ public class SettingsFragment extends Fragment {
             navController.popBackStack();
         });
         try {
-            // Load users info
-            db.collection("users")
-                    .whereEqualTo("email", auth.getCurrentUser().getEmail())
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (DocumentSnapshot document : task.getResult()) {
-                                    try {
-                                        String url = document.get("pfpUrl").toString();
-                                        Glide.with(getContext())
-                                                .load(url)
-                                                .into(imageView);
-                                        imageView.setClipToOutline(true);
-                                    } catch (Exception e) {
-                                        Log.d("Profile Picture Exception", "No Profile Picture Found");
-                                    }
-                                }
-                            }
-                        }
-                    });
+
         } catch (Exception e) {
 
         }
@@ -136,12 +113,7 @@ public class SettingsFragment extends Fragment {
         // Handle password resetting
         resetPass.setOnClickListener(v -> {
             String email = auth.getCurrentUser().getEmail();
-            auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    Toast.makeText(getContext(), "Password Reset Email Sent.", Toast.LENGTH_SHORT).show();
-                }
-            });
+            auth.sendPasswordResetEmail(email).addOnCompleteListener(task -> Toast.makeText(getContext(), "Password Reset Email Sent.", Toast.LENGTH_SHORT).show());
 
         });
 
@@ -177,19 +149,26 @@ public class SettingsFragment extends Fragment {
             db.collection("users")
             .whereEqualTo("email", current)
             .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        signOut.setText("Sign Out");
-                        signOut.setOnClickListener(v1 -> {
-                            FirebaseAuth.getInstance().signOut();
-                            getActivity().finish();
-                            Intent intent = new Intent(getActivity(), RegisterActivity.class);
-                            startActivity(intent);
-                        });
-                        Log.i("here is the user", auth.getCurrentUser().getEmail());
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+
+                    for (DocumentSnapshot document : task.getResult()) {
+                        try {
+                            String url = document.get("pfpUrl").toString();
+                            Glide.with(getContext())
+                                    .load(url)
+                                    .into(imageView);
+                            imageView.setClipToOutline(true);
+                        } catch (Exception ignored) {
+                        }
                     }
+                    signOut.setText("Sign Out");
+                    signOut.setOnClickListener(v1 -> {
+                        FirebaseAuth.getInstance().signOut();
+                        getActivity().finish();
+                        Intent intent = new Intent(getActivity(), RegisterActivity.class);
+                        startActivity(intent);
+                    });
                 }
             });
         }
@@ -199,21 +178,18 @@ public class SettingsFragment extends Fragment {
     public void deleteUser(){
         try {
             user.delete()
-            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.clear();
-                        editor.apply();
-                        preferences2 = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor2 = preferences2.edit();
-                        editor2.clear();
-                        editor2.apply();
-                        Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
-                        checkSignedIn();
-                    }
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    preferences = getActivity().getBaseContext().getSharedPreferences("database", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.clear();
+                    editor.apply();
+                    preferences2 = getActivity().getBaseContext().getSharedPreferences("workouts", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor2 = preferences2.edit();
+                    editor2.clear();
+                    editor2.apply();
+                    Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
+                    checkSignedIn();
                 }
             });
         } catch (Exception e) {
@@ -227,11 +203,12 @@ public class SettingsFragment extends Fragment {
         if (requestCode == imageRequest && resultCode == RESULT_OK && data != null && data.getData() != null) {
             Uri imageUri = data.getData();
             imageView.setImageURI(imageUri);
+            imageView.setClipToOutline(true);
             uploadProfileImage(imageUri);
         }
     }
 
-    // Open users phone gallery
+    // Open users system gallery
     private void openGallery() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, imageRequest);
@@ -250,19 +227,16 @@ public class SettingsFragment extends Fragment {
                 db.collection("users")
                 .whereEqualTo("email", current)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                String documentId = document.getId();
-                                db.collection("users").document(documentId).update("pfpUrl", imageUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        Toast.makeText(getContext(), "Profile Picture Changed Successfully!", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String documentId = document.getId();
+                            db.collection("users").document(documentId).update("pfpUrl", imageUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Toast.makeText(getContext(), "Profile Picture Changed Successfully!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
                     }
                 });

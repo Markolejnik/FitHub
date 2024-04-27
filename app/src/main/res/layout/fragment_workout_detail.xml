@@ -70,11 +70,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/wDetailGroups">
 
-<!--        <TableLayout-->
-<!--            android:id="@+id/wDetailTable"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content" />-->
-
 
         <LinearLayout
             android:id="@+id/wDetailTable"

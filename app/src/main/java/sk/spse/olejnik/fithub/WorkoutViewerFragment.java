@@ -76,19 +76,16 @@ public class WorkoutViewerFragment extends Fragment {
         workoutViewModel = ((MainActivity) requireActivity()).getWorkoutViewModel();
 
         // Get workout data from workout view model
-        workoutViewModel.getWorkoutLiveData().observe(getViewLifecycleOwner(), new Observer<WorkoutData>() {
-            @Override
-            public void onChanged(@Nullable WorkoutData workoutData) {
-                if (workoutData != null) {
-                    exercises = new ArrayList<>();
-                    titleValue = workoutData.getTitle();
-                    targetedMGValue = workoutData.getTargetedMuscleGroups();
-                    workoutTitle.setText(titleValue);
-                    muscleGroups.setText(targetedMGValue);
-                    exercises = workoutData.getExercises();
-                    current = 0;
-                    displayExercise(current);
-                }
+        workoutViewModel.getWorkoutLiveData().observe(getViewLifecycleOwner(), workoutData -> {
+            if (workoutData != null) {
+                exercises = new ArrayList<>();
+                titleValue = workoutData.getTitle();
+                targetedMGValue = workoutData.getTargetedMuscleGroups();
+                workoutTitle.setText(titleValue);
+                muscleGroups.setText(targetedMGValue);
+                exercises = workoutData.getExercises();
+                current = 0;
+                displayExercise(current);
             }
         });
 

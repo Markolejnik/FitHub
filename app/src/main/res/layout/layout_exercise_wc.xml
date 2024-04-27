@@ -89,22 +89,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/sets"
         app:layout_constraintStart_toEndOf="@+id/sets" />
 
-    <!--    <Button-->
-    <!--        android:id="@+id/repstosec"-->
-    <!--        android:layout_width="136dp"-->
-    <!--        android:layout_height="41dp"-->
-    <!--        android:layout_marginStart="12dp"-->
-    <!--        android:background="@drawable/round_filter"-->
-    <!--        android:fontFamily="@font/oswald_semibold"-->
-    <!--        android:padding="5dp"-->
-    <!--        android:text="Use Seconds"-->
-    <!--        android:textColor="@color/foreground"-->
-    <!--        android:textSize="15sp"-->
-    <!--        app:layout_constraintBottom_toBottomOf="@+id/reps"-->
-    <!--        app:layout_constraintStart_toEndOf="@+id/reps"-->
-    <!--        app:layout_constraintTop_toTopOf="@+id/reps"-->
-    <!--        app:layout_constraintVertical_bias="0.0" />-->
-
     <ToggleButton
         android:id="@+id/repstosec"
         android:layout_width="wrap_content"

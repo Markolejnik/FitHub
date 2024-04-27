@@ -114,7 +114,6 @@ public class ProgressAdapter extends RecyclerView.Adapter<ProgressAdapter.Progre
 
     @Override
     public int getItemCount() {
-        Log.i("progress entries count", progress.size() + "");
         return progress.size();
     }
 
